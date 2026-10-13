@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/doc-hygiene-check.mjs",
+            "timeout": 15,
+            "statusMessage": "Checking doc hygiene (mechanical)..."
+          }
+        ]
+      }
+    ]
+  }
+}

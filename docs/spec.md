@@ -1,5 +1,11 @@
 # Cantab OS — Spec (as provided 2026-10-13)
 
+| Status | Version | Owner | Last updated |
+| --- | --- | --- | --- |
+| Current | v1.0 | Nela | 2026-10-13 |
+
+The spec as Nela provided it, kept verbatim. Where a later decision changes it, [DECISIONS.md](DECISIONS.md) wins.
+
 Scope: Operating system for a consulting / small business / biotech OS.
 
 ## Initial use cases

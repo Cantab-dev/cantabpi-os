@@ -1,6 +1,10 @@
 # Cantab OS — Architecture proposal (DRAFT, 2026-10-13)
 
-Status: proposal for review. Nothing here is built. Items marked **DECIDE** need an answer from Nela before implementation.
+| Status | Version | Owner | Last updated |
+| --- | --- | --- | --- |
+| Draft | v0.1 | Nela | 2026-10-13 |
+
+Parked proposal, kept as input for step 3. Nothing here is built. Items marked **DECIDE** need an answer from Nela before implementation.
 
 ## 1. Platform facts this design rests on
 

@@ -1,10 +1,14 @@
 # Cantab OS — Data structure: plan and status
 
+| Status | Version | Owner | Last updated |
+| --- | --- | --- | --- |
+| Current | v1.0 | Nela | 2026-10-13 |
+
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
 Status values: `planned` (agreed, not built) · `built` (exists in the Supabase project) · `changed` (built, then altered; note what changed) · `open` (needs a decision).
 
-Last updated: 2026-10-13 · Supabase project `etofljbxzllkucmearwl` (cantabpi-os, Postgres 17, eu-west-1) · Database contents: six tables, label and context functions, dummy data (built 2026-10-13).
+Supabase project `etofljbxzllkucmearwl` (cantabpi-os, Postgres 17, eu-west-1) · Database contents: six tables, label and context functions, dummy data (built 2026-10-13).
 
 ## Scope
 
@@ -99,14 +103,6 @@ Three tables with the same shape; each row points to a Google file. Cantab OS st
 
 15 rows across the six tables plus two notes, clearly fake. Every dummy row carries the prefix `Dummy - ` in `name` (`description` for skills). Remove with `delete from <table> where name like 'Dummy - %'`.
 
-## Decisions (2026-10-13)
-
-Everything in this phase is subject to change later.
-
-1. **Importance scale** — 1 to 3.
-2. **Category** — free text for now.
-3. **Timestamps** — `created_at` and `updated_at` kept.
-
 ## Where it lives
 
 - `supabase/migrations/20261013120000_tables_and_labels.sql`
@@ -115,4 +111,7 @@ Everything in this phase is subject to change later.
 
 ## Next
 
-Step 2 tools (`list`, `get`, `write_*`, `note`) as an MCP edge function. Not started.
+Step 2 tools (`list`, `get`, `write_*`, `note`) as an MCP edge function: see [tools-status.md](tools-status.md).
+
+**Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.0 (2026-10-13) — Six tables, label and context functions and dummy data built. → DECISIONS.md 2026-10-13

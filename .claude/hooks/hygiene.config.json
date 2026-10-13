@@ -1,0 +1,12 @@
+{
+  "_note": "Project-specific settings for doc-hygiene-check.mjs. Every key is optional; omit a key to keep the default. The status vocabulary is NOT configured here -- it lives once, in Documentation_Rulebook.md Part C section 3, and is mirrored once in the hook.",
+  "docDirs": ["docs"],
+  "livingDirs": [],
+  "planDirs": [],
+  "handoffFiles": ["HANDOFF.md"],
+  "handoffLineLimit": 200,
+  "claudeMdLineLimit": 120,
+  "memoryIndex": null,
+  "memoryIndexLineLimit": 40,
+  "tempAgeDays": 14
+}
