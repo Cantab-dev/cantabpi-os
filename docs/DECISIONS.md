@@ -15,6 +15,7 @@ the reasoning.
 
 | Date | Decision and why | Reference | Status |
 |---|---|---|---|
+| 2026-10-13 | **After the agent design guide check: tools stay create-only; six `write_*` tools stay; `list` gets paging.** The guide prefers an upsert and one generic `write`; both are kept as suggestions and may be revisited. Paging was chosen over filters to bound `list`. | `tools-status.md` — Not in this deployment; Suggestions to consider later; list | Current |
 | 2026-10-13 | **The repo docs folder stays `docs/`.** Renaming to the kit's `.docs/` was allowed but not done: it would mean fixing every link for no gain, and the hook is configured for `docs`. | `.claude/hooks/hygiene.config.json` | Current |
 | 2026-10-13 | **Adopt the Cantab Pi Project Kit 0.9.1 (pre-release), profile M; sessions open from the repo.** Close between M and L, so the smaller: one agent writes here. `.claude/` lives in the repo; the SharePoint root stays a plain folder the hook does not scan. | `CLAUDE.md` | Current |
 | 2026-10-13 | **Row-level status words stay as they are.** `planned` / `built` / `changed` / `open` are a table's own lifecycle; only a document's header takes the Rulebook vocabulary. | `AGENTS.md`; `Documentation_Rulebook.md` Part C §3 | Current |
