@@ -12,7 +12,8 @@ Backend-only operating system for a consulting / small business / biotech: Supab
 
 - GitHub: Cantab-dev/cantabpi-os
 - Supabase project id: etofljbxzllkucmearwl
-- Local: SharePoint "CantabPI - XCO001 - Consulting/Cantabpi-OS"
+- Repo (code and project files): C:\dev\cantabpi-os
+- SharePoint "CantabPI - XCO001 - Consulting/Cantabpi-OS": handoff, analysis and other documentation only; never put the repo or .git there
 
 ## Conventions
 
