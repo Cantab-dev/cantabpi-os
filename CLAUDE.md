@@ -30,6 +30,7 @@ layer genuinely conflict, say so and ask — don't pick one silently.
 | `supabase/migrations/` | SQL migrations | Never edit an applied migration; add a new one |
 | `supabase/functions/` | MCP edge function(s) | |
 | `supabase/seed.sql` | Dummy data | Fake rows only |
+| `scripts/` | `smoke.sh` — live checks against the deployed function | Creates test rows; remove them afterwards |
 | `.claude/` | `settings.json`, `hooks/` (doc-hygiene check), `MEMORY_seed.md` | |
 | SharePoint root: `C:\Sharepoint\cantabpi.com\CantabPI - XCO001 - Consulting\Cantabpi-OS` | `HANDOFF.md`, `Document_Log.md`, `folder-skeleton.md`, a pointer `CLAUDE.md`; handoff, analysis and other documentation | Never put the repo or `.git` there — sync mirrors git internals |
 
