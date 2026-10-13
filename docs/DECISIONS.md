@@ -15,6 +15,7 @@ the reasoning.
 
 | Date | Decision and why | Reference | Status |
 |---|---|---|---|
+| 2026-10-13 | **Tools built and deployed; two things differ from plan v0.2.** (1) Every table gained an internal `label_no` column, because ordering and paging by label number is not possible on the text label. (2) On `get`, a guideline keeps its first 8,000 characters, not its last 4,000: the start of a workflow is the part that matters and 8,000 is the write limit. Decided by Claude during the build, reported to Nela. | `tools-status.md`; `data-structure-status.md` — Labels | Current |
 | 2026-10-13 | **After the agent design guide check: tools stay create-only; six `write_*` tools stay; `list` gets paging.** The guide prefers an upsert and one generic `write`; both are kept as suggestions and may be revisited. Paging was chosen over filters to bound `list`. | `tools-status.md` — Not in this deployment; Suggestions to consider later; list | Current |
 | 2026-10-13 | **The repo docs folder stays `docs/`.** Renaming to the kit's `.docs/` was allowed but not done: it would mean fixing every link for no gain, and the hook is configured for `docs`. | `.claude/hooks/hygiene.config.json` | Current |
 | 2026-10-13 | **Adopt the Cantab Pi Project Kit 0.9.1 (pre-release), profile M; sessions open from the repo.** Close between M and L, so the smaller: one agent writes here. `.claude/` lives in the repo; the SharePoint root stays a plain folder the hook does not scan. | `CLAUDE.md` | Current |

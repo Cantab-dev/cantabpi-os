@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.0 | Nela | 2026-10-13 |
+| Current | v1.1 | Nela | 2026-10-13 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
@@ -82,6 +82,7 @@ Three tables with the same shape; each row points to a Google file. Cantab OS st
 - Sequences never hand out the same number twice, so a label is never reused after a delete. Numbers can have gaps.
 - Labels are unique across the whole database (not per user).
 - The prefix tells `get` and `note` which table a label belongs to.
+- `changed` (2026-10-13): every table also has `label_no`, the number part of the label, filled by the database and indexed. It exists so lists can be ordered and paged by label number (`todo:2` before `todo:10`). It is internal and never returned by the tools.
 
 ## Context — `built`
 
@@ -107,6 +108,7 @@ Three tables with the same shape; each row points to a Google file. Cantab OS st
 
 - `supabase/migrations/20261013120000_tables_and_labels.sql`
 - `supabase/migrations/20261013120100_append_context.sql`
+- `supabase/migrations/20261013150000_label_no.sql`
 - `supabase/seed.sql`
 
 ## Next
@@ -114,4 +116,5 @@ Three tables with the same shape; each row points to a Google file. Cantab OS st
 Step 2 tools (`list`, `get`, `write_*`, `note`) as an MCP edge function: see [tools-status.md](tools-status.md).
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.1 (2026-10-13) — `label_no` column added to every table for ordering and paging. → DECISIONS.md 2026-10-13
 - v1.0 (2026-10-13) — Six tables, label and context functions and dummy data built. → DECISIONS.md 2026-10-13
