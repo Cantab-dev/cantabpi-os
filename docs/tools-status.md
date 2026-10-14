@@ -146,7 +146,7 @@ From the agent design guide check. None is built.
 |---|---|
 | Unit tests for input checks and failure messages ▲ — `supabase/functions/mcp/lib_test.ts`, run with `deno test` | `built` — 18 pass |
 | Live checks for each tool, the error cases and a second page of `list` — `bash scripts/smoke.sh` | `built` — all pass |
-| The server added to Claude Code as an MCP server, to check the tools read naturally to a model | `planned` — not done yet |
+| The server added to Claude Code as an MCP server, to check the tools read naturally to a model | `built` — connected 2026-10-14; "what's on my todo list?" called `list`. Guide for other testers: [testing-guide.md](testing-guide.md) |
 
 Rows created during testing were removed; the label numbers they used are not reused, so new labels continue after a gap.
 - Findings go in [test_tracker.md](test_tracker.md).
@@ -159,9 +159,10 @@ Rows created during testing were removed; the label numbers they used are not re
 
 ## Next
 
-Try the tools from Claude Code as an MCP server. Then step 3: connect a host (see [open-questions.md](open-questions.md)).
+Others can test from Claude Code with [testing-guide.md](testing-guide.md). Then step 3: connect a host (see [open-questions.md](open-questions.md)).
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.2 (2026-10-14) — Claude Code connected and calling the tools; testing guide added for other testers.
 - v1.1 (2026-10-14) — `render` removed from every result; data only. → DECISIONS.md 2026-10-14
 - v1.0 (2026-10-13) — All nine tools built, deployed and tested. Guideline limit on `get` corrected to the first 8,000 characters. → DECISIONS.md 2026-10-13
 - v0.2 (2026-10-13) — Revised after the agent design guide check: paging on `list`, limits, failure tables, display titles, descriptions; suggestions listed. → DECISIONS.md 2026-10-13
