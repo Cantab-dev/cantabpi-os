@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.2 | Nela | 2026-10-14 |
+| Current | v1.3 | Nela | 2026-10-14 |
 
 Questions still waiting for a decision, all for step 3 (connecting a host). Read whole; it is short.
 Answered questions are in [DECISIONS.md](DECISIONS.md). Remaining design work goes to the Opus pass
@@ -33,11 +33,13 @@ Each tool returns, in addition to its result, host-view instructions following M
 - Host authentication: claude.ai custom connectors use MCP OAuth — Supabase Auth as OAuth provider vs external IdP.
 - Label uniqueness scope: global, per-workspace or per-user? (Per-entity counters must be concurrency-safe and never reused.)
 - Skills: global, per-workspace or per-user? (Trust model deferred, but scope affects the schema.)
+- OAuth clients before real data: keep dynamic client registration (any MCP client can register, and a user must still approve it), or register clients such as claude.ai by hand? For testing, it is on only until claude.ai has connected once, then off (Nela, 2026-10-14).
 
 ## Feasibility spike (cheap, de-risks layout)
 Before the full schema: deploy one trivial MCP edge function with a single tool + `ui://` resource, connect it as a custom connector in claude.ai, confirm what renders on desktop and mobile.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.3 (2026-10-14) — Question added on OAuth client registration before real data.
 - v1.2 (2026-10-14) — Siniša's side-window scope recorded with six clarifying questions.
 - v1.1 (2026-10-13) — Answered questions moved to DECISIONS.md; status header added.
 - v1.0 (2026-10-13) — First version.
