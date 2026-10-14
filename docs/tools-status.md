@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.3 | Nela | 2026-10-14 |
+| Current | v1.4 | Nela | 2026-10-14 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
@@ -20,20 +20,19 @@ Data structure the tools work on: [data-structure-status.md](data-structure-stat
 
 - One Supabase edge function named `mcp`, at `https://etofljbxzllkucmearwl.supabase.co/functions/v1/mcp`.
 - Speaks MCP over Streamable HTTP, stateless, built with the official MCP TypeScript SDK as in Supabase's guide.
-- Reads and writes the database with the backend (service role) key, which stays inside the function.
+- Acts as the signed-in user: `withSupabase` checks the access token and gives the tools a client for that user, so RLS decides what they see (see [sign-in-status.md](sign-in-status.md)).
 - One shared database helper for all tools ▲.
 
-## Temporary access for this phase — `built`
+## Access — `changed` (sign-in replaces the development key, 2026-10-14)
 
-The function has a public URL and full access to the data, so it cannot be left open, even with dummy data.
-
-- **Development key**: every request must carry the key as `Authorization: Bearer <key>`. The key is stored as a Supabase secret and in the git-ignored `supabase/functions/.env`; never in the repo. Requests without it get 401.
-- **Acting user**: rows created by the tools get `owner_id` of the test user `claude@test.com` (decided 2026-10-13). All tools see all rows.
-- Both are replaced in step 3 by real sign-in and per-user rules.
+- Callers sign in through Supabase Auth's OAuth server; a request without a valid user token gets 401
+  with a pointer to the OAuth metadata.
+- The development key, the service-role client and the acting user were removed in function v0.4.0.
+  Detail: [sign-in-status.md](sign-in-status.md).
 
 ## Rules for every tool — `built`
 
-- **Labels only.** No argument takes a database id and no result contains one. `id`, `owner_id`, `created_at` and `updated_at` are never returned.
+- **Labels only.** No argument takes a database id and no result contains one. `id`, `profile_id`, `created_at` and `updated_at` are never returned.
 - **One exit for results ▲.** Every result is built from a fixed list of columns per entity and passes one check before it leaves: no id fields, plain JSON values only (dates as `YYYY-MM-DD` text).
 - **Bounded results ▲.** Every tool has row and character limits that are always on. When a limit cuts something, the result says so with `truncated: true` and how to get the rest.
 - **Errors name the next call ▲.** Every failure listed under a tool returns a message that says what was wrong and what to call next.
@@ -126,7 +125,7 @@ Requested by Siniša, approved by Nela on 2026-10-14; deployed as function v0.3.
 
 ### edit — `built`
 - **Arguments:** `label` (required), plus any field of that entity. Each field given overwrites the whole stored value. The fields are those of the matching `write_*` tool, with the same checks.
-- **Never editable:** `id`, `label`, `context` (changed only through `note`), `owner_id`, `created_at`, `updated_at`, `label_no`. `updated_at` is set automatically.
+- **Never editable:** `id`, `label`, `context` (changed only through `note`), `profile_id`, `created_at`, `updated_at`, `label_no`. `updated_at` is set automatically.
 - **Clearing a field:** an empty string clears an optional field. A required field (`name`; `description` for skills) cannot be emptied.
 - **Result:** the full record after the edit, as `get` returns it. It is annotated idempotent.
 
@@ -143,8 +142,8 @@ Requested by Siniša, approved by Nela on 2026-10-14; deployed as function v0.3.
 - **Result:** the deleted label and its name (`description` for skills).
 - **Failures:** a bad label, or a label that doesn't exist. Each says to call `list`.
 
-### Tools act for one user — `built`
-- `list`, `get`, `note`, `edit` and `delete` see only rows whose `owner_id` is the acting user (`claude@test.com` for now). `write_*` already stamps that owner.
+### Tools act for one user — `changed` (v0.4.0: RLS does this now)
+- In v0.3.0 the tools filtered on the acting user themselves. Since v0.4.0 they act as the signed-in user and RLS limits every call to that user's rows; new rows get the user through the column default.
 - **Why:** once the dummy data is copied for Nela, Claude Code would otherwise see both sets. This also behaves the way RLS will at step 3, so swapping in sign-in changes where the user comes from, not what the tools see.
 - `append_context` gets an owner argument so `note` follows the same rule.
 
@@ -190,6 +189,7 @@ Rows created during testing were removed; the label numbers they used are not re
 Others can test from Claude Code with [testing-guide.md](testing-guide.md). Next: connect claude.ai over Supabase OAuth with the Lovable consent app (see [COMMS.md](COMMS.md) and [open-questions.md](open-questions.md)).
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.4 (2026-10-14) — Sign-in replaces the development key; tools act as the signed-in user under RLS. Function v0.4.0. → DECISIONS.md 2026-10-14
 - v1.3 (2026-10-14) — `edit` and `delete` built; tools act for the acting user only; upsert dropped. Function v0.3.0. → DECISIONS.md 2026-10-14
 - v1.2 (2026-10-14) — Claude Code connected and calling the tools; testing guide added for other testers.
 - v1.1 (2026-10-14) — `render` removed from every result; data only. → DECISIONS.md 2026-10-14

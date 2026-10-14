@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.2 | Nela | 2026-10-14 |
+| Current | v0.3 | Nela | 2026-10-14 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the
 status in the same change that builds the item.
@@ -37,14 +37,14 @@ project signs tokens with ES256.
 
 ## Database
 
-### profiles — `planned`
+### profiles — `built`
 - New table `public.profiles`: `id uuid` primary key referencing `auth.users(id)` on delete cascade,
   `email text`, `display_name text`, `created_at`, `updated_at`.
 - A trigger on `auth.users` creates the profile when a user is created. The three existing users are
   backfilled.
 - RLS: a user can read and update their own profile only.
 
-### Owner column — `planned`
+### Owner column — `built`
 - On all six tables, `owner_id` is renamed `profile_id`, following the agreed naming (primary key
   `id`, foreign key `<table>_id`).
 - It references `public.profiles(id)` (on delete cascade: deleting a user deletes their rows), is
@@ -52,7 +52,7 @@ project signs tokens with ES256.
   rows already have an owner.
 - Indexed, because every policy checks it.
 
-### RLS policies — `planned`
+### RLS policies — `built`
 - On each of the six tables, one policy for the `authenticated` role covering all operations:
   `(select auth.uid()) = profile_id` in both `using` and `with check`. A user can't read, change or
   delete another user's rows, or move a row to someone else.
@@ -60,7 +60,7 @@ project signs tokens with ES256.
   ignore RLS, plus REFERENCES and TRIGGER. On `profiles` it also can't insert or delete; the trigger
   creates profiles.
 
-### Functions the tools rely on — `planned`
+### Functions the tools rely on — `built`
 - `next_label` becomes `security definer` and is granted to `authenticated`, so a signed-in user's
   insert can take the next label without direct access to the sequences.
 - `append_context` drops its owner argument and runs as the caller (`security invoker`), so RLS
@@ -68,7 +68,7 @@ project signs tokens with ES256.
 - Labels stay unique across the whole database. A user sees gaps in the numbers where other users'
   rows are.
 
-## MCP function — `planned` (v0.4.0)
+## MCP function — `built` (v0.4.0, deployed 2026-10-14)
 
 - `index.ts` follows Supabase's MCP block: `pipeline([withOAuthProtectedResource(),
   withSupabase({ auth: 'user', cors })], handleMcp)`, with a fresh server per request bound to the
@@ -82,7 +82,7 @@ project signs tokens with ES256.
 - Server instructions say that every tool acts as the signed-in user.
 - `config.toml`: `[functions.mcp] verify_jwt = false` stays, because the function checks the token itself.
 
-## Testing — `planned`
+## Testing — `built` for `smoke.sh` (all pass, 2026-10-14); client connections still to do
 
 | Check | How |
 |---|---|
@@ -126,5 +126,6 @@ project signs tokens with ES256.
   approve it.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.3 (2026-10-14) — Migration applied, function v0.4.0 deployed, `smoke.sh` passes live (rollout steps 1–4).
 - v0.2 (2026-10-14) — Approved by Nela; built locally. TRUNCATE revoked from `authenticated`, cascade on user delete. → DECISIONS.md 2026-10-14
 - v0.1 (2026-10-14) — Plan drafted: profiles, `profile_id`, RLS, function switched to `@supabase/server`. → DECISIONS.md 2026-10-14
