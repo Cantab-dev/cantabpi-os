@@ -4,6 +4,13 @@ Only Claude Code writes to this repo. Lovable builds the OAuth consent app in it
 and never writes here or changes the Supabase project. The ownership split and the channel between the
 two are in [docs/COMMS.md](docs/COMMS.md). Nela carries messages across.
 
+## Developers take turns
+
+Nela and Siniša both work here, **one at a time**. Whoever starts runs `git pull` first and reads
+`HANDOFF.md` in the SharePoint folder. When finished, they commit, push and update `HANDOFF.md` (state
+and next steps), so the other can pick up from there. Migrations and deploys are run only by whoever is
+active.
+
 ## Git
 
 - `main` only; commits go straight to it.
