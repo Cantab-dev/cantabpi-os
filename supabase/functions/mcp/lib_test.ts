@@ -146,11 +146,11 @@ Deno.test('assertSafe refuses ids, internal columns and non-JSON values', () => 
   assertThrows(() => assertSafe({ v: undefined }))
 })
 
-Deno.test('finish wraps data and render, and runs the exit check', () => {
-  const r = finish({ label: 'todo:1' }, 'show it')
-  assertEquals(r.structuredContent, { data: { label: 'todo:1' }, render: 'show it' })
+Deno.test('finish returns the data only, and runs the exit check', () => {
+  const r = finish({ label: 'todo:1' })
+  assertEquals(r.structuredContent, { label: 'todo:1' })
   assertEquals(JSON.parse(r.content[0].text), r.structuredContent)
-  assertThrows(() => finish({ id: 'x' }, 'show it'))
+  assertThrows(() => finish({ id: 'x' }))
 })
 
 Deno.test('authorised needs the exact bearer key', () => {

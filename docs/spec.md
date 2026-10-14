@@ -58,6 +58,7 @@ Argument: label, text. Appends context for label. Returns confirmation or error.
 
 ### important
 Every tool also returns instructions how to render 'in chat' elements.
+*Set aside for the MVP on 2026-10-14 (Siniša): results carry data only. See DECISIONS.md.*
 
 ## Deployment
 1. Generate database; populate with dummy values (can be delayed)

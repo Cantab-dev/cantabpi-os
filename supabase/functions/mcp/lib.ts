@@ -277,10 +277,9 @@ export interface ToolResult {
   isError?: boolean
 }
 
-export function finish(data: Record<string, unknown>, render: string): ToolResult {
-  const payload = { data, render }
-  assertSafe(payload)
-  return { content: [{ type: 'text', text: JSON.stringify(payload) }], structuredContent: payload }
+export function finish(data: Record<string, unknown>): ToolResult {
+  assertSafe(data)
+  return { content: [{ type: 'text', text: JSON.stringify(data) }], structuredContent: data }
 }
 
 export function failure(message: string): ToolResult {
@@ -294,21 +293,4 @@ export function authorised(header: string | null, key: string): boolean {
   let diff = 0
   for (let i = 0; i < expected.length; i++) diff |= header.charCodeAt(i) ^ expected.charCodeAt(i)
   return diff === 0
-}
-
-const FILE_RENDER =
-  ' On desktop, for a sheet, doc or slide, show the record\'s url in the side window (for a slide, storage_url when present).'
-
-export const RENDER = {
-  list: (page: number, pages: number) =>
-    `Show as a table, one row per record, with the columns given. For todos, show status as done or open ` +
-    `and highlight open todos whose due date has passed. Say this is page ${page} of ${pages}.`,
-  get:
-    'Show one card per record: label and name as the title, the fields below, context as a dated list. Show urls as links.' +
-    FILE_RENDER,
-  write: (entity: EntityKey) =>
-    'Give a one-line confirmation with the new label, then show the record as a card: label as the title, ' +
-    'the fields below. Show urls as links.' +
-    (entity === 'sheets' || entity === 'docs' || entity === 'slides' ? FILE_RENDER : ''),
-  note: 'Give a one-line confirmation naming the label.',
 }

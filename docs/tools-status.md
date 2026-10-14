@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.0 | Nela | 2026-10-13 |
+| Current | v1.1 | Nela | 2026-10-14 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
@@ -116,20 +116,9 @@ Display title: "Add note".
 | Label is a skill | not retry: skills take no notes |
 | `text` empty or too long | supply text within 1,000 characters; split into several notes if needed |
 
-## Render instructions — `built`
+## Render instructions — `changed` (removed)
 
-Every tool result has two parts:
-- `data` — the records or the confirmation.
-- `render` — a short plain-text instruction to the host on how to show the result in chat.
-
-In this phase `render` is a placeholder in words. Step 3 decides the real mechanism and replaces it.
-
-| Tool | Render instruction |
-|---|---|
-| `list` | Table, one row per record. Columns per entity (todos: label, name, category, due, importance, done). Overdue open todos highlighted. Say which page of how many. |
-| `get` | One card per record: label and name as title, fields below, context as a dated list. Urls as links. On desktop, for a sheet, doc or slide, show the record's `url` in the side window (for a slide, `storage_url` when present). |
-| `write_*` | One-line confirmation with the new label, then the record as a card. The side-window line is added for sheets, docs and slides only. |
-| `note` | One-line confirmation naming the label. |
+Removed on 2026-10-14: results carry the data only, as the spec defines it; no `render` part and no side-window line. In-host layout comes back in a later phase. Code changed and unit-tested; **not yet deployed** — live checks to re-run after the deploy. → DECISIONS.md 2026-10-14
 
 ## Not in this deployment (decided 2026-10-13)
 
@@ -173,6 +162,7 @@ Rows created during testing were removed; the label numbers they used are not re
 Try the tools from Claude Code as an MCP server. Then step 3: connect a host (see [open-questions.md](open-questions.md)).
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.1 (2026-10-14) — `render` removed from every result; data only. → DECISIONS.md 2026-10-14
 - v1.0 (2026-10-13) — All nine tools built, deployed and tested. Guideline limit on `get` corrected to the first 8,000 characters. → DECISIONS.md 2026-10-13
 - v0.2 (2026-10-13) — Revised after the agent design guide check: paging on `list`, limits, failure tables, display titles, descriptions; suggestions listed. → DECISIONS.md 2026-10-13
 - v0.1 (2026-10-13) — Plan drafted; update and delete left out of this deployment. → DECISIONS.md 2026-10-13

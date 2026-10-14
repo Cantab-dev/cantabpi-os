@@ -15,7 +15,6 @@ import {
   parseEntity,
   parseLabel,
   parsePage,
-  RENDER,
   ToolError,
   type ToolResult,
   validateNoteText,
@@ -55,7 +54,6 @@ async function listTool(db: SupabaseClient, entity: unknown, pageArg: unknown): 
   if (total === 0) {
     return finish(
       { entity: def.key, page: 1, pages: 1, total: 0, rows: [], truncated: false, next: `Nothing here yet. Use ${writeToolName(def)} to add one.` },
-      RENDER.list(1, 1),
     )
   }
   if (page > pages) {
@@ -76,7 +74,7 @@ async function listTool(db: SupabaseClient, entity: unknown, pageArg: unknown): 
   } else if (page < pages) {
     data.next = `More records exist. Call list with entity "${def.key}" and page ${page + 1}.`
   }
-  return finish(data, RENDER.list(page, pages))
+  return finish(data)
 }
 
 async function getTool(db: SupabaseClient, labelsArg: unknown): Promise<ToolResult> {
@@ -125,7 +123,7 @@ async function getTool(db: SupabaseClient, labelsArg: unknown): Promise<ToolResu
     }
     records.push(entry)
   }
-  return finish({ records }, RENDER.get)
+  return finish({ records })
 }
 
 async function writeTool(db: SupabaseClient, def: EntityDef, args: Row, ownerId: string | null): Promise<ToolResult> {
@@ -133,7 +131,7 @@ async function writeTool(db: SupabaseClient, def: EntityDef, args: Row, ownerId:
   const res = await db.from(def.key).insert({ ...row, owner_id: ownerId }).select(def.getCols.join(',')).single()
   if (res.error) throw res.error
   const record = res.data as unknown as Row
-  return finish({ label: record.label, created: true, record }, RENDER.write(def.key))
+  return finish({ label: record.label, created: true, record })
 }
 
 async function noteTool(db: SupabaseClient, labelArg: unknown, textArg: unknown): Promise<ToolResult> {
@@ -150,7 +148,7 @@ async function noteTool(db: SupabaseClient, labelArg: unknown, textArg: unknown)
     if (/not found/i.test(res.error.message)) throw new ToolError(notFoundMessage(p.label, p.def))
     throw res.error
   }
-  return finish({ label: p.label, noted: true, text }, RENDER.note)
+  return finish({ label: p.label, noted: true, text })
 }
 
 const text = (field: string, what: string) => z.string({ error: `"${field}" must be text.` }).describe(what)

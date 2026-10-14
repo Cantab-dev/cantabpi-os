@@ -14,7 +14,7 @@ const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SE
 })
 
 const handler = createMcpHandler(() => {
-  const server = new McpServer({ name: 'cantab-os', version: '0.1.0' })
+  const server = new McpServer({ name: 'cantab-os', version: '0.2.0' })
   registerTools(server, db, actingUserId)
   return server
 })
