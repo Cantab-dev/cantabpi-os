@@ -286,7 +286,7 @@ export function fitRows<T>(rows: T[], maxChars = MAX_RESULT_CHARS): { rows: T[];
   return { rows: kept, cut: kept.length < rows.length }
 }
 
-const FORBIDDEN_KEYS = new Set(['id', 'owner_id', 'created_at', 'updated_at', 'label_no'])
+const FORBIDDEN_KEYS = new Set(['id', 'profile_id', 'created_at', 'updated_at', 'label_no'])
 
 /** The single exit check: plain JSON values only, and no database id or internal column anywhere. */
 export function assertSafe(value: unknown, path = 'result'): void {
@@ -323,13 +323,4 @@ export function finish(data: Record<string, unknown>): ToolResult {
 
 export function failure(message: string): ToolResult {
   return { content: [{ type: 'text', text: message }], isError: true }
-}
-
-export function authorised(header: string | null, key: string): boolean {
-  if (!key || !header) return false
-  const expected = `Bearer ${key}`
-  if (header.length !== expected.length) return false
-  let diff = 0
-  for (let i = 0; i < expected.length; i++) diff |= header.charCodeAt(i) ^ expected.charCodeAt(i)
-  return diff === 0
 }

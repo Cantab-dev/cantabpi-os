@@ -1,30 +1,43 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
 
 import { createMcpHandler, McpServer } from '@modelcontextprotocol/server'
-import { createClient } from '@supabase/supabase-js'
-import { authorised } from './lib.ts'
+import { pipeline } from '@supabase/middleware'
+import { type SupabaseContext, withOAuthProtectedResource, withSupabase } from '@supabase/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { registerTools } from './tools.ts'
 
-// Temporary access for the build phase: a shared development key and one acting user.
-const devKey = Deno.env.get('CANTAB_DEV_KEY') ?? ''
-const actingUserId = Deno.env.get('CANTAB_ACTING_USER_ID') || null
+// As in Supabase's MCP block:
+//   withOAuthProtectedResource  OAuth discovery for MCP clients (RFC 9728) and the WWW-Authenticate
+//                               challenge on 401, so claude.ai can find Supabase Auth and sign in.
+//   withSupabase                Checks the user's access token and gives the tools a client that acts
+//                               as that user, so RLS decides which rows they see.
+//   handleMcp                   A fresh MCP server per request, bound to that user's client.
 
-const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
-  auth: { persistSession: false, autoRefreshToken: false },
-})
+const INSTRUCTIONS =
+  'Cantab OS stores todos, leads, skills and pointers to Google sheets, docs and slides. ' +
+  'Every tool acts as the signed-in user and sees only their records. ' +
+  'Call list before get, edit, delete or note to find labels; never invent one.'
 
-const handler = createMcpHandler(() => {
-  const server = new McpServer({ name: 'cantab-os', version: '0.3.0' })
-  registerTools(server, db, actingUserId)
-  return server
-})
+const CORS_HEADERS: Record<string, string> = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers':
+    'Authorization, Content-Type, Accept, Mcp-Protocol-Version, Mcp-Session-Id, Mcp-Method, Mcp-Name',
+  'Access-Control-Expose-Headers': 'WWW-Authenticate, Mcp-Session-Id',
+}
 
-Deno.serve((req) => {
-  if (!authorised(req.headers.get('authorization'), devKey)) {
-    return new Response(JSON.stringify({ error: 'Missing or wrong development key.' }), {
-      status: 401,
-      headers: { 'content-type': 'application/json' },
-    })
-  }
-  return handler.fetch(req)
-})
+function handleMcp(request: Request, ctx: SupabaseContext): Promise<Response> {
+  const handler = createMcpHandler(() => {
+    const server = new McpServer({ name: 'cantab-os', version: '0.4.0' }, { instructions: INSTRUCTIONS })
+    registerTools(server, ctx.supabase as unknown as SupabaseClient)
+    return server
+  })
+  return handler.fetch(request)
+}
+
+Deno.serve(
+  pipeline(
+    [withOAuthProtectedResource(), withSupabase({ auth: 'user', cors: { headers: CORS_HEADERS } })],
+    (request, ctx) => handleMcp(request, ctx),
+  ),
+)

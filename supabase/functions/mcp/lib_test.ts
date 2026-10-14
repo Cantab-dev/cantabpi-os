@@ -1,7 +1,6 @@
 import { assert, assertEquals, assertThrows } from 'jsr:@std/assert@1'
 import {
   assertSafe,
-  authorised,
   clipRecord,
   ENTITIES,
   finish,
@@ -102,7 +101,7 @@ Deno.test('write: clean row keeps only known fields and drops empty optionals', 
     importance: 3,
     status: false,
     id: 'x',
-    owner_id: 'y',
+    profile_id: 'y',
     label: 'todo:1',
   })
   assertEquals(row, { name: 'Send proposal', due: '2026-11-30', importance: 3, status: false })
@@ -139,7 +138,7 @@ Deno.test('fitRows cuts rows from the end when over the cap', () => {
 
 Deno.test('assertSafe refuses ids, internal columns and non-JSON values', () => {
   assertSafe({ data: { rows: [{ label: 'todo:1', due: '2026-11-30', importance: 2, status: false, context: null }] } })
-  for (const key of ['id', 'owner_id', 'created_at', 'updated_at', 'label_no']) {
+  for (const key of ['id', 'profile_id', 'created_at', 'updated_at', 'label_no']) {
     assertThrows(() => assertSafe({ data: { rows: [{ label: 'todo:1', [key]: 'x' }] } }))
   }
   assertThrows(() => assertSafe({ when: new Date() }))
@@ -154,14 +153,6 @@ Deno.test('finish returns the data only, and runs the exit check', () => {
   assertThrows(() => finish({ id: 'x' }))
 })
 
-Deno.test('authorised needs the exact bearer key', () => {
-  assert(authorised('Bearer secret', 'secret'))
-  assert(!authorised('Bearer wrong!', 'secret'))
-  assert(!authorised('secret', 'secret'))
-  assert(!authorised(null, 'secret'))
-  assert(!authorised('Bearer ', ''))
-})
-
 Deno.test('edit needs at least one field and names the editable ones', () => {
   const m = message(() => validateEdit(ENTITIES.todos, { label: 'todo:1' }))
   assert(m.includes('name, category, due, importance, status'))
@@ -170,7 +161,7 @@ Deno.test('edit needs at least one field and names the editable ones', () => {
 Deno.test('edit refuses fields that are not on the entity, and points context to note', () => {
   assert(message(() => validateEdit(ENTITIES.leads, { label: 'lead:1', due: '2026-11-30' })).includes('"due" cannot be changed on a lead'))
   assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', context: 'x' })).includes('call note'))
-  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', owner_id: 'x' })).includes('cannot be changed'))
+  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', profile_id: 'x' })).includes('cannot be changed'))
 })
 
 Deno.test('edit overwrites given fields only, with the same checks as write', () => {

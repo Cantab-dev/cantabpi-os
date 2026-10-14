@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Draft | v0.1 | Nela | 2026-10-14 |
+| Current | v0.2 | Nela | 2026-10-14 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the
 status in the same change that builds the item.
@@ -47,15 +47,18 @@ project signs tokens with ES256.
 ### Owner column — `planned`
 - On all six tables, `owner_id` is renamed `profile_id`, following the agreed naming (primary key
   `id`, foreign key `<table>_id`).
-- It references `public.profiles(id)`, is `not null`, and defaults to `auth.uid()`, so a new row
-  belongs to whoever creates it. All existing rows already have an owner.
+- It references `public.profiles(id)` (on delete cascade: deleting a user deletes their rows), is
+  `not null`, and defaults to `auth.uid()`, so a new row belongs to whoever creates it. All existing
+  rows already have an owner.
 - Indexed, because every policy checks it.
 
 ### RLS policies — `planned`
 - On each of the six tables, one policy for the `authenticated` role covering all operations:
   `(select auth.uid()) = profile_id` in both `using` and `with check`. A user can't read, change or
   delete another user's rows, or move a row to someone else.
-- `anon` gets nothing.
+- `anon` gets nothing (all table rights revoked). `authenticated` loses TRUNCATE, which would
+  ignore RLS, plus REFERENCES and TRIGGER. On `profiles` it also can't insert or delete; the trigger
+  creates profiles.
 
 ### Functions the tools rely on — `planned`
 - `next_label` becomes `security definer` and is granted to `authenticated`, so a signed-in user's
@@ -87,8 +90,9 @@ project signs tokens with ES256.
 | No token → 401 with a `WWW-Authenticate` header pointing to the OAuth metadata | `smoke.sh` |
 | The OAuth metadata names Supabase Auth as the authorisation server | `smoke.sh` |
 | All tool checks pass as `claude@test.com`, who sees only their own 15 rows | `smoke.sh`, signing in with the test user's password from the git-ignored `.env.local` |
+| Nela's `todo:39` is "not found" for Claude's `get`, `edit`, `note` and `delete` | `smoke.sh` |
 | As Nela, `list` shows her own rows; Claude's labels return "not found" | `smoke.sh` second pass, or a Claude Code session as Nela |
-| A direct Data API call with Nela's token can't read Claude's rows | `smoke.sh` |
+| The Data API returns nothing without a user token, and only Claude's labels with Claude's token | `smoke.sh` |
 | Claude Code connects through OAuth (`/mcp` → authenticate) | Nela |
 | claude.ai connects as Nela: Settings → Connectors → Add custom connector, URL only | Nela |
 | Siniša connects and sees none of Nela's rows | Siniša |
@@ -122,4 +126,5 @@ project signs tokens with ES256.
   approve it.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.2 (2026-10-14) — Approved by Nela; built locally. TRUNCATE revoked from `authenticated`, cascade on user delete. → DECISIONS.md 2026-10-14
 - v0.1 (2026-10-14) — Plan drafted: profiles, `profile_id`, RLS, function switched to `@supabase/server`. → DECISIONS.md 2026-10-14

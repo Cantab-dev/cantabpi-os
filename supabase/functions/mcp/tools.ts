@@ -23,11 +23,6 @@ import {
 } from './lib.ts'
 
 type Row = Record<string, unknown>
-type Owner = string | null
-
-/** Limits a query to the acting user's rows, the way the RLS policies will at step 3. */
-// deno-lint-ignore no-explicit-any
-const owned = (q: any, ownerId: Owner): any => (ownerId ? q.eq('owner_id', ownerId) : q.is('owner_id', null))
 
 const READ_CRASH =
   'The request could not be completed because of an internal error. Try the same call once more; ' +
@@ -52,11 +47,11 @@ async function run(fn: () => Promise<ToolResult>, onCrash: string): Promise<Tool
 
 const writeToolName = (def: EntityDef) => `write_${def.prefix}`
 
-async function listTool(db: SupabaseClient, ownerId: Owner, entity: unknown, pageArg: unknown): Promise<ToolResult> {
+async function listTool(db: SupabaseClient, entity: unknown, pageArg: unknown): Promise<ToolResult> {
   const def = parseEntity(entity)
   const page = parsePage(pageArg)
 
-  const head = await owned(db.from(def.key).select('label', { count: 'exact', head: true }), ownerId)
+  const head = await db.from(def.key).select('label', { count: 'exact', head: true })
   if (head.error) throw head.error
   const total = head.count ?? 0
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE))
@@ -74,7 +69,7 @@ async function listTool(db: SupabaseClient, ownerId: Owner, entity: unknown, pag
   }
 
   const from = (page - 1) * PAGE_SIZE
-  const res = await owned(db.from(def.key).select(def.listCols.join(',')), ownerId).order('label_no').range(from, from + PAGE_SIZE - 1)
+  const res = await db.from(def.key).select(def.listCols.join(',')).order('label_no').range(from, from + PAGE_SIZE - 1)
   if (res.error) throw res.error
   const { rows, cut } = fitRows(res.data as unknown as Row[])
 
@@ -87,7 +82,7 @@ async function listTool(db: SupabaseClient, ownerId: Owner, entity: unknown, pag
   return finish(data)
 }
 
-async function getTool(db: SupabaseClient, ownerId: Owner, labelsArg: unknown): Promise<ToolResult> {
+async function getTool(db: SupabaseClient, labelsArg: unknown): Promise<ToolResult> {
   const requested = Array.isArray(labelsArg) ? labelsArg : []
   if (requested.length === 0) {
     throw new ToolError(`"labels" needs at least one label, for example ["todo:1"]. Call list to find labels.`)
@@ -106,7 +101,7 @@ async function getTool(db: SupabaseClient, ownerId: Owner, labelsArg: unknown): 
 
   const found = new Map<string, Row>()
   for (const [def, labels] of byEntity) {
-    const res = await owned(db.from(def.key).select(def.getCols.join(',')), ownerId).in('label', labels)
+    const res = await db.from(def.key).select(def.getCols.join(',')).in('label', labels)
     if (res.error) throw res.error
     for (const row of res.data as unknown as Row[]) found.set(String(row.label), row)
   }
@@ -136,15 +131,15 @@ async function getTool(db: SupabaseClient, ownerId: Owner, labelsArg: unknown): 
   return finish({ records })
 }
 
-async function writeTool(db: SupabaseClient, ownerId: Owner, def: EntityDef, args: Row): Promise<ToolResult> {
+async function writeTool(db: SupabaseClient, def: EntityDef, args: Row): Promise<ToolResult> {
   const row = validateWrite(def, args)
-  const res = await db.from(def.key).insert({ ...row, owner_id: ownerId }).select(def.getCols.join(',')).single()
+  const res = await db.from(def.key).insert(row).select(def.getCols.join(',')).single()
   if (res.error) throw res.error
   const record = res.data as unknown as Row
   return finish({ label: record.label, created: true, record })
 }
 
-async function noteTool(db: SupabaseClient, ownerId: Owner, labelArg: unknown, textArg: unknown): Promise<ToolResult> {
+async function noteTool(db: SupabaseClient, labelArg: unknown, textArg: unknown): Promise<ToolResult> {
   const p = parseLabel(labelArg)
   if (!p.ok) throw new ToolError(p.message)
   if (!p.def.hasContext) {
@@ -153,7 +148,7 @@ async function noteTool(db: SupabaseClient, ownerId: Owner, labelArg: unknown, t
     )
   }
   const text = validateNoteText(textArg)
-  const res = await db.rpc('append_context', { p_label: p.label, p_text: text, p_owner: ownerId })
+  const res = await db.rpc('append_context', { p_label: p.label, p_text: text })
   if (res.error) {
     if (/not found/i.test(res.error.message)) throw new ToolError(notFoundMessage(p.label, p.def))
     throw res.error
@@ -161,27 +156,27 @@ async function noteTool(db: SupabaseClient, ownerId: Owner, labelArg: unknown, t
   return finish({ label: p.label, noted: true, text })
 }
 
-async function editTool(db: SupabaseClient, ownerId: Owner, args: Row): Promise<ToolResult> {
+async function editTool(db: SupabaseClient, args: Row): Promise<ToolResult> {
   const p = parseLabel(args.label)
   if (!p.ok) throw new ToolError(p.message)
   const changes = validateEdit(p.def, args)
-  const res = await owned(db.from(p.def.key).update(changes).eq('label', p.label), ownerId)
+  const res = await db.from(p.def.key).update(changes).eq('label', p.label)
     .select(p.def.getCols.join(','))
     .maybeSingle()
   if (res.error) throw res.error
   if (!res.data) throw new ToolError(notFoundMessage(p.label, p.def))
-  const { record } = clipRecord(res.data as Row)
+  const { record } = clipRecord(res.data as unknown as Row)
   return finish({ label: p.label, edited: true, record })
 }
 
-async function deleteTool(db: SupabaseClient, ownerId: Owner, labelArg: unknown): Promise<ToolResult> {
+async function deleteTool(db: SupabaseClient, labelArg: unknown): Promise<ToolResult> {
   const p = parseLabel(labelArg)
   if (!p.ok) throw new ToolError(p.message)
   const nameCol = p.def.hasContext ? 'name' : 'description'
-  const res = await owned(db.from(p.def.key).delete().eq('label', p.label), ownerId).select(`label,${nameCol}`).maybeSingle()
+  const res = await db.from(p.def.key).delete().eq('label', p.label).select(`label,${nameCol}`).maybeSingle()
   if (res.error) throw res.error
   if (!res.data) throw new ToolError(notFoundMessage(p.label, p.def))
-  return finish({ ...(res.data as Row), deleted: true })
+  return finish({ ...(res.data as unknown as Row), deleted: true })
 }
 
 const text = (field: string, what: string) => z.string({ error: `"${field}" must be text.` }).describe(what)
@@ -276,7 +271,7 @@ const WRITE_TOOLS: { entity: keyof typeof ENTITIES; title: string; description: 
   },
 ]
 
-export function registerTools(server: McpServer, db: SupabaseClient, ownerId: Owner): void {
+export function registerTools(server: McpServer, db: SupabaseClient): void {
   server.registerTool(
     'list',
     {
@@ -291,7 +286,7 @@ export function registerTools(server: McpServer, db: SupabaseClient, ownerId: Ow
         page: z.number({ error: '"page" must be a whole number from 1.' }).describe('Page number, from 1. Leave out for the first page.').optional(),
       }),
     },
-    ({ entity, page }) => run(() => listTool(db, ownerId, entity, page), READ_CRASH),
+    ({ entity, page }) => run(() => listTool(db, entity, page), READ_CRASH),
   )
 
   server.registerTool(
@@ -308,7 +303,7 @@ export function registerTools(server: McpServer, db: SupabaseClient, ownerId: Ow
           .describe(`1 to ${MAX_LABELS} labels such as "todo:1" or "lead:2".`),
       }),
     },
-    ({ labels }) => run(() => getTool(db, ownerId, labels), READ_CRASH),
+    ({ labels }) => run(() => getTool(db, labels), READ_CRASH),
   )
 
   for (const tool of WRITE_TOOLS) {
@@ -316,7 +311,7 @@ export function registerTools(server: McpServer, db: SupabaseClient, ownerId: Ow
     server.registerTool(
       writeToolName(def),
       { title: tool.title, description: tool.description, inputSchema: z.object(tool.shape) },
-      (args) => run(() => writeTool(db, ownerId, def, args as Row), WRITE_CRASH),
+      (args) => run(() => writeTool(db, def, args as Row), WRITE_CRASH),
     )
   }
 
@@ -333,7 +328,7 @@ export function registerTools(server: McpServer, db: SupabaseClient, ownerId: Ow
         text: required('text', 'What to record, up to 1000 characters.'),
       }),
     },
-    ({ label, text }) => run(() => noteTool(db, ownerId, label, text), WRITE_CRASH),
+    ({ label, text }) => run(() => noteTool(db, label, text), WRITE_CRASH),
   )
 
   server.registerTool(
@@ -364,7 +359,7 @@ export function registerTools(server: McpServer, db: SupabaseClient, ownerId: Ow
       }),
       annotations: { destructiveHint: false, idempotentHint: true },
     },
-    (args) => run(() => editTool(db, ownerId, args as Row), EDIT_CRASH),
+    (args) => run(() => editTool(db, args as Row), EDIT_CRASH),
   )
 
   server.registerTool(
@@ -380,6 +375,6 @@ export function registerTools(server: McpServer, db: SupabaseClient, ownerId: Ow
       }),
       annotations: { destructiveHint: true, idempotentHint: false },
     },
-    ({ label }) => run(() => deleteTool(db, ownerId, label), DELETE_CRASH),
+    ({ label }) => run(() => deleteTool(db, label), DELETE_CRASH),
   )
 }
