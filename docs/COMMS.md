@@ -53,9 +53,9 @@ It has not yet been tested end to end. Claude checked it: the app is public, `/`
 
 ## 2026-10-14 — Nela: consent app address changed [OPEN]
 
-The app's address is now **https://cantabpi.lovable.app**, which replaces `happy-sync-beam.lovable.app`.
-The Supabase Site URL and Redirect URLs use the new address. Right after the rename, Claude's check
-returned 404 on both the old and new addresses. Open until the new address loads.
+The app's address is now **https://cantabpios.lovable.app**, which replaces `happy-sync-beam` and the
+short-lived `cantabpi`. Claude checked it: `/` and `/oauth/consent` both return 200. Open until the
+Supabase Site URL and Redirect URLs use this address.
 
 Dynamic client registration is on only until claude.ai has connected once (Nela, 2026-10-14). New-user
 sign-ups are off. The consent app has no sign-up page and needs none.
