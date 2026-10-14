@@ -8,7 +8,7 @@ Findings from **live testing**. Distinct from the queue of tests still to run �
 - **Add the row in the same session you find something.** Deferring it is how a tracker goes stale.
 - **A row is one issue's lifecycle, edited in place:** `Open` → `Root-caused` → `Fixed` → `Verified`.
   Not append-only — a row should read as current state, not a stack of edits.
-- **`#` is a stable sequential id.** Next new row takes the next integer (currently `3`). Never
+- **`#` is a stable sequential id.** Next new row takes the next integer (currently `5`). Never
   reused, never renumbered, kept after the row is archived. It is a handle for discussion, not a way
   to locate the evidence.
 - **Cells stay short — one or two sentences, current state only.** `Notes` is not a log: no dated
@@ -32,6 +32,8 @@ a blank line ends a markdown table and the row silently renders as loose text.
 
 | # | Found | Finding | Session/Msg ID | Stack version | Status | Fix | Decision ref | Notes |
 |---|---|---|---|---|---|---|---|---|
+| 3 | 2026-10-14 | Claude Code showed `cantabpi-os` as "Failed to connect": the key in the registration did not match `CANTAB_DEV_KEY` in `supabase\functions\.env`. | N/A — `claude.cmd mcp list` and a direct `initialize` call, 2026-10-14 | Function v0.2.0; Claude Code CLI, user scope | Verified | Re-added at user scope with the key read straight from the file. | — | `mcp list` shows Connected, and a fresh session's `list` call returned the 4 dummy todos. |
+| 4 | 2026-10-14 | "What's on my todo list?" could not call `list`: `mcp list` showed `cantabpi-os` Connected, but none of its tools were loaded in the open VS Code session. | N/A — VS Code extension session, 2026-10-14 | Function v0.2.0; Claude Code VS Code extension, Opus 5.5 | Verified | Restart VS Code after adding or changing an MCP server. | — | The session had started before the re-add in #3. After a restart all 9 tools loaded and the question called `list` with entity `todos`. |
 
 ## Resolved (verified)
 
