@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.1 | Nela | 2026-10-13 |
+| Current | v1.2 | Nela | 2026-10-14 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
@@ -92,7 +92,8 @@ Three tables with the same shape; each row points to a Google file. Cantab OS st
 ## Ownership — `built`
 
 - Every table has `owner_id`, a reference to the Supabase Auth user who created the row.
-- It is nullable for now. Until sign-in exists (step 3) rows are created without an owner or with a test user.
+- It is nullable for now. Until sign-in exists, the tools act as the test user `claude@test.com` and see only its rows; `append_context` takes the owner too.
+- Agreed 2026-10-14, not built: a `public.profiles` table (1:1 with `auth.users`), and `owner_id` renamed `profile_id`.
 - Who may see or change which rows is decided in step 3.
 
 ## Access — `built`
@@ -104,11 +105,19 @@ Three tables with the same shape; each row points to a Google file. Cantab OS st
 
 15 rows across the six tables plus two notes, clearly fake. Every dummy row carries the prefix `Dummy - ` in `name` (`description` for skills). Remove with `delete from <table> where name like 'Dummy - %'`.
 
+### Per-user dummy data — `built`
+- The original 15 dummy rows belong to `claude@test.com`. Nela has a copy of all 15, with the two notes; the copies have their own labels (for example `todo:39`).
+- Built by one data migration that looks the users up by email. It skips a user that doesn't exist, so a local reset without those users still runs.
+- Checked live 2026-10-14: 15 rows per user; the tools, acting as Claude, don't see Nela's rows.
+- **Why:** testing continues as Claude until sign-in is ready. Nela's set is then ready for the claude.ai test as Nela.
+
 ## Where it lives
 
 - `supabase/migrations/20261013120000_tables_and_labels.sql`
 - `supabase/migrations/20261013120100_append_context.sql`
 - `supabase/migrations/20261013150000_label_no.sql`
+- `supabase/migrations/20261014120000_append_context_owner.sql`
+- `supabase/migrations/20261014120100_dummy_data_per_user.sql`
 - `supabase/seed.sql`
 
 ## Next
@@ -116,5 +125,6 @@ Three tables with the same shape; each row points to a Google file. Cantab OS st
 Step 2 tools (`list`, `get`, `write_*`, `note`) as an MCP edge function: see [tools-status.md](tools-status.md).
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.2 (2026-10-14) — Dummy data owned per user (Claude, plus a copy for Nela); `append_context` takes the owner. → DECISIONS.md 2026-10-14
 - v1.1 (2026-10-13) — `label_no` column added to every table for ordering and paging. → DECISIONS.md 2026-10-13
 - v1.0 (2026-10-13) — Six tables, label and context functions and dummy data built. → DECISIONS.md 2026-10-13

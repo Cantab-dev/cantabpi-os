@@ -57,3 +57,21 @@ call note '{"label":"skill:1","text":"x"}'
 call note '{"label":"todo:999","text":"x"}'
 call note '{"label":"todo:1","text":"   "}'
 call note '{"label":"nonsense","text":"x"}'
+
+# edit and delete (v0.3.0). Work on a fresh test row so dummy data stays as it is.
+LBL="$(rpc tools/call '{"name":"write_todo","arguments":{"name":"Test - edit me","due":"2026-11-30","importance":1}}' | grep -o '"label":"todo:[0-9]*"' | head -1 | cut -d'"' -f4)"
+echo "--- test row: $LBL"
+call edit "{\"label\":\"$LBL\",\"importance\":3,\"status\":true,\"due\":\"\"}"
+call edit "{\"label\":\"$LBL\"}"
+call edit "{\"label\":\"$LBL\",\"email\":\"a@b.com\"}"
+call edit "{\"label\":\"$LBL\",\"context\":\"x\"}"
+call edit "{\"label\":\"$LBL\",\"name\":\"  \"}"
+call edit "{\"label\":\"$LBL\",\"due\":\"2026-02-30\"}"
+call edit '{"label":"todo:999","status":true}'
+call edit '{"label":"banana","status":true}'
+call delete "{\"label\":\"$LBL\"}"
+call delete "{\"label\":\"$LBL\"}"
+call delete '{"label":"banana"}'
+
+# Acting user only: Nela's copies must not show. Expect total 4 todos (plus any Test rows left).
+call list '{"entity":"todos"}'

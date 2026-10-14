@@ -2,13 +2,13 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.1 | Nela | 2026-10-14 |
+| Current | v1.3 | Nela | 2026-10-14 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then altered; note what changed) · `open` (needs a decision).
 
-All nine tools are deployed and tested against dummy data (2026-10-13). The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
+All eleven tools are deployed and tested against dummy data: nine on 2026-10-13, `edit` and `delete` on 2026-10-14 (function v0.3.0). The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
 
 ## Scope
 
@@ -120,20 +120,48 @@ Display title: "Add note".
 
 Removed on 2026-10-14: results carry the data only, as the spec defines it; no `render` part and no side-window line. In-host layout comes back in a later phase. Deployed as function v0.2.0 and checked live the same day: no result contains `render` or a side-window line; all live checks pass. → DECISIONS.md 2026-10-14
 
-## Not in this deployment (decided 2026-10-13)
+## Edit, delete and the acting user — `built`
 
-1. **Updating a record** — not for now; confirmed after the guide check. The `write_*` tools only create. Known consequence: a todo cannot be marked done, a due date cannot be changed and a lead cannot be corrected through the tools.
-2. **Deleting a record** — not included.
-3. **One generic `write` tool** — not for now: six `write_*` tools, as in the spec. May change later.
+Requested by Siniša, approved by Nela on 2026-10-14; deployed as function v0.3.0 and checked live the same day. → DECISIONS.md 2026-10-14
+
+### edit — `built`
+- **Arguments:** `label` (required), plus any field of that entity. Each field given overwrites the whole stored value. The fields are those of the matching `write_*` tool, with the same checks.
+- **Never editable:** `id`, `label`, `context` (changed only through `note`), `owner_id`, `created_at`, `updated_at`, `label_no`. `updated_at` is set automatically.
+- **Clearing a field:** an empty string clears an optional field. A required field (`name`; `description` for skills) cannot be emptied.
+- **Result:** the full record after the edit, as `get` returns it. It is annotated idempotent.
+
+| Failure | Message tells the model to |
+|---|---|
+| Bad or unknown label | call `list` to find the label |
+| A field that isn't on this entity, or a never-editable one | use only the fields listed in the message for this entity |
+| No fields given | call again with at least one field to change |
+| A field fails its check | the same message as `write_*` |
+
+### delete — `built`
+- **Arguments:** `label`. Deletes the whole row. The label is never reused.
+- **Annotated destructive**, so the host asks the user to confirm. There is no undo.
+- **Result:** the deleted label and its name (`description` for skills).
+- **Failures:** a bad label, or a label that doesn't exist. Each says to call `list`.
+
+### Tools act for one user — `built`
+- `list`, `get`, `note`, `edit` and `delete` see only rows whose `owner_id` is the acting user (`claude@test.com` for now). `write_*` already stamps that owner.
+- **Why:** once the dummy data is copied for Nela, Claude Code would otherwise see both sets. This also behaves the way RLS will at step 3, so swapping in sign-in changes where the user comes from, not what the tools see.
+- `append_context` gets an owner argument so `note` follows the same rule.
+
+### Testing — `built`
+Unit tests for the edit checks (4). Smoke checks, all passing: edit (each failure, a good edit, clearing a field), delete (good, missing, bad label), and a check that Nela's rows are invisible to the acting user.
+
+## Not in this deployment
+
+1. **Upsert through `write_*`** — `write_*` only creates; changes go through `edit`. Keeping them apart means a wrong or missing label can never change or duplicate the wrong record (2026-10-14).
+2. **One generic `write` tool** — not for now: six `write_*` tools, as in the spec. May change later.
 
 ## Suggestions to consider later
 
-From the agent design guide check. None is built.
+From the agent design guide check. None is built. Former items "update through `write_*`" and "duplicate creates" were closed by `edit` and `delete` on 2026-10-14.
 
-1. **Update through `write_*`.** The guide treats `write` as an upsert, because revising an earlier record is the normal case. Suggested shape: `write_*` accepts an optional `label`; when given, it updates only the fields supplied.
 2. **Soft delete** (archive) by label.
 3. **One generic `write`** keyed by label, so a new entity is a new type and not a new tool.
-4. **Duplicate creates.** A retried `write_*` creates a second record under a new label, and nothing can remove it. Update or delete would resolve it.
 5. **`storage_url` on `write_slide`.** The model has no way to produce this value; no tool uploads the PDF.
 6. **Entity spelling.** `list` takes `todos`; labels say `todo:`. One spelling would be safer.
 7. **Label cannot change.** The label is filled once when a row is created. A database rule that refuses changes to it would guarantee it never drifts.
@@ -144,8 +172,8 @@ From the agent design guide check. None is built.
 
 | Test | Status |
 |---|---|
-| Unit tests for input checks and failure messages ▲ — `supabase/functions/mcp/lib_test.ts`, run with `deno test` | `built` — 18 pass |
-| Live checks for each tool, the error cases and a second page of `list` — `bash scripts/smoke.sh` | `built` — all pass |
+| Unit tests for input checks and failure messages ▲ — `supabase/functions/mcp/lib_test.ts`, run with `deno test` | `built` — 22 pass |
+| Live checks for each tool, the error cases, a second page of `list`, edit and delete, and the acting-user filter — `bash scripts/smoke.sh` | `built` — all pass (v0.3.0, 2026-10-14) |
 | The server added to Claude Code as an MCP server, to check the tools read naturally to a model | `built` — connected 2026-10-14; "what's on my todo list?" called `list`. Guide for other testers: [testing-guide.md](testing-guide.md) |
 
 Rows created during testing were removed; the label numbers they used are not reused, so new labels continue after a gap.
@@ -153,15 +181,16 @@ Rows created during testing were removed; the label numbers they used are not re
 
 ## Where it lives
 
-- `supabase/functions/mcp/` — `index.ts` (server and key check), `tools.ts` (the nine tools), `lib.ts` (checks, limits, messages, result exit), `lib_test.ts`
+- `supabase/functions/mcp/` — `index.ts` (server and key check), `tools.ts` (the eleven tools), `lib.ts` (checks, limits, messages, result exit), `lib_test.ts`
 - `scripts/smoke.sh` — live checks
 - `supabase/config.toml` — `[functions.mcp] verify_jwt = false`, because the function checks its own key
 
 ## Next
 
-Others can test from Claude Code with [testing-guide.md](testing-guide.md). Then step 3: connect a host (see [open-questions.md](open-questions.md)).
+Others can test from Claude Code with [testing-guide.md](testing-guide.md). Next: connect claude.ai over Supabase OAuth with the Lovable consent app (see [COMMS.md](COMMS.md) and [open-questions.md](open-questions.md)).
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.3 (2026-10-14) — `edit` and `delete` built; tools act for the acting user only; upsert dropped. Function v0.3.0. → DECISIONS.md 2026-10-14
 - v1.2 (2026-10-14) — Claude Code connected and calling the tools; testing guide added for other testers.
 - v1.1 (2026-10-14) — `render` removed from every result; data only. → DECISIONS.md 2026-10-14
 - v1.0 (2026-10-13) — All nine tools built, deployed and tested. Guideline limit on `get` corrected to the first 8,000 characters. → DECISIONS.md 2026-10-13

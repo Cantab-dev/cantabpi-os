@@ -13,6 +13,7 @@ import {
   parseLabel,
   parsePage,
   ToolError,
+  validateEdit,
   validateNoteText,
   validateWrite,
 } from './lib.ts'
@@ -159,4 +160,28 @@ Deno.test('authorised needs the exact bearer key', () => {
   assert(!authorised('secret', 'secret'))
   assert(!authorised(null, 'secret'))
   assert(!authorised('Bearer ', ''))
+})
+
+Deno.test('edit needs at least one field and names the editable ones', () => {
+  const m = message(() => validateEdit(ENTITIES.todos, { label: 'todo:1' }))
+  assert(m.includes('name, category, due, importance, status'))
+})
+
+Deno.test('edit refuses fields that are not on the entity, and points context to note', () => {
+  assert(message(() => validateEdit(ENTITIES.leads, { label: 'lead:1', due: '2026-11-30' })).includes('"due" cannot be changed on a lead'))
+  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', context: 'x' })).includes('call note'))
+  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', owner_id: 'x' })).includes('cannot be changed'))
+})
+
+Deno.test('edit overwrites given fields only, with the same checks as write', () => {
+  assertEquals(validateEdit(ENTITIES.todos, { label: 'todo:1', status: true, due: '2026-11-30' }), { status: true, due: '2026-11-30' })
+  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', due: '2026-02-30' })).includes('real date'))
+  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', importance: 5 })).includes('1 (low)'))
+})
+
+Deno.test('edit clears optional fields with an empty string but not required ones or status', () => {
+  assertEquals(validateEdit(ENTITIES.todos, { label: 'todo:1', due: '', importance: '' }), { due: null, importance: null })
+  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', name: '  ' })).includes('cannot be emptied'))
+  assert(message(() => validateEdit(ENTITIES.skills, { label: 'skill:1', description: '' })).includes('cannot be emptied'))
+  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', status: '' })).includes('cannot be emptied'))
 })

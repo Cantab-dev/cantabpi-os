@@ -1,7 +1,8 @@
 # Agent instructions — cantabpi-os
 
-One agent (Claude Code) writes to this repo for now; this is expected to change. Before a second tool
-or agent starts writing here, add an ownership split and a `docs/COMMS.md` channel from the kit.
+Only Claude Code writes to this repo. Lovable builds the OAuth consent app in its own project and repo,
+and never writes here or changes the Supabase project. The ownership split and the channel between the
+two are in [docs/COMMS.md](docs/COMMS.md). Nela carries messages across.
 
 ## Git
 

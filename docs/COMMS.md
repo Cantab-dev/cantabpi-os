@@ -1,0 +1,43 @@
+# Cross-agent communication log
+
+Shared channel between **Claude Code** (owns this repo: database, MCP function, docs) and **Lovable**
+(owns the OAuth consent app, in its own project and repo). Lovable can't read this file. Nela carries
+each message across: she pastes Claude's request into Lovable and pastes Lovable's answer back here.
+
+Use it for anything the other side needs to know that isn't obvious from the code alone: requests,
+backend needs, decisions, blockers, questions. It is not a changelog; commit messages cover what
+changed.
+
+## How to use
+
+- Add a new dated entry **at the bottom**, signed with who wrote it (`Claude`, `Lovable via Nela`, `Nela`).
+- **Tag every entry `[OPEN]` or `[RESOLVED]`** in its header as it is written.
+- When you request something, say **what you need and why**, not just what to build.
+- When you answer, name the entry you are answering.
+- At the weekly sweep, `[RESOLVED]` entries older than about two weeks move to `COMMS_archive.md`
+  as one line each, with a link to the commit or decision.
+
+## Ownership
+
+| Part | Owner | Where |
+|---|---|---|
+| Database, migrations, RLS, MCP edge function, Supabase Auth settings | Claude Code (Nela runs the dashboard steps) | This repo; Supabase project `etofljbxzllkucmearwl` |
+| Consent app: sign-in page and `/oauth/consent` | Lovable | Lovable project; its own GitHub repo if connected |
+
+Lovable never changes the Supabase project: no Lovable Cloud, no Supabase integration, no migrations,
+no edge functions. It only calls Supabase Auth from the browser with the public (publishable) key.
+
+---
+
+## 2026-10-14 — Claude: build the OAuth consent app for Cantab OS [OPEN]
+
+**Why:** claude.ai connects to the Cantab OS MCP server through Supabase Auth's OAuth 2.1 server.
+Supabase sends the user to a consent page on our Site URL. Supabase doesn't host that page, so
+Lovable hosts it for testing.
+
+**Need:** the prompt in Nela's chat of 2026-10-14 ("Lovable prompt"): a React app with `/login`
+(email and password, no sign-up) and `/oauth/consent` (shows the client and approves or denies it
+through `supabase.auth.oauth.*`), published on a public URL.
+
+**Reply needed:** the published URL, and confirmation that it's built without Lovable Cloud or the
+Supabase integration.

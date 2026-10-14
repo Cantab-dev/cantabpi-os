@@ -28,5 +28,8 @@ insert into public.slides (name, url, storage_url) values
   ('Dummy - Company intro deck', 'https://docs.google.com/presentation/d/EXAMPLE_SLIDE_1', null),
   ('Dummy - Acme pitch', 'https://docs.google.com/presentation/d/EXAMPLE_SLIDE_2', null);
 
-select public.append_context('todo:1', 'Dummy note: client asked for a revised price.');
-select public.append_context('lead:1', 'Dummy note: met at a conference.');
+update public.todos set context = to_char(current_date, 'YYYY-MM-DD') || ': Dummy note: client asked for a revised price.' where label = 'todo:1';
+update public.leads set context = to_char(current_date, 'YYYY-MM-DD') || ': Dummy note: met at a conference.' where label = 'lead:1';
+
+-- Rows have no owner here. On the live project, migration 20261014120100 gave them to claude@test.com
+-- and copied them for nela@cantabpi.com; locally, set owner_id by hand once those users exist.

@@ -17,11 +17,17 @@ import {
   parsePage,
   ToolError,
   type ToolResult,
+  validateEdit,
   validateNoteText,
   validateWrite,
 } from './lib.ts'
 
 type Row = Record<string, unknown>
+type Owner = string | null
+
+/** Limits a query to the acting user's rows, the way the RLS policies will at step 3. */
+// deno-lint-ignore no-explicit-any
+const owned = (q: any, ownerId: Owner): any => (ownerId ? q.eq('owner_id', ownerId) : q.is('owner_id', null))
 
 const READ_CRASH =
   'The request could not be completed because of an internal error. Try the same call once more; ' +
@@ -29,6 +35,10 @@ const READ_CRASH =
 const WRITE_CRASH =
   'The record may or may not have been saved. Do not retry blindly: call list for this entity to check ' +
   'whether it was created, then decide.'
+const EDIT_CRASH =
+  'The change may or may not have been saved. Do not retry blindly: call get with this label to check, then decide.'
+const DELETE_CRASH =
+  'The record may or may not have been deleted. Do not retry blindly: call get with this label to check, then decide.'
 
 async function run(fn: () => Promise<ToolResult>, onCrash: string): Promise<ToolResult> {
   try {
@@ -42,11 +52,11 @@ async function run(fn: () => Promise<ToolResult>, onCrash: string): Promise<Tool
 
 const writeToolName = (def: EntityDef) => `write_${def.prefix}`
 
-async function listTool(db: SupabaseClient, entity: unknown, pageArg: unknown): Promise<ToolResult> {
+async function listTool(db: SupabaseClient, ownerId: Owner, entity: unknown, pageArg: unknown): Promise<ToolResult> {
   const def = parseEntity(entity)
   const page = parsePage(pageArg)
 
-  const head = await db.from(def.key).select('label', { count: 'exact', head: true })
+  const head = await owned(db.from(def.key).select('label', { count: 'exact', head: true }), ownerId)
   if (head.error) throw head.error
   const total = head.count ?? 0
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE))
@@ -64,7 +74,7 @@ async function listTool(db: SupabaseClient, entity: unknown, pageArg: unknown): 
   }
 
   const from = (page - 1) * PAGE_SIZE
-  const res = await db.from(def.key).select(def.listCols.join(',')).order('label_no').range(from, from + PAGE_SIZE - 1)
+  const res = await owned(db.from(def.key).select(def.listCols.join(',')), ownerId).order('label_no').range(from, from + PAGE_SIZE - 1)
   if (res.error) throw res.error
   const { rows, cut } = fitRows(res.data as unknown as Row[])
 
@@ -77,7 +87,7 @@ async function listTool(db: SupabaseClient, entity: unknown, pageArg: unknown): 
   return finish(data)
 }
 
-async function getTool(db: SupabaseClient, labelsArg: unknown): Promise<ToolResult> {
+async function getTool(db: SupabaseClient, ownerId: Owner, labelsArg: unknown): Promise<ToolResult> {
   const requested = Array.isArray(labelsArg) ? labelsArg : []
   if (requested.length === 0) {
     throw new ToolError(`"labels" needs at least one label, for example ["todo:1"]. Call list to find labels.`)
@@ -96,7 +106,7 @@ async function getTool(db: SupabaseClient, labelsArg: unknown): Promise<ToolResu
 
   const found = new Map<string, Row>()
   for (const [def, labels] of byEntity) {
-    const res = await db.from(def.key).select(def.getCols.join(',')).in('label', labels)
+    const res = await owned(db.from(def.key).select(def.getCols.join(',')), ownerId).in('label', labels)
     if (res.error) throw res.error
     for (const row of res.data as unknown as Row[]) found.set(String(row.label), row)
   }
@@ -126,7 +136,7 @@ async function getTool(db: SupabaseClient, labelsArg: unknown): Promise<ToolResu
   return finish({ records })
 }
 
-async function writeTool(db: SupabaseClient, def: EntityDef, args: Row, ownerId: string | null): Promise<ToolResult> {
+async function writeTool(db: SupabaseClient, ownerId: Owner, def: EntityDef, args: Row): Promise<ToolResult> {
   const row = validateWrite(def, args)
   const res = await db.from(def.key).insert({ ...row, owner_id: ownerId }).select(def.getCols.join(',')).single()
   if (res.error) throw res.error
@@ -134,7 +144,7 @@ async function writeTool(db: SupabaseClient, def: EntityDef, args: Row, ownerId:
   return finish({ label: record.label, created: true, record })
 }
 
-async function noteTool(db: SupabaseClient, labelArg: unknown, textArg: unknown): Promise<ToolResult> {
+async function noteTool(db: SupabaseClient, ownerId: Owner, labelArg: unknown, textArg: unknown): Promise<ToolResult> {
   const p = parseLabel(labelArg)
   if (!p.ok) throw new ToolError(p.message)
   if (!p.def.hasContext) {
@@ -143,12 +153,35 @@ async function noteTool(db: SupabaseClient, labelArg: unknown, textArg: unknown)
     )
   }
   const text = validateNoteText(textArg)
-  const res = await db.rpc('append_context', { p_label: p.label, p_text: text })
+  const res = await db.rpc('append_context', { p_label: p.label, p_text: text, p_owner: ownerId })
   if (res.error) {
     if (/not found/i.test(res.error.message)) throw new ToolError(notFoundMessage(p.label, p.def))
     throw res.error
   }
   return finish({ label: p.label, noted: true, text })
+}
+
+async function editTool(db: SupabaseClient, ownerId: Owner, args: Row): Promise<ToolResult> {
+  const p = parseLabel(args.label)
+  if (!p.ok) throw new ToolError(p.message)
+  const changes = validateEdit(p.def, args)
+  const res = await owned(db.from(p.def.key).update(changes).eq('label', p.label), ownerId)
+    .select(p.def.getCols.join(','))
+    .maybeSingle()
+  if (res.error) throw res.error
+  if (!res.data) throw new ToolError(notFoundMessage(p.label, p.def))
+  const { record } = clipRecord(res.data as Row)
+  return finish({ label: p.label, edited: true, record })
+}
+
+async function deleteTool(db: SupabaseClient, ownerId: Owner, labelArg: unknown): Promise<ToolResult> {
+  const p = parseLabel(labelArg)
+  if (!p.ok) throw new ToolError(p.message)
+  const nameCol = p.def.hasContext ? 'name' : 'description'
+  const res = await owned(db.from(p.def.key).delete().eq('label', p.label), ownerId).select(`label,${nameCol}`).maybeSingle()
+  if (res.error) throw res.error
+  if (!res.data) throw new ToolError(notFoundMessage(p.label, p.def))
+  return finish({ ...(res.data as Row), deleted: true })
 }
 
 const text = (field: string, what: string) => z.string({ error: `"${field}" must be text.` }).describe(what)
@@ -243,7 +276,7 @@ const WRITE_TOOLS: { entity: keyof typeof ENTITIES; title: string; description: 
   },
 ]
 
-export function registerTools(server: McpServer, db: SupabaseClient, ownerId: string | null): void {
+export function registerTools(server: McpServer, db: SupabaseClient, ownerId: Owner): void {
   server.registerTool(
     'list',
     {
@@ -258,7 +291,7 @@ export function registerTools(server: McpServer, db: SupabaseClient, ownerId: st
         page: z.number({ error: '"page" must be a whole number from 1.' }).describe('Page number, from 1. Leave out for the first page.').optional(),
       }),
     },
-    ({ entity, page }) => run(() => listTool(db, entity, page), READ_CRASH),
+    ({ entity, page }) => run(() => listTool(db, ownerId, entity, page), READ_CRASH),
   )
 
   server.registerTool(
@@ -275,7 +308,7 @@ export function registerTools(server: McpServer, db: SupabaseClient, ownerId: st
           .describe(`1 to ${MAX_LABELS} labels such as "todo:1" or "lead:2".`),
       }),
     },
-    ({ labels }) => run(() => getTool(db, labels), READ_CRASH),
+    ({ labels }) => run(() => getTool(db, ownerId, labels), READ_CRASH),
   )
 
   for (const tool of WRITE_TOOLS) {
@@ -283,7 +316,7 @@ export function registerTools(server: McpServer, db: SupabaseClient, ownerId: st
     server.registerTool(
       writeToolName(def),
       { title: tool.title, description: tool.description, inputSchema: z.object(tool.shape) },
-      (args) => run(() => writeTool(db, def, args as Row, ownerId), WRITE_CRASH),
+      (args) => run(() => writeTool(db, ownerId, def, args as Row), WRITE_CRASH),
     )
   }
 
@@ -300,6 +333,53 @@ export function registerTools(server: McpServer, db: SupabaseClient, ownerId: st
         text: required('text', 'What to record, up to 1000 characters.'),
       }),
     },
-    ({ label, text }) => run(() => noteTool(db, label, text), WRITE_CRASH),
+    ({ label, text }) => run(() => noteTool(db, ownerId, label, text), WRITE_CRASH),
+  )
+
+  server.registerTool(
+    'edit',
+    {
+      title: 'Edit record',
+      description:
+        'Call this to change fields of an existing todo, lead, sheet, doc, slide or skill. Give the label and only the fields ' +
+        'to change; each one overwrites the stored value, and an empty string clears an optional field. Notes are added with ' +
+        'note, not edit. Examples: "Mark the Acme proposal as done" -> list with entity "todos" to find its label, then edit ' +
+        'with that label and status true. "Move the dentist to next Friday" -> edit with the label and due. ' +
+        '"Ada\'s email is ada@new.com" -> edit with her lead label and email.',
+      inputSchema: z.looseObject({
+        label: required('label', 'Label of the record to change, such as "todo:1". Find it with list.'),
+        name: text('name', 'Todos, leads, sheets, docs, slides: new name. Cannot be emptied.').optional(),
+        category: text('category', 'Todos: free text grouping.').optional(),
+        due: text('due', 'Todos: due date as YYYY-MM-DD.').optional(),
+        importance: z.union([z.number(), z.literal('')], { error: '"importance" must be 1 (low), 2 (medium) or 3 (high).' })
+          .describe('Todos: 1 low, 2 medium, 3 high.').optional(),
+        status: z.boolean({ error: '"status" must be true (done) or false (open).' }).describe('Todos: true = done, false = open.').optional(),
+        full_name: text('full_name', 'Leads: full name.').optional(),
+        email: text('email', 'Leads: email address.').optional(),
+        url_linkedin: text('url_linkedin', 'Leads: LinkedIn profile address, starting with https://.').optional(),
+        url: text('url', 'Sheets, docs, slides: Google file address, starting with https://.').optional(),
+        storage_url: text('storage_url', 'Slides: address of a PDF copy.').optional(),
+        description: text('description', 'Skills: what the workflow is for. Cannot be emptied.').optional(),
+        guideline: text('guideline', 'Skills: the steps to follow.').optional(),
+      }),
+      annotations: { destructiveHint: false, idempotentHint: true },
+    },
+    (args) => run(() => editTool(db, ownerId, args as Row), EDIT_CRASH),
+  )
+
+  server.registerTool(
+    'delete',
+    {
+      title: 'Delete record',
+      description:
+        'Call this only when the user asks to remove a record. It deletes the whole todo, lead, sheet, doc, slide or skill ' +
+        'and cannot be undone; the label is never reused. Example: "Delete the dentist todo" -> list with entity "todos" ' +
+        'to find its label, then delete with that label.',
+      inputSchema: z.object({
+        label: required('label', 'Label of the record to delete, such as "todo:1". Find it with list.'),
+      }),
+      annotations: { destructiveHint: true, idempotentHint: false },
+    },
+    ({ label }) => run(() => deleteTool(db, ownerId, label), DELETE_CRASH),
   )
 }

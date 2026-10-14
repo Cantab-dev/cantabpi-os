@@ -1,5 +1,9 @@
 # Testing the Cantab OS MCP server
 
+| Status | Version | Owner | Last updated |
+| --- | --- | --- | --- |
+| Current | v1.1 | Nela | 2026-10-14 |
+
 How to connect Claude Code to the Cantab OS tools and try them. About 10 minutes.
 
 ## Before you start
@@ -33,7 +37,7 @@ How to connect Claude Code to the Cantab OS tools and try them. About 10 minutes
 
 3. **Fully restart Claude Code or VS Code.** A session started before the add doesn't load the tools.
 
-4. In a new session, type `/mcp`. `cantabpi-os` should list 9 tools.
+4. In a new session, type `/mcp`. `cantabpi-os` should list 11 tools.
 
 ## Try it
 
@@ -48,13 +52,20 @@ Ask in plain words; Claude should pick the tool itself. For example:
 | Add a lead "Test - Ada Lovelace" | `write_lead` |
 | Add a note to todo:1 saying "chased by email" | `note` |
 | Which skills are there? | `list`, then `get` |
+| Mark todo:1 as done | `edit` |
+| Move the dentist todo to next Friday | `list`, then `edit` |
+| Delete the "Test - call Ada" todo | `list`, then `delete` (Claude asks you to confirm) |
 
 The other write tools are `write_sheet`, `write_doc`, `write_slide` and `write_skill`. These save
 pointers and text only. Claude does any Google work itself.
 
-There is no update or delete in this version. To remove `Test -` rows you created, tell Nela.
+You only see the test user's rows. Please delete the `Test -` rows you created when you're done.
 
 ## Report what you find
 
 Send Nela what you asked, what happened and roughly when. Note anything where Claude picked the wrong
 tool or a message was unclear. She logs each finding in [test_tracker.md](test_tracker.md).
+
+**Changelog** (file history in git)
+- v1.1 (2026-10-14) — `edit` and `delete` added (11 tools).
+- v1.0 (2026-10-14) — First version.

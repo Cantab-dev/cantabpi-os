@@ -157,61 +157,100 @@ function isHttpUrl(value: string): boolean {
   }
 }
 
+const isEmpty = (value: unknown) => value === undefined || value === null || value === ''
+const trimmed = (value: unknown) => (typeof value === 'string' ? value.trim() : value)
+
+/** Checks one non-empty field value against its spec; throws a ToolError naming the field. */
+function checkField(def: EntityDef, field: string, spec: FieldSpec, value: unknown): void {
+  switch (spec.kind) {
+    case 'text':
+      if (typeof value !== 'string') throw new ToolError(`"${field}" must be text.`)
+      if (value.length > spec.max) {
+        throw new ToolError(
+          `"${field}" is ${value.length} characters; the limit is ${spec.max}. Shorten it` +
+            (def.hasContext ? ', and put the extra detail in a note on the record afterwards.' : '.'),
+        )
+      }
+      break
+    case 'date':
+      if (typeof value !== 'string' || !isRealDate(value)) {
+        throw new ToolError(`"${field}" must be a real date written as YYYY-MM-DD, for example 2026-11-30.`)
+      }
+      break
+    case 'importance':
+      if (value !== 1 && value !== 2 && value !== 3) {
+        throw new ToolError(`"${field}" must be 1 (low), 2 (medium) or 3 (high).`)
+      }
+      break
+    case 'bool':
+      if (typeof value !== 'boolean') throw new ToolError(`"${field}" must be true (done) or false (open).`)
+      break
+    case 'url':
+      if (typeof value !== 'string' || value.length > 2000 || !isHttpUrl(value)) {
+        throw new ToolError(
+          `"${field}" must be a full web address starting with http:// or https://, up to 2000 characters. ` +
+            `Correct it or leave "${field}" out.`,
+        )
+      }
+      break
+    case 'email':
+      if (typeof value !== 'string' || value.length > 200 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        throw new ToolError(`"${field}" must be an email address like name@example.com. Correct it or leave "${field}" out.`)
+      }
+      break
+  }
+}
+
 /** Checks the arguments of a write tool and returns the row to insert. */
 export function validateWrite(def: EntityDef, args: Record<string, unknown>): Record<string, unknown> {
   const row: Record<string, unknown> = {}
   for (const [field, spec] of Object.entries(def.fields)) {
-    let value = args[field]
-    if (typeof value === 'string') value = value.trim()
-    const empty = value === undefined || value === null || value === ''
-
-    if (empty) {
+    const value = trimmed(args[field])
+    if (isEmpty(value)) {
       if (spec.kind === 'text' && spec.required) {
         throw new ToolError(`"${field}" is required and cannot be empty. Call the tool again with "${field}" filled in.`)
       }
       continue
     }
-
-    switch (spec.kind) {
-      case 'text':
-        if (typeof value !== 'string') throw new ToolError(`"${field}" must be text.`)
-        if (value.length > spec.max) {
-          throw new ToolError(
-            `"${field}" is ${value.length} characters; the limit is ${spec.max}. Shorten it` +
-              (def.hasContext ? ', and put the extra detail in a note on the record afterwards.' : '.'),
-          )
-        }
-        break
-      case 'date':
-        if (typeof value !== 'string' || !isRealDate(value)) {
-          throw new ToolError(`"${field}" must be a real date written as YYYY-MM-DD, for example 2026-11-30.`)
-        }
-        break
-      case 'importance':
-        if (value !== 1 && value !== 2 && value !== 3) {
-          throw new ToolError(`"${field}" must be 1 (low), 2 (medium) or 3 (high).`)
-        }
-        break
-      case 'bool':
-        if (typeof value !== 'boolean') throw new ToolError(`"${field}" must be true (done) or false (open).`)
-        break
-      case 'url':
-        if (typeof value !== 'string' || value.length > 2000 || !isHttpUrl(value)) {
-          throw new ToolError(
-            `"${field}" must be a full web address starting with http:// or https://, up to 2000 characters. ` +
-              `Correct it or leave "${field}" out.`,
-          )
-        }
-        break
-      case 'email':
-        if (typeof value !== 'string' || value.length > 200 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          throw new ToolError(`"${field}" must be an email address like name@example.com. Correct it or leave "${field}" out.`)
-        }
-        break
-    }
+    checkField(def, field, spec, value)
     row[field] = value
   }
   return row
+}
+
+/**
+ * Checks the arguments of edit and returns the changes. Each field given overwrites the stored value;
+ * an empty string clears an optional field. `label` itself is not a change.
+ */
+export function validateEdit(def: EntityDef, args: Record<string, unknown>): Record<string, unknown> {
+  const editable = Object.keys(def.fields).join(', ')
+  const given = Object.keys(args).filter((k) => k !== 'label' && args[k] !== undefined)
+  if (given.length === 0) {
+    throw new ToolError(`No fields to change. Call edit again with the label and at least one of: ${editable}.`)
+  }
+
+  const changes: Record<string, unknown> = {}
+  for (const field of given) {
+    const spec = def.fields[field]
+    if (!spec) {
+      throw new ToolError(
+        `"${field}" cannot be changed on a ${def.prefix}.` +
+          (field === 'context' && def.hasContext ? ' To add to its notes, call note.' : '') +
+          ` Fields you can change: ${editable}. Call edit again with only those.`,
+      )
+    }
+    const value = trimmed(args[field])
+    if (isEmpty(value)) {
+      if ((spec.kind === 'text' && spec.required) || spec.kind === 'bool') {
+        throw new ToolError(`"${field}" cannot be emptied. Give it a new value, or leave it out.`)
+      }
+      changes[field] = null
+      continue
+    }
+    checkField(def, field, spec, value)
+    changes[field] = value
+  }
+  return changes
 }
 
 export function validateNoteText(value: unknown): string {
