@@ -118,8 +118,8 @@ Three tables with the same shape; each row points to a Google file. Cantab OS st
 - The original 15 dummy rows belong to `claude@test.com`. Nela has a copy of all 15, with the two notes; the copies have their own labels (for example `todo:39`).
 - Built by one data migration that looks the users up by email. It skips a user that doesn't exist, so a local reset without those users still runs.
 - Checked live 2026-10-14: 15 rows per user; the tools, acting as Claude, don't see Nela's rows.
-- `planned`: a third copy for `sinisa@cantabpi.com`, so he can test as himself (migration
-  `20261014140000_dummy_data_sinisa.sql`, waiting for `db push`).
+- A third copy for `sinisa@cantabpi.com`, so he can test as himself (migration
+  `20261014140000_dummy_data_sinisa.sql`). Checked live 2026-10-14: 15 rows each for all three users.
 - **Why:** testing continues as Claude until sign-in is ready. Nela's set is then ready for the claude.ai test as Nela.
 
 ## Where it lives
