@@ -118,7 +118,7 @@ Display title: "Add note".
 
 ## Render instructions — `changed` (removed)
 
-Removed on 2026-10-14: results carry the data only, as the spec defines it; no `render` part and no side-window line. In-host layout comes back in a later phase. Code changed and unit-tested; **not yet deployed** — live checks to re-run after the deploy. → DECISIONS.md 2026-10-14
+Removed on 2026-10-14: results carry the data only, as the spec defines it; no `render` part and no side-window line. In-host layout comes back in a later phase. Deployed as function v0.2.0 and checked live the same day: no result contains `render` or a side-window line; all live checks pass. → DECISIONS.md 2026-10-14
 
 ## Not in this deployment (decided 2026-10-13)
 
