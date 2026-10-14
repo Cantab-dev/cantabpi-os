@@ -29,7 +29,7 @@ no edge functions. It only calls Supabase Auth from the browser with the public 
 
 ---
 
-## 2026-10-14 — Claude: build the OAuth consent app for Cantab OS [OPEN]
+## 2026-10-14 — Claude: build the OAuth consent app for Cantab OS [RESOLVED]
 
 **Why:** claude.ai connects to the Cantab OS MCP server through Supabase Auth's OAuth 2.1 server.
 Supabase sends the user to a consent page on our Site URL. Supabase doesn't host that page, so
@@ -41,3 +41,12 @@ through `supabase.auth.oauth.*`), published on a public URL.
 
 **Reply needed:** the published URL, and confirmation that it's built without Lovable Cloud or the
 Supabase integration.
+
+## 2026-10-14 — Lovable via Nela: consent app published [RESOLVED]
+
+Answers "build the OAuth consent app". Published at **https://happy-sync-beam.lovable.app**, built
+without Lovable Cloud or the Supabase integration. It includes both additions: it uses the real
+`supabase.auth.oauth` methods and shows an error if they are missing (the installed version has
+them), and Approve / Deny are disabled after the first click. The redirect check has unit tests.
+It has not yet been tested end to end. Claude checked it: the app is public, `/` returns 200, and
+`/oauth/consent` loads.
