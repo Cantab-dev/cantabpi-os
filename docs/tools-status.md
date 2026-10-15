@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.4 | Nela | 2026-10-14 |
+| Current | v1.5 | Nela | 2026-10-15 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
@@ -165,7 +165,9 @@ From the agent design guide check. None is built. Former items "update through `
 6. **Entity spelling.** `list` takes `todos`; labels say `todo:`. One spelling would be safer.
 7. **Label cannot change.** The label is filled once when a row is created. A database rule that refuses changes to it would guarantee it never drifts.
 8. **`render` in every result.** The instruction is the same for every call of a tool; the guide would state it once in the tool description.
-9. **Filters on `list`** (for example open todos only), once the lists grow.
+9. **Filters on `list`** (for example open todos only), once the lists grow. Planned in [chat-ux-status.md](chat-ux-status.md).
+10. **Draw the view by context** (MVP 2.0): a `layout` argument on `list`, default yes, so lookups do not draw a view. See [chat-ux-status.md](chat-ux-status.md).
+11. **Compact `context`** (after MVP 2.0): `list` will return full `context` on every row; cap or summarise it once histories grow, keeping the full text in `get`.
 
 ## Testing
 
@@ -189,6 +191,7 @@ Rows created during testing were removed; the label numbers they used are not re
 Others can test from Claude Code with [testing-guide.md](testing-guide.md). Next: connect claude.ai over Supabase OAuth with the Lovable consent app (see [COMMS.md](COMMS.md) and [open-questions.md](open-questions.md)).
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.5 (2026-10-15) — Suggestions 10 and 11 added (view by context, compact context); next phase planned in chat-ux-status.md. → DECISIONS.md 2026-10-15
 - v1.4 (2026-10-14) — Sign-in replaces the development key; tools act as the signed-in user under RLS. Function v0.4.0. → DECISIONS.md 2026-10-14
 - v1.3 (2026-10-14) — `edit` and `delete` built; tools act for the acting user only; upsert dropped. Function v0.3.0. → DECISIONS.md 2026-10-14
 - v1.2 (2026-10-14) — Claude Code connected and calling the tools; testing guide added for other testers.
