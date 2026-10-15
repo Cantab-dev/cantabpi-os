@@ -118,10 +118,11 @@ function todos(sc){
   const changed=()=>rows.filter(o=>o.v!=o.s);
   const upd=()=>{const d=changed().length;M.textContent=d?d+(d>1?' changes':' change'):'No changes'};
   A.querySelectorAll('.rw').forEach(el=>{draw(el);el.querySelector('.cb').onclick=()=>{const o=by[el.dataset.l];o.v=o.v?0:1;draw(el);upd()}});
-  // Save: one edit per changed row, in order, straight to Cantab OS through the host; then tell the model.
+  // Save: one edit per changed row, all at once, straight to Cantab OS through the host; then tell the model.
+  // Parallel is safe: each row sends one final state, so no two calls touch the same todo.
   SV.onclick=async()=>{const d=changed();if(!d.length){M.textContent='Nothing to save';return}
     SV.disabled=true;M.textContent='Saving…';const ok=[],bad=[];
-    for(const o of d){try{const r=await callTool('edit',{label:o.label,status:!!o.v});if(r&&!r.isError){o.s=o.v;ok.push(o)}else bad.push(o.name)}catch(e){bad.push(o.name)}}
+    await Promise.all(d.map(async o=>{const v=o.v;try{const r=await callTool('edit',{label:o.label,status:!!v});if(r&&!r.isError){o.s=v;ok.push(o)}else bad.push(o.name)}catch(e){bad.push(o.name)}}));
     A.querySelectorAll('.rw').forEach(draw);HS.textContent=sub();SV.disabled=false;
     M.textContent=bad.length?'Not saved: '+bad.join(', '):'Saved';
     if(ok.length){const t=await tellModel('In the Cantab OS todo view the user saved: '+ok.map(o=>o.label+' ('+o.name+') is now '+(o.v?'done':'open')).join('; ')+'.');

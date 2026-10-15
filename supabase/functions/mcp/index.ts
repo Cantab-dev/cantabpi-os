@@ -29,7 +29,7 @@ const CORS_HEADERS: Record<string, string> = {
 
 function handleMcp(request: Request, ctx: SupabaseContext): Promise<Response> {
   const handler = createMcpHandler(() => {
-    const server = new McpServer({ name: 'cantab-os', version: '0.5.4' }, { instructions: INSTRUCTIONS })
+    const server = new McpServer({ name: 'cantab-os', version: '0.5.5' }, { instructions: INSTRUCTIONS })
     registerTools(server, ctx.supabase as unknown as SupabaseClient)
     registerViews(server)
     return server
