@@ -265,7 +265,7 @@ after step 4.
 - `smoke.sh` on v0.5.3, 2026-10-15, as `claude@test.com`: all checks as expected, including the view address and HTML, categories, filters, docs and sheets together, importance as text, the action history and the new error messages. The Test rows it created were deleted; its note on `todo:1` stays (notes are append-only).
 - Small gap seen: an unknown entity error lists the six entities but not `categories`.
 - **Open — timing against the POC.** Needs Siniša's POC Project set-up to time the same prompt both ways.
-- **Still to confirm:** whether the `edit` call from Save asks for approval, and whether Claude then answers "what's still open?" from the update without a new `list`.
+- **Retest 2026-10-15 (v0.5.3):** Save worked ("Saved", count updated; Nela did not notice an approval prompt for `edit`). Asked "what's still open?" straight after, Claude answered from memory without a new `list` and was wrong. v0.5.4: the footer shows whether Claude was told (the view only sends `ui/update-model-context` when the host announces support), and the `list` result tells Claude to list again for the current state.
 
 ## Later — MVP 2.0 and after
 
