@@ -8,7 +8,7 @@ Findings from **live testing**. Distinct from the queue of tests still to run �
 - **Add the row in the same session you find something.** Deferring it is how a tracker goes stale.
 - **A row is one issue's lifecycle, edited in place:** `Open` → `Root-caused` → `Fixed` → `Verified`.
   Not append-only — a row should read as current state, not a stack of edits.
-- **`#` is a stable sequential id.** Next new row takes the next integer (currently `15`). Never
+- **`#` is a stable sequential id.** Next new row takes the next integer (currently `18`). Never
   reused, never renumbered, kept after the row is archived. It is a handle for discussion, not a way
   to locate the evidence.
 - **Cells stay short — one or two sentences, current state only.** `Notes` is not a log: no dated
@@ -36,6 +36,9 @@ a blank line ends a markdown table and the row silently renders as loose text.
 | 10 | 2026-10-15 | File and lead names were cut off in the view ("Dummy - Acme propo…"). | claude.ai desktop app 2.37, Nela, 2026-10-15 | Function v0.5.2 | Fixed | v0.5.3 widens the name column (180 to 240 px). | — | Not checked live yet. |
 | 13 | 2026-10-15 | The unknown-entity error of `list` named six entities but not `categories`. | N/A — `scripts/smoke.sh` run, 2026-10-15 | Function v0.5.3; no model involved | Fixed | v0.5.4 adds "or categories with list". | — | Not re-run live yet. |
 | 14 | 2026-10-15 | Sign-out exists only on the consent page, so connecting or reconnecting goes straight through as the last signed-in user. | claude.ai desktop app 2.37, Nela, 2026-10-15 | Consent app at cantabpios.lovable.app | Open | Requested from Lovable: signed-in header, "Not you? Sign out", local-scope sign-out. | [COMMS.md](COMMS.md) 2026-10-15 | Needed to switch between test accounts. |
+| 15 | 2026-10-15 | "Could you show me my todo list" showed all 19 todos, 10 of them done and struck through. Nela expects open todos by default and done ones only on request. | claude.ai desktop app 2.37, Nela, 2026-10-15 | Function v0.5.5; Opus | Open | — | [chat-ux-status.md](chat-ux-status.md) §3.3 | Works as specified: `list` returns every status, and the view follows the memo rule (done todos due today or later stay, struck through). Changing it overrides the memo; decide when planning. |
+| 16 | 2026-10-15 | "Show me the leads now, and remind me what I need to do today" drew the leads view plus a second `list` of todos (open, due today or earlier). Nela expected today's to-dos from the leads' next-action column. | claude.ai desktop app 2.37, Nela, 2026-10-15 | Function v0.5.5; Opus | Open | — | — | Lead actions have no date, and the four leads have no action set, so Claude read "today" as todos. Design question: dated actions, or guidance to Claude. |
+| 17 | 2026-10-15 | In the leads view, a double-click showed no Open button (Ada Lovelace); a single click on Cleo Sample showed only the email. | claude.ai desktop app 2.37, Nela, 2026-10-15 | Function v0.5.5 | Root-caused | — | — | Works as built: Open appears only when the lead has a LinkedIn address, and these two have none ("No LinkedIn on file" shows on double-click). Improvements to plan: show "No LinkedIn" on a single click; the ✉️ emoji renders as a pale, empty-looking box. |
 
 ## Resolved (verified)
 
