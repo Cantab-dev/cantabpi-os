@@ -32,14 +32,14 @@ layer genuinely conflict, say so and ask — don't pick one silently.
 | `supabase/seed.sql` | Dummy data | Fake rows only |
 | `scripts/` | `smoke.sh` — live checks against the deployed function | Creates test rows; remove them afterwards |
 | `.claude/` | `settings.json`, `hooks/` (doc-hygiene check), `MEMORY_seed.md` | |
-| SharePoint root: `C:\Sharepoint\cantabpi.com\CantabPI - XCO001 - Consulting\Cantabpi-OS` | `HANDOFF.md`, `Document_Log.md`, `folder-skeleton.md`, a pointer `CLAUDE.md`; handoff, analysis and other documentation | Never put the repo or `.git` there — sync mirrors git internals |
+| SharePoint root: `C:\Sharepoint\cantabpi.com\CantabPI - XCO001 - Consulting\Cantabpi-OS` | `HANDOFF.md`, `folder-skeleton.md`, a pointer `CLAUDE.md`, `01_analysis/`, `03_documentation/` (`Document_Log.md` and other SharePoint documents) | Never put the repo or `.git` there — sync mirrors git internals |
 
 **Leave alone unless asked:** `.env.local` (secrets); any file in the SharePoint root this project did
 not create.
 
 ## Document tracking
 
-`Document_Log.md` in the SharePoint root is the single record of every tracked document. **Update it
+`03_documentation/Document_Log.md` in the SharePoint root is the single record of every tracked document. **Update it
 in the same session a document is created, finalised, shared, or moved** — a periodic sweep is how it
 goes stale. Document rules live in `docs/Documentation_Rulebook.md`: read it before restructuring any
 doc that has grown hard to read.
