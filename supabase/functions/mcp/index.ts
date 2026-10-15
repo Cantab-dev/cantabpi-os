@@ -5,6 +5,7 @@ import { pipeline } from '@supabase/middleware'
 import { type SupabaseContext, withOAuthProtectedResource, withSupabase } from '@supabase/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { registerTools } from './tools.ts'
+import { registerViews } from './ui.ts'
 
 // As in Supabase's MCP block:
 //   withOAuthProtectedResource  OAuth discovery for MCP clients (RFC 9728) and the WWW-Authenticate
@@ -28,8 +29,9 @@ const CORS_HEADERS: Record<string, string> = {
 
 function handleMcp(request: Request, ctx: SupabaseContext): Promise<Response> {
   const handler = createMcpHandler(() => {
-    const server = new McpServer({ name: 'cantab-os', version: '0.4.0' }, { instructions: INSTRUCTIONS })
+    const server = new McpServer({ name: 'cantab-os', version: '0.4.1' }, { instructions: INSTRUCTIONS })
     registerTools(server, ctx.supabase as unknown as SupabaseClient)
+    registerViews(server)
     return server
   })
   return handler.fetch(request)

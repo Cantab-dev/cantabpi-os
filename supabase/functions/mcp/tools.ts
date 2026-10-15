@@ -21,6 +21,7 @@ import {
   validateNoteText,
   validateWrite,
 } from './lib.ts'
+import { LIST_VIEW_URI } from './ui.ts'
 
 type Row = Record<string, unknown>
 
@@ -285,6 +286,7 @@ export function registerTools(server: McpServer, db: SupabaseClient): void {
         entity: z.string({ error: `"entity" must be one of: ${ENTITY_KEYS.join(', ')}.` }).describe(`One of: ${ENTITY_KEYS.join(', ')}.`),
         page: z.number({ error: '"page" must be a whole number from 1.' }).describe('Page number, from 1. Leave out for the first page.').optional(),
       }),
+      _meta: { ui: { resourceUri: LIST_VIEW_URI } },
     },
     ({ entity, page }) => run(() => listTool(db, entity, page), READ_CRASH),
   )
