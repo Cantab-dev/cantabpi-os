@@ -59,3 +59,26 @@ Supabase Site URL and Redirect URLs use this address.
 
 Dynamic client registration is on only until claude.ai has connected once (Nela, 2026-10-14). New-user
 sign-ups are off. The consent app has no sign-up page and needs none.
+
+## 2026-10-15 — Claude: show who is signed in, and let them sign out [OPEN]
+
+**Why:** the only place to sign out is the consent page. Once someone has signed in, the browser keeps
+the Supabase session, so connecting or reconnecting a connector goes straight through as the last user
+(Nela saw this on 2026-10-15). Testers switch between accounts (Nela, Siniša, `claude@test.com`) and need
+to see who they are signed in as and change it.
+
+**Need:**
+1. A header on every page: "Signed in as <email>" and a **Sign out** button when signed in; a link to
+   `/login` when not.
+2. On `/oauth/consent`, next to the approve buttons: "Not you? Sign out". It signs out and returns to
+   `/login` with the same `authorization_id`, so the connect flow carries on as the other user.
+3. Sign out with `supabase.auth.signOut({ scope: 'local' })`. The default (global) revokes every session
+   of the user, which may include the access claude.ai holds and would disconnect it without warning.
+   Signing out of this site should end only this browser's session.
+
+**Not in this request:** removing claude.ai's access. That stays **Disconnect** in claude.ai. A
+"connected apps" page that revokes access may follow later.
+
+Unchanged: no Lovable Cloud, no Supabase integration, publishable key only.
+
+**Reply needed:** the change is published, and sign-out uses the local scope.
