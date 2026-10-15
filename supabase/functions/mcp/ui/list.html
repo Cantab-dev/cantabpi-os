@@ -67,7 +67,9 @@ let n=0;const pend={};
 const send=m=>parent.postMessage(Object.assign({jsonrpc:'2.0'},m),'*');
 const req=(method,params)=>new Promise((res,rej)=>{const id=++n;pend[id]={res,rej};send({id,method,params})});
 const callTool=(name,args)=>req('tools/call',{name,arguments:args});
-const tellModel=text=>req('ui/update-model-context',{content:[{type:'text',text}]}).catch(()=>{});
+// The host says at initialize whether it takes context updates; the footer reports what happened.
+let caps={};
+const tellModel=text=>!caps.updateModelContext?Promise.resolve('not supported by this host'):req('ui/update-model-context',{content:[{type:'text',text}]}).then(()=>'told',e=>'error: '+((e&&e.message)||'unknown'));
 function applyContext(c){if(!c)return;if(c.theme)document.documentElement.dataset.theme=c.theme;
   const v=c.styles&&c.styles.variables;if(v)for(const k in v)if(v[k])document.documentElement.style.setProperty(k,v[k])}
 addEventListener('message',e=>{
@@ -122,7 +124,8 @@ function todos(sc){
     for(const o of d){try{const r=await callTool('edit',{label:o.label,status:!!o.v});if(r&&!r.isError){o.s=o.v;ok.push(o)}else bad.push(o.name)}catch(e){bad.push(o.name)}}
     A.querySelectorAll('.rw').forEach(draw);HS.textContent=sub();SV.disabled=false;
     M.textContent=bad.length?'Not saved: '+bad.join(', '):'Saved';
-    if(ok.length)tellModel('In the Cantab OS todo view the user saved: '+ok.map(o=>o.label+' ('+o.name+') is now '+(o.v?'done':'open')).join('; ')+'.');
+    if(ok.length){const t=await tellModel('In the Cantab OS todo view the user saved: '+ok.map(o=>o.label+' ('+o.name+') is now '+(o.v?'done':'open')).join('; ')+'.');
+      M.textContent+=' · Claude '+(t==='told'?'told':'not told ('+t+')')}
   };
 }
 
@@ -156,6 +159,6 @@ function plain(sc){
 
 new ResizeObserver(()=>send({method:'ui/notifications/size-changed',params:{width:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight}})).observe(document.body);
 req('ui/initialize',{appCapabilities:{availableDisplayModes:['inline']},appInfo:{name:'cantab-os-list',version:'0.5.1'},protocolVersion:'2026-01-26'})
-  .then(r=>{applyContext(r&&r.hostContext);send({method:'ui/notifications/initialized'})})
+  .then(r=>{caps=(r&&r.hostCapabilities)||{};applyContext(r&&r.hostContext);send({method:'ui/notifications/initialized'})})
   .catch(()=>{A.innerHTML='<div class="e">This view could not connect to the chat host.</div>'});
 </script></body></html>

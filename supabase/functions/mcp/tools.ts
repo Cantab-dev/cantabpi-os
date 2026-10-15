@@ -56,7 +56,8 @@ const writeToolName = (def: EntityDef) => `write_${def.prefix}`
 // Every list result is drawn as a view in hosts with MCP Apps, so the model is told not to repeat it.
 const VIEW_LEAD =
   'The user sees these records in an interactive view. Do not restate or tabulate them; reply in at most one ' +
-  'sentence, and only if something needs attention. Notes on a record come back as "context".'
+  'sentence, and only if something needs attention. Notes on a record come back as "context". The user can tick and ' +
+  'save todos in the view, so this result may be out of date later: when asked about the current state, call list again.'
 
 /** Category label -> id, from the shared categories table. Unknown labels fail with the valid list. */
 async function categoryId(db: SupabaseClient, label: string): Promise<number> {

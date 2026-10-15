@@ -122,7 +122,7 @@ export function parseEntity(value: unknown): EntityDef {
   const key = String(value ?? '').trim().toLowerCase()
   const def = (ENTITIES as Record<string, EntityDef>)[key]
   if (!def) {
-    throw new ToolError(`Unknown entity "${value}". Use one of: ${ENTITY_KEYS.join(', ')}.`)
+    throw new ToolError(`Unknown entity "${value}". Use one of: ${ENTITY_KEYS.join(', ')}, or categories with list.`)
   }
   return def
 }
