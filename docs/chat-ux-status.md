@@ -256,14 +256,14 @@ after step 4.
 **Result, 2026-10-15 (v0.5.2, Claude desktop app, as Nela):**
 - All three views rendered from one `list` call each: todos grouped by due date, leads with the LinkedIn
   field on double-click, docs and sheets in one view.
-- Ticking a todo and pressing Save showed "Saved". The `edit` call from the view did not ask Nela to approve it.
+- Ticking a todo and pressing Save showed "Saved".
 - Claude wrote one sentence under each view.
 - claude.ai asked to approve each `list` call. v0.5.3 marks `list` and `get` read-only, so they can be set
   to **Always allow**.
 - Checked locally before the deploy: headless Chrome with a stand-in host, light and dark, scripted tick and Save
   (one `edit` per change, in order, then the update to the model).
 - **Open — timing against the POC.** Needs Siniša's POC Project set-up to time the same prompt both ways.
-- **Still to confirm:** after a Save, does Claude answer "what's still open?" from the update without a new `list`?
+- **Still to confirm:** whether the `edit` call from Save asks for approval, and whether Claude then answers "what's still open?" from the update without a new `list`.
 
 ## Later — MVP 2.0 and after
 
