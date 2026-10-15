@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Draft | v0.5 | Nela | 2026-10-15 |
+| Draft | v0.6 | Nela | 2026-10-15 |
 
 Plan for the next phase (MVP 1.x, before MVP 2.0). Nela's four design decisions are in; nothing is
 built: the step 0 spike (§3.1), the data changes (§1) and the tool changes (§2), live since 2026-10-15 as function v0.5.0, and the views (§3), checked in claude.ai on v0.5.2. Open: the POC timing comparison (§4) and the optional "+" (§3.5). Read whole. Once built, this becomes the record of
@@ -265,7 +265,7 @@ after step 4.
 - `smoke.sh` on v0.5.3, 2026-10-15, as `claude@test.com`: all checks as expected, including the view address and HTML, categories, filters, docs and sheets together, importance as text, the action history and the new error messages. The Test rows it created were deleted; its note on `todo:1` stays (notes are append-only).
 - Small gap seen: an unknown entity error lists the six entities but not `categories`.
 - **Open — timing against the POC.** Needs Siniša's POC Project set-up to time the same prompt both ways.
-- **Retest 2026-10-15 (v0.5.3):** Save worked ("Saved", count updated; Nela did not notice an approval prompt for `edit`). Asked "what's still open?" straight after, Claude answered from memory without a new `list` and was wrong. v0.5.4: the footer shows whether Claude was told (the view only sends `ui/update-model-context` when the host announces support), and the `list` result tells Claude to list again for the current state.
+- **Retest 2026-10-15 (v0.5.3):** Save worked ("Saved", count updated; Nela did not notice an approval prompt for `edit`). Asked "what's still open?" straight after, Claude answered from memory without a new `list` and was wrong. v0.5.4: the footer shows whether Claude was told (the view only sends `ui/update-model-context` when the host announces support), and the `list` result tells Claude to list again for the current state. Deployed 2026-10-15; retest pending.
 
 ## Later — MVP 2.0 and after
 
@@ -288,6 +288,7 @@ after step 4.
 - `scripts/smoke.sh`
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.6 (2026-10-15) — Save retest recorded; v0.5.4 deployed (save trace in the footer, list again for current state).
 - v0.5 (2026-10-15) — Step 3 built and checked in claude.ai; view address carries an HTML hash; step 4 except the POC timing.
 - v0.4 (2026-10-15) — Steps 1 and 2 built and checked live (migration applied; function v0.5.0).
 - v0.3 (2026-10-15) — Step 0 spike passed in claude.ai; results in §3.1.
