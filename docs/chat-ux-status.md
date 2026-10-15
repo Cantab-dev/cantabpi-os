@@ -2,10 +2,10 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Draft | v0.2 | Nela | 2026-10-15 |
+| Draft | v0.3 | Nela | 2026-10-15 |
 
 Plan for the next phase (MVP 1.x, before MVP 2.0). Nela's four design decisions are in; nothing is
-built yet. Build starts with step 0 on Nela's go. Read whole. Once built, this becomes the record of
+built yet except the step 0 spike, which passed (§3.1). Build continues with step 1. Read whole. Once built, this becomes the record of
 what exists, like [tools-status.md](tools-status.md).
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then
@@ -55,7 +55,7 @@ This reverses, for this phase, the 2026-10-14 decision "tool results carry data 
 
 | Step | What | Who | Status |
 |---|---|---|---|
-| 0 | Spike: prove the mechanism in claude.ai (§3.1) | Claude builds; Nela deploys and clicks | `planned` |
+| 0 | Spike: prove the mechanism in claude.ai (§3.1) | Claude builds and deploys; Nela clicks | `built` — passed 2026-10-15 (v0.4.2) |
 | 1 | Migration: `categories`, three new columns, todo category moved (§1) | Claude writes; Nela runs `db push` | `planned` |
 | 2 | Tool changes and fixes (§2), function v0.5.0 | Claude builds; Nela deploys | `planned` |
 | 3 | The view on `list`: todos, leads, files (§3) | Claude builds; Nela deploys | `planned` |
@@ -161,7 +161,7 @@ Returns the same fields as `list`, with `context` up to 4,000 characters as now.
 
 ## 3. In-chat views
 
-### 3.1 Spike (step 0) — `planned`
+### 3.1 Spike (step 0) — `built`
 A throwaway view on `list` that renders "hello + row count" in claude.ai. It must prove five
 things; the result is recorded here before step 1:
 1. `@modelcontextprotocol/server` v2, which this function uses, can register a tool with
@@ -174,6 +174,15 @@ things; the result is recorded here before step 1:
 4. The edge function can serve the HTML. It will be kept as a TypeScript string module so no
    static-file config is needed.
 5. The host's theme variables reach the view in light and dark mode.
+
+**Result, 2026-10-15 (function v0.4.2, Claude desktop app 2.37, as Nela):** all five proven.
+- The view rendered from `structuredContent`: initialized 5 ms after load, data at 16 ms.
+- `edit` called from the view through the host succeeded in about 1.2 s.
+- Host context: theme light, 76 style variables, `serverTools` capability on.
+- The function serves the HTML from a string module. The view uses a hand-written bridge (about 3 KB) instead of the 418 KB ext-apps bundle.
+- `list` sets both `_meta.ui.resourceUri` and the legacy `_meta["ui/resourceUri"]`, as ext-apps' own helper does.
+- claude.ai picked up the view only after the connector was disconnected and reconnected; toggling it in the chat's + menu was not enough.
+- Seen in the test, handled in step 3: the model still replied in two sentences restating the todos, and did not know about the edit made in the view.
 
 ### 3.2 One resource, several views — `planned`
 - A tool points to one UI resource, so `list` uses a single resource, `ui://cantab-os/list`. It holds
@@ -256,5 +265,6 @@ after step 4.
 - `scripts/smoke.sh`
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.3 (2026-10-15) — Step 0 spike passed in claude.ai; results in §3.1.
 - v0.2 (2026-10-15) — Nela's decisions: view always on `list` (no `show` tool), emoji icons, data-only fallback, history format and full context. → DECISIONS.md 2026-10-15
 - v0.1 (2026-10-15) — Plan drafted from Siniša's memo of 2026-10-15.
