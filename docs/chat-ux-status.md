@@ -2,10 +2,10 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Draft | v0.3 | Nela | 2026-10-15 |
+| Draft | v0.4 | Nela | 2026-10-15 |
 
 Plan for the next phase (MVP 1.x, before MVP 2.0). Nela's four design decisions are in; nothing is
-built yet except the step 0 spike, which passed (§3.1). Build continues with step 1. Read whole. Once built, this becomes the record of
+built: the step 0 spike (§3.1), the data changes (§1) and the tool changes (§2), live since 2026-10-15 as function v0.5.0. Next: step 3, the views. Read whole. Once built, this becomes the record of
 what exists, like [tools-status.md](tools-status.md).
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then
@@ -56,8 +56,8 @@ This reverses, for this phase, the 2026-10-14 decision "tool results carry data 
 | Step | What | Who | Status |
 |---|---|---|---|
 | 0 | Spike: prove the mechanism in claude.ai (§3.1) | Claude builds and deploys; Nela clicks | `built` — passed 2026-10-15 (v0.4.2) |
-| 1 | Migration: `categories`, three new columns, todo category moved (§1) | Claude writes; Nela runs `db push` | `planned` |
-| 2 | Tool changes and fixes (§2), function v0.5.0 | Claude builds; Nela deploys | `planned` |
+| 1 | Migration: `categories`, three new columns, todo category moved (§1) | Claude writes; Nela runs `db push` | `built` 2026-10-15 |
+| 2 | Tool changes and fixes (§2), function v0.5.0 | Claude builds and deploys | `built` 2026-10-15 |
 | 3 | The view on `list`: todos, leads, files (§3) | Claude builds; Nela deploys | `planned` |
 | 4 | Tests, `smoke.sh`, live check and timing in claude.ai (§4); docs updated | Claude, then Nela in claude.ai | `planned` |
 | 5 | Optional: "+" on todos (§3.5) | Only if time allows and Nela says so | `planned` |
@@ -69,7 +69,7 @@ and the plan is redone before any migration runs.
 
 Detail goes into [data-structure-status.md](data-structure-status.md) when built.
 
-### 1.1 Table `categories` — `planned`
+### 1.1 Table `categories` — `built`
 - Columns: `id` integer primary key; `label` text unique (slug, such as `sales`); `name` text;
   `icon` text, an emoji (decision 2; the memo's Tabler names are not used).
 - Seeded with the memo's ten categories:
@@ -91,20 +91,20 @@ Detail goes into [data-structure-status.md](data-structure-status.md) when built
   the API. Changes go through a migration.
 - No `category:N` label. The slug is the identifier tools use, as the memo specifies.
 
-### 1.2 New columns on `todos`, `leads`, `sheets`, `docs`, `slides` — `planned`
+### 1.2 New columns on `todos`, `leads`, `sheets`, `docs`, `slides` — `built`
 - `category_id` integer, nullable, foreign key to `categories.id`, indexed.
 - `importance` smallint, nullable, check 1–3. Todos already have it, so only the check is added
   where missing.
 - `action` text, nullable: the single current next action.
 
-### 1.3 Todo category moved to `category_id` — `planned`
+### 1.3 Todo category moved to `category_id` — `built`
 - Set `category_id` by matching the free-text `category` to `categories.label`, case-insensitive,
   then drop `category`.
 - The dummy data uses `sales`, `personal`, `finance` and `admin`, which all match. Other values
   (from POC testing) become null. The migration first lists any it would drop so they can be
   checked.
 
-### 1.4 An overwritten action is kept in `context` — `planned`
+### 1.4 An overwritten action is kept in `context` — `built`
 A database trigger on update: when `action` changes and the old value is not empty, it appends
 `YYYY-MM-DD: Previous action: <old value>` to `context`, dated the day of the change. Because it is
 a trigger, it applies on every path, not only through the tools.
@@ -113,7 +113,7 @@ a trigger, it applies on every path, not only through the tools.
 
 Detail goes into [tools-status.md](tools-status.md) when built.
 
-### 2.1 `list` — `planned`
+### 2.1 `list` — `built` (the view itself is step 3)
 - **Carries the view** (§3): `_meta.ui.resourceUri` = `ui://cantab-os/list`. Every call returns:
   - `content`: the rows as data for the model, as now. It also carries the line "The user sees
     these rows in a view. Do not restate them; reply in at most one sentence, and only if
@@ -135,16 +135,16 @@ Detail goes into [tools-status.md](tools-status.md) when built.
   page comes from `list` as now.
 - **Skills and categories** get a plain view (name and description, or icon and name).
 
-### 2.2 `get` — `planned`
+### 2.2 `get` — `built`
 Returns the same fields as `list`, with `context` up to 4,000 characters as now.
 
-### 2.3 `write_todo`, `write_lead`, `write_sheet`, `write_doc`, `write_slide` — `planned`
+### 2.3 `write_todo`, `write_lead`, `write_sheet`, `write_doc`, `write_slide` — `built`
 - New optional arguments: `category` (a category label), `importance` (1–3) and `action` (up to 500
   characters).
 - An unknown category is rejected, and the error lists the valid labels.
 - On `write_todo`, `category` changes from free text to a label.
 
-### 2.4 `edit` — `planned`
+### 2.4 `edit` — `built`
 - Accepts `category`, `importance` and `action` on all five entities. An empty string clears them.
 - Overwriting `action` keeps the old value in `context` through the trigger (§1.4).
 
@@ -153,11 +153,16 @@ Returns the same fields as `list`, with `context` up to 4,000 characters as now.
 ### 2.6 Fixes from POC testing
 | # | Item | Plan |
 |---|---|---|
-| 1 | `edit` rejects importance 1, 2 and 3 | `planned`. The schema `z.union([z.number(), z.literal('')])` (`tools.ts`) gets a string from the client. It will accept a number, a numeric string or `""`, with a unit test for each |
-| 2 | Notes go in with `note` but come back as `context` | `planned`: the `get`, `list` and `note` descriptions say so. Renaming the field is not planned |
+| 1 | `edit` rejects importance 1, 2 and 3 | `built`. The schema `z.union([z.number(), z.literal('')])` (`tools.ts`) gets a string from the client. It will accept a number, a numeric string or `""`, with a unit test for each |
+| 2 | Notes go in with `note` but come back as `context` | `built`: the `get`, `list` and `note` descriptions say so. Renaming the field is not planned |
 | 3 | Skills have no `name` | Not in this phase (skills are out of scope). Comment for later |
-| 4 | Descriptions say "starting with https://" but `http://` is also accepted | `planned`: the descriptions say "http:// or https://" |
+| 4 | Descriptions say "starting with https://" but `http://` is also accepted | `built`: the descriptions say "http:// or https://" |
 | 5 | No server-side deduplication | Not in this phase. Comment: a later `write_*` could return close name or URL matches |
+
+**Checked 2026-10-15 (steps 1–2):** dry run of the migration in a rolled-back transaction (10 categories, 22 todos
+mapped, 1 without a category); applied by Nela; function v0.5.0 deployed. Live as `claude@test.com`: categories list,
+todos with the category object, `["docs","sheets"]` in one call, filters, the two error messages, `edit` with importance
+`"2"`, and two action overwrites leaving `Previous action` lines in `context`. 25 unit tests pass.
 
 ## 3. In-chat views
 
@@ -265,6 +270,7 @@ after step 4.
 - `scripts/smoke.sh`
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.4 (2026-10-15) — Steps 1 and 2 built and checked live (migration applied; function v0.5.0).
 - v0.3 (2026-10-15) — Step 0 spike passed in claude.ai; results in §3.1.
 - v0.2 (2026-10-15) — Nela's decisions: view always on `list` (no `show` tool), emoji icons, data-only fallback, history format and full context. → DECISIONS.md 2026-10-15
 - v0.1 (2026-10-15) — Plan drafted from Siniša's memo of 2026-10-15.

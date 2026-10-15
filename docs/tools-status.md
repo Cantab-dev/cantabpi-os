@@ -2,13 +2,18 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.5 | Nela | 2026-10-15 |
+| Current | v1.6 | Nela | 2026-10-15 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then altered; note what changed) · `open` (needs a decision).
 
 All eleven tools are deployed and tested against dummy data: nine on 2026-10-13, `edit` and `delete` on 2026-10-14 (function v0.3.0). The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
+
+**Function v0.5.0 (2026-10-15):** `list`, `get`, the five record `write_*` tools and `edit` changed for the in-chat
+views: category, importance and action fields, `categories` as a list entity, filters, a list of file kinds, importance as
+text accepted, and a view (`ui://cantab-os/list`) declared on `list`. The current contract is in
+[chat-ux-status.md](chat-ux-status.md) §2; the sections below describe v0.4.0 where they differ.
 
 ## Scope
 
@@ -191,6 +196,7 @@ Rows created during testing were removed; the label numbers they used are not re
 Others can test from Claude Code with [testing-guide.md](testing-guide.md). Next: connect claude.ai over Supabase OAuth with the Lovable consent app (see [COMMS.md](COMMS.md) and [open-questions.md](open-questions.md)).
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.6 (2026-10-15) — Function v0.5.0: tool changes for the in-chat views, live; contract in chat-ux-status.md §2. → DECISIONS.md 2026-10-15
 - v1.5 (2026-10-15) — Suggestions 10 and 11 added (view by context, compact context); next phase planned in chat-ux-status.md. → DECISIONS.md 2026-10-15
 - v1.4 (2026-10-14) — Sign-in replaces the development key; tools act as the signed-in user under RLS. Function v0.4.0. → DECISIONS.md 2026-10-14
 - v1.3 (2026-10-14) — `edit` and `delete` built; tools act for the acting user only; upsert dropped. Function v0.3.0. → DECISIONS.md 2026-10-14

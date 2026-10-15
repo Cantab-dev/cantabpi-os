@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.4 | Nela | 2026-10-14 |
+| Current | v1.5 | Nela | 2026-10-15 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
@@ -75,6 +75,14 @@ Three tables with the same shape; each row points to a Google file. Cantab OS st
 | profile_id ＋ | uuid | see Ownership |
 | created_at ＋, updated_at ＋ | timestamptz | set automatically |
 
+### categories, and category / importance / action on five tables — `built`
+Added 2026-10-15 for the in-chat views. Detail, seed values and the checks: [chat-ux-status.md](chat-ux-status.md) §1.
+- `categories` (`id`, `label` unique, `name`, `icon` as an emoji): ten fixed rows, shared, read-only for signed-in users.
+- `todos`, `leads`, `sheets`, `docs`, `slides` each have `category_id` (to `categories.id`), `importance` (1–3) and
+  `action` (the current next action). The todos' free-text `category` column was moved into `category_id` and dropped.
+- Trigger `keep_previous_action`: overwriting `action` appends `YYYY-MM-DD: Previous action: <old>` to `context`.
+- Migration: `supabase/migrations/20261015120000_categories_and_action.sql`.
+
 ## Labels — `built`
 
 - Format `<entity>:<number>`, with entity one of `skill`, `todo`, `lead`, `sheet`, `doc`, `slide`.
@@ -131,6 +139,7 @@ Three tables with the same shape; each row points to a Google file. Cantab OS st
 - `supabase/migrations/20261014120100_dummy_data_per_user.sql`
 - `supabase/migrations/20261014130000_profiles_and_rls.sql`
 - `supabase/migrations/20261014140000_dummy_data_sinisa.sql`
+- `supabase/migrations/20261015120000_categories_and_action.sql`
 - `supabase/seed.sql`
 
 ## Next
@@ -138,6 +147,7 @@ Three tables with the same shape; each row points to a Google file. Cantab OS st
 Step 2 tools (`list`, `get`, `write_*`, `note`) as an MCP edge function: see [tools-status.md](tools-status.md).
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.5 (2026-10-15) — `categories` table; `category_id`, `importance`, `action` on five tables; todo `category` moved; previous-action trigger. → DECISIONS.md 2026-10-15
 - v1.4 (2026-10-14) — `profiles` table, `owner_id` renamed `profile_id`, per-user RLS policies. → DECISIONS.md 2026-10-14
 - v1.3 (2026-10-14) — Known gap noted: labels can be changed through the Data API once users sign in. → DECISIONS.md 2026-10-14
 - v1.2 (2026-10-14) — Dummy data owned per user (Claude, plus a copy for Nela); `append_context` takes the owner. → DECISIONS.md 2026-10-14
