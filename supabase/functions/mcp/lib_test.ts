@@ -7,8 +7,10 @@ import {
   fitRows,
   MAX_CONTEXT_CHARS,
   MAX_GUIDELINE_CHARS,
+  MAX_ACTION_CHARS,
   notFoundMessage,
   parseEntity,
+  parseFilters,
   parseLabel,
   parsePage,
   ToolError,
@@ -77,7 +79,7 @@ Deno.test('write: bad date', () => {
 })
 
 Deno.test('write: importance outside 1 to 3', () => {
-  for (const importance of [0, 4, 2.5, '2']) {
+  for (const importance of [0, 4, 2.5, '4', 'high']) {
     assert(message(() => validateWrite(ENTITIES.todos, { name: 'x', importance })).includes('1 (low), 2 (medium) or 3 (high)'))
   }
 })
@@ -155,7 +157,7 @@ Deno.test('finish returns the data only, and runs the exit check', () => {
 
 Deno.test('edit needs at least one field and names the editable ones', () => {
   const m = message(() => validateEdit(ENTITIES.todos, { label: 'todo:1' }))
-  assert(m.includes('name, category, due, importance, status'))
+  assert(m.includes('name, category, importance, action, due, status'))
 })
 
 Deno.test('edit refuses fields that are not on the entity, and points context to note', () => {
@@ -175,4 +177,45 @@ Deno.test('edit clears optional fields with an empty string but not required one
   assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', name: '  ' })).includes('cannot be emptied'))
   assert(message(() => validateEdit(ENTITIES.skills, { label: 'skill:1', description: '' })).includes('cannot be emptied'))
   assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', status: '' })).includes('cannot be emptied'))
+})
+
+Deno.test('importance accepts 1 to 3 as a number or as text (POC bug: edit rejected "2")', () => {
+  assertEquals(validateEdit(ENTITIES.todos, { label: 'todo:1', importance: '2' }), { importance: 2 })
+  assertEquals(validateEdit(ENTITIES.leads, { label: 'lead:1', importance: 3 }), { importance: 3 })
+  assertEquals(validateWrite(ENTITIES.docs, { name: 'A', importance: '1' }), { name: 'A', importance: 1 })
+  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', importance: '4' })).includes('1 (low)'))
+  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', importance: '2.0' })).includes('1 (low)'))
+})
+
+Deno.test('category and action are on all five record entities, not on skills', () => {
+  for (const key of ['todos', 'leads', 'sheets', 'docs', 'slides'] as const) {
+    assertEquals(validateWrite(ENTITIES[key], { name: 'A', category: ' Sales ', action: 'Call back' }), {
+      name: 'A',
+      category: 'sales',
+      action: 'Call back',
+    })
+    assert(ENTITIES[key].listCols.some((c) => c.startsWith('category:categories(')))
+  }
+  assert(message(() => validateEdit(ENTITIES.skills, { label: 'skill:1', action: 'x' })).includes('cannot be changed'))
+  assert(message(() => validateWrite(ENTITIES.todos, { name: 'A', action: 'x'.repeat(MAX_ACTION_CHARS + 1) })).includes('limit'))
+  assertEquals(validateEdit(ENTITIES.sheets, { label: 'sheet:1', category: '', action: '' }), { category: null, action: null })
+})
+
+Deno.test('list filters: todo-only ones refuse other entities; dates and importance are checked', () => {
+  assertEquals(parseFilters(ENTITIES.todos, { status: false, due_before: '2026-10-15', importance_min: '2', category: 'Sales' }), {
+    status: false,
+    due_before: '2026-10-15',
+    importance_min: 2,
+    category: 'sales',
+  })
+  assertEquals(parseFilters(ENTITIES.leads, { category: 'client' }), { category: 'client' })
+  assert(message(() => parseFilters(ENTITIES.leads, { status: true })).includes('does not work for leads'))
+  assert(message(() => parseFilters(ENTITIES.skills, { category: 'sales' })).includes('does not work for skills'))
+  assert(message(() => parseFilters(ENTITIES.todos, { due_after: '15/10/2026' })).includes('YYYY-MM-DD'))
+})
+
+Deno.test('finish puts the lead line before the data in content, not in structuredContent', () => {
+  const r = finish({ entity: 'todos', rows: [] }, 'Do not restate.')
+  assert(r.content[0].text.startsWith('Do not restate.\n{'))
+  assertEquals(r.structuredContent, { entity: 'todos', rows: [] })
 })

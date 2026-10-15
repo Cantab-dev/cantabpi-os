@@ -4,6 +4,7 @@ export const MAX_CONTEXT_CHARS = 4000
 export const MAX_GUIDELINE_CHARS = 8000
 export const MAX_NOTE_CHARS = 1000
 export const MAX_RESULT_CHARS = 40000
+export const MAX_ACTION_CHARS = 500
 
 export type EntityKey = 'skills' | 'todos' | 'leads' | 'sheets' | 'docs' | 'slides'
 
@@ -14,6 +15,7 @@ type FieldSpec =
   | { kind: 'bool' }
   | { kind: 'url' }
   | { kind: 'email' }
+  | { kind: 'category' }
 
 export interface EntityDef {
   key: EntityKey
@@ -24,8 +26,21 @@ export interface EntityDef {
   fields: Record<string, FieldSpec>
 }
 
-const fileFields: Record<string, FieldSpec> = {
+// The category comes back as an object {label, name, icon} or null, through the category_id foreign key.
+const CATEGORY = 'category:categories(label,name,icon)'
+
+/** Columns every view needs, on todos, leads, sheets, docs and slides. */
+const RENDER_COLS = ['label', 'name', CATEGORY, 'importance', 'action', 'context']
+
+const renderFields: Record<string, FieldSpec> = {
   name: { kind: 'text', max: 200, required: true },
+  category: { kind: 'category' },
+  importance: { kind: 'importance' },
+  action: { kind: 'text', max: MAX_ACTION_CHARS },
+}
+
+const fileFields: Record<string, FieldSpec> = {
+  ...renderFields,
   url: { kind: 'url' },
 }
 
@@ -44,25 +59,23 @@ export const ENTITIES: Record<EntityKey, EntityDef> = {
   todos: {
     key: 'todos',
     prefix: 'todo',
-    listCols: ['label', 'name', 'category', 'due', 'importance', 'status'],
-    getCols: ['label', 'name', 'category', 'due', 'importance', 'status', 'context'],
+    listCols: [...RENDER_COLS, 'due', 'status'],
+    getCols: [...RENDER_COLS, 'due', 'status'],
     hasContext: true,
     fields: {
-      name: { kind: 'text', max: 200, required: true },
-      category: { kind: 'text', max: 200 },
+      ...renderFields,
       due: { kind: 'date' },
-      importance: { kind: 'importance' },
       status: { kind: 'bool' },
     },
   },
   leads: {
     key: 'leads',
     prefix: 'lead',
-    listCols: ['label', 'name', 'full_name', 'email', 'url_linkedin'],
-    getCols: ['label', 'name', 'full_name', 'email', 'url_linkedin', 'context'],
+    listCols: [...RENDER_COLS, 'full_name', 'email', 'url_linkedin'],
+    getCols: [...RENDER_COLS, 'full_name', 'email', 'url_linkedin'],
     hasContext: true,
     fields: {
-      name: { kind: 'text', max: 200, required: true },
+      ...renderFields,
       full_name: { kind: 'text', max: 200 },
       email: { kind: 'email' },
       url_linkedin: { kind: 'url' },
@@ -71,30 +84,34 @@ export const ENTITIES: Record<EntityKey, EntityDef> = {
   sheets: {
     key: 'sheets',
     prefix: 'sheet',
-    listCols: ['label', 'name', 'url'],
-    getCols: ['label', 'name', 'url', 'context'],
+    listCols: [...RENDER_COLS, 'url'],
+    getCols: [...RENDER_COLS, 'url'],
     hasContext: true,
     fields: fileFields,
   },
   docs: {
     key: 'docs',
     prefix: 'doc',
-    listCols: ['label', 'name', 'url'],
-    getCols: ['label', 'name', 'url', 'context'],
+    listCols: [...RENDER_COLS, 'url'],
+    getCols: [...RENDER_COLS, 'url'],
     hasContext: true,
     fields: fileFields,
   },
   slides: {
     key: 'slides',
     prefix: 'slide',
-    listCols: ['label', 'name', 'url', 'storage_url'],
-    getCols: ['label', 'name', 'url', 'storage_url', 'context'],
+    listCols: [...RENDER_COLS, 'url', 'storage_url'],
+    getCols: [...RENDER_COLS, 'url', 'storage_url'],
     hasContext: true,
     fields: { ...fileFields, storage_url: { kind: 'url' } },
   },
 }
 
 export const ENTITY_KEYS = Object.keys(ENTITIES) as EntityKey[]
+/** list also takes the shared categories table, which has no labels and no write tool. */
+export const LIST_KEYS = [...ENTITY_KEYS, 'categories']
+/** Kinds that list can show together in one call and one view. */
+export const FILE_KEYS: EntityKey[] = ['docs', 'sheets', 'slides']
 const BY_PREFIX = new Map(Object.values(ENTITIES).map((e) => [e.prefix, e]))
 const PREFIXES = [...BY_PREFIX.keys()].join(', ')
 
@@ -160,8 +177,11 @@ function isHttpUrl(value: string): boolean {
 const isEmpty = (value: unknown) => value === undefined || value === null || value === ''
 const trimmed = (value: unknown) => (typeof value === 'string' ? value.trim() : value)
 
-/** Checks one non-empty field value against its spec; throws a ToolError naming the field. */
-function checkField(def: EntityDef, field: string, spec: FieldSpec, value: unknown): void {
+/**
+ * Checks one non-empty field value against its spec and returns it in stored form; throws a ToolError
+ * naming the field. Importance also accepts "1" to "3" as text, because some clients send numbers as strings.
+ */
+function checkField(def: EntityDef, field: string, spec: FieldSpec, value: unknown): unknown {
   switch (spec.kind) {
     case 'text':
       if (typeof value !== 'string') throw new ToolError(`"${field}" must be text.`)
@@ -177,11 +197,18 @@ function checkField(def: EntityDef, field: string, spec: FieldSpec, value: unkno
         throw new ToolError(`"${field}" must be a real date written as YYYY-MM-DD, for example 2026-11-30.`)
       }
       break
-    case 'importance':
-      if (value !== 1 && value !== 2 && value !== 3) {
+    case 'importance': {
+      const n = typeof value === 'string' && /^[123]$/.test(value) ? Number(value) : value
+      if (n !== 1 && n !== 2 && n !== 3) {
         throw new ToolError(`"${field}" must be 1 (low), 2 (medium) or 3 (high).`)
       }
-      break
+      return n
+    }
+    case 'category':
+      if (typeof value !== 'string' || value.length > 50) {
+        throw new ToolError(`"${field}" must be a category label such as "sales". Call list with entity "categories" to see them.`)
+      }
+      return value.toLowerCase()
     case 'bool':
       if (typeof value !== 'boolean') throw new ToolError(`"${field}" must be true (done) or false (open).`)
       break
@@ -199,6 +226,7 @@ function checkField(def: EntityDef, field: string, spec: FieldSpec, value: unkno
       }
       break
   }
+  return value
 }
 
 /** Checks the arguments of a write tool and returns the row to insert. */
@@ -212,8 +240,7 @@ export function validateWrite(def: EntityDef, args: Record<string, unknown>): Re
       }
       continue
     }
-    checkField(def, field, spec, value)
-    row[field] = value
+    row[field] = checkField(def, field, spec, value)
   }
   return row
 }
@@ -247,10 +274,42 @@ export function validateEdit(def: EntityDef, args: Record<string, unknown>): Rec
       changes[field] = null
       continue
     }
-    checkField(def, field, spec, value)
-    changes[field] = value
+    changes[field] = checkField(def, field, spec, value)
   }
   return changes
+}
+
+export interface ListFilters {
+  status?: boolean
+  due_before?: string
+  due_after?: string
+  category?: string
+  importance_min?: number
+}
+
+const TODO_FILTERS = ['status', 'due_before', 'due_after']
+const ALL_FILTERS = [...TODO_FILTERS, 'category', 'importance_min']
+
+/** Checks the optional filters of list for one entity. Both dates are inclusive. */
+export function parseFilters(def: EntityDef, args: Record<string, unknown>): ListFilters {
+  const out: ListFilters = {}
+  for (const f of ALL_FILTERS.filter((f) => !isEmpty(args[f]))) {
+    if (def.key === 'skills' || (TODO_FILTERS.includes(f) && def.key !== 'todos')) {
+      throw new ToolError(`"${f}" does not work for ${def.key}. Call list again without it.`)
+    }
+    const v = trimmed(args[f])
+    if (f === 'status') {
+      if (typeof v !== 'boolean') throw new ToolError(`"status" must be true (done) or false (open).`)
+      out.status = v
+    } else if (f === 'due_before' || f === 'due_after') {
+      out[f] = checkField(def, f, { kind: 'date' }, v) as string
+    } else if (f === 'category') {
+      out.category = checkField(def, f, { kind: 'category' }, v) as string
+    } else {
+      out.importance_min = checkField(def, f, { kind: 'importance' }, v) as number
+    }
+  }
+  return out
 }
 
 export function validateNoteText(value: unknown): string {
@@ -316,9 +375,11 @@ export interface ToolResult {
   isError?: boolean
 }
 
-export function finish(data: Record<string, unknown>): ToolResult {
+/** Builds a result. `lead` is a line for the model before the data; the view reads structuredContent only. */
+export function finish(data: Record<string, unknown>, lead?: string): ToolResult {
   assertSafe(data)
-  return { content: [{ type: 'text', text: JSON.stringify(data) }], structuredContent: data }
+  const json = JSON.stringify(data)
+  return { content: [{ type: 'text', text: lead ? `${lead}\n${json}` : json }], structuredContent: data }
 }
 
 export function failure(message: string): ToolResult {

@@ -5,11 +5,15 @@ insert into public.skills (description, guideline) values
   ('Dummy - Weekly review', 'List open todos, flag overdue ones, ask which to reschedule.'),
   ('Dummy - New lead intake', 'Create the lead, add a note on where it came from, create a follow-up todo.');
 
-insert into public.todos (name, category, due, importance, status) values
+insert into public.todos (name, category_id, due, importance, status)
+select v.name, c.id, v.due, v.importance, v.status
+from (values
   ('Dummy - Send proposal to Acme', 'sales', current_date + 2, 3, false),
   ('Dummy - Book dentist', 'personal', current_date + 10, 1, false),
   ('Dummy - Review Q3 budget sheet', 'finance', current_date - 1, 2, false),
-  ('Dummy - Renew domain', 'admin', current_date - 5, 2, true);
+  ('Dummy - Renew domain', 'admin', current_date - 5, 2, true)
+) as v(name, category, due, importance, status)
+join public.categories c on c.label = v.category;
 
 insert into public.leads (name, full_name, email, url_linkedin) values
   ('Dummy - Ada', 'Ada Example', 'ada@example.com', 'https://www.linkedin.com/in/example-ada'),
