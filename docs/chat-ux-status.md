@@ -262,6 +262,8 @@ after step 4.
   to **Always allow**.
 - Checked locally before the deploy: headless Chrome with a stand-in host, light and dark, scripted tick and Save
   (one `edit` per change, in order, then the update to the model).
+- `smoke.sh` on v0.5.3, 2026-10-15, as `claude@test.com`: all checks as expected, including the view address and HTML, categories, filters, docs and sheets together, importance as text, the action history and the new error messages. The Test rows it created were deleted; its note on `todo:1` stays (notes are append-only).
+- Small gap seen: an unknown entity error lists the six entities but not `categories`.
 - **Open — timing against the POC.** Needs Siniša's POC Project set-up to time the same prompt both ways.
 - **Still to confirm:** whether the `edit` call from Save asks for approval, and whether Claude then answers "what's still open?" from the update without a new `list`.
 

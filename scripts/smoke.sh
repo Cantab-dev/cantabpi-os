@@ -80,7 +80,7 @@ call note '{"label":"nonsense","text":"x"}'
 echo "--- list declares the view; the view can be read"
 VIEW="$(rpc tools/list '{}' | grep -o '"resourceUri":"ui://cantab-os/list/[0-9a-f]*"' | head -1 | cut -d'"' -f4)"
 echo "$VIEW"
-rpc resources/read "{\"uri\":\"$VIEW\"}" | grep -o 'text/html;profile=mcp-app|function todos' | sort -u | paste -sd' '
+rpc resources/read "{\"uri\":\"$VIEW\"}" | grep -o 'text/html;profile=mcp-app\|function todos' | sort -u | paste -sd' '
 call list '{"entity":"categories"}'
 call list '{"entity":["docs","sheets"]}'
 call list '{"entity":"todos","status":false,"importance_min":"2"}'
