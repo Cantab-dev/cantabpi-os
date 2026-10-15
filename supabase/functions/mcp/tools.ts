@@ -369,6 +369,7 @@ export function registerTools(server: McpServer, db: SupabaseClient): void {
         category: text('category', 'Only this category label, such as "sales". Not for skills.').optional(),
         importance_min: importance('Only importance at least this: 1, 2 or 3. Not for skills.').optional(),
       }),
+      annotations: { readOnlyHint: true },
       // Both keys, as ext-apps' registerAppTool sets them: some hosts still read the flat legacy key.
       _meta: { ui: { resourceUri: LIST_VIEW_URI }, 'ui/resourceUri': LIST_VIEW_URI },
     },
@@ -388,6 +389,7 @@ export function registerTools(server: McpServer, db: SupabaseClient): void {
         labels: z.array(z.string(), { error: '"labels" must be a list of labels, for example ["todo:1", "lead:2"].' })
           .describe(`1 to ${MAX_LABELS} labels such as "todo:1" or "lead:2".`),
       }),
+      annotations: { readOnlyHint: true },
     },
     ({ labels }) => run(() => getTool(db, labels), READ_CRASH),
   )

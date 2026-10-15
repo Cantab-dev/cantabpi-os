@@ -2,10 +2,10 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Draft | v0.4 | Nela | 2026-10-15 |
+| Draft | v0.5 | Nela | 2026-10-15 |
 
 Plan for the next phase (MVP 1.x, before MVP 2.0). Nela's four design decisions are in; nothing is
-built: the step 0 spike (§3.1), the data changes (§1) and the tool changes (§2), live since 2026-10-15 as function v0.5.0. Next: step 3, the views. Read whole. Once built, this becomes the record of
+built: the step 0 spike (§3.1), the data changes (§1) and the tool changes (§2), live since 2026-10-15 as function v0.5.0, and the views (§3), checked in claude.ai on v0.5.2. Open: the POC timing comparison (§4) and the optional "+" (§3.5). Read whole. Once built, this becomes the record of
 what exists, like [tools-status.md](tools-status.md).
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then
@@ -58,8 +58,8 @@ This reverses, for this phase, the 2026-10-14 decision "tool results carry data 
 | 0 | Spike: prove the mechanism in claude.ai (§3.1) | Claude builds and deploys; Nela clicks | `built` — passed 2026-10-15 (v0.4.2) |
 | 1 | Migration: `categories`, three new columns, todo category moved (§1) | Claude writes; Nela runs `db push` | `built` 2026-10-15 |
 | 2 | Tool changes and fixes (§2), function v0.5.0 | Claude builds and deploys | `built` 2026-10-15 |
-| 3 | The view on `list`: todos, leads, files (§3) | Claude builds; Nela deploys | `planned` |
-| 4 | Tests, `smoke.sh`, live check and timing in claude.ai (§4); docs updated | Claude, then Nela in claude.ai | `planned` |
+| 3 | The view on `list`: todos, leads, files (§3) | Claude builds and deploys | `built` 2026-10-15 (v0.5.2; v0.5.3 adds read-only hints and a wider name column) |
+| 4 | Tests, `smoke.sh`, live check and timing in claude.ai (§4); docs updated | Claude, then Nela in claude.ai | `built` except the POC timing comparison |
 | 5 | Optional: "+" on todos (§3.5) | Only if time allows and Nela says so | `planned` |
 
 Step 0 is the gate. If the spike fails (no render, or the view cannot call tools), building stops
@@ -189,14 +189,18 @@ things; the result is recorded here before step 1:
 - claude.ai picked up the view only after the connector was disconnected and reconnected; toggling it in the chat's + menu was not enough.
 - Seen in the test, handled in step 3: the model still replied in two sentences restating the todos, and did not know about the edit made in the view.
 
-### 3.2 One resource, several views — `planned`
-- A tool points to one UI resource, so `list` uses a single resource, `ui://cantab-os/list`. It holds
+### 3.2 One resource, several views — `built`
+- A tool points to one UI resource, so `list` uses a single resource, `ui://cantab-os/list/<hash>`. It holds
   the todos, leads and files views (plus the plain view) and picks one from the entity in the data.
   This departs from the memo's three URIs; the views themselves stay separate.
 - The resource is one self-contained HTML file: inline CSS and script, no external fetch, so it
   renders as soon as the result arrives. The host can preload it before the first call.
+- **The address carries a hash of the HTML** (`scripts/build-ui.mjs`), because claude.ai caches a view by
+  its address: v0.5.1 changed the HTML under the same address and claude.ai kept drawing the spike. A changed
+  view needs one disconnect and reconnect of the connector, since claude.ai reads the tool list only then.
+- Source: `supabase/functions/mcp/ui/list.html`, built into `ui_html.ts`; a unit test keeps them in step.
 
-### 3.3 The three views — `planned`
+### 3.3 The three views — `built`
 Built from the memo's Appendix A templates, with the memo's §3.2 rules: real category and
 importance fields, the `action` line, expanded history newest first, the todo groups and the
 hiding of done todos. These changes are needed for the MCP Apps setting:
@@ -217,7 +221,7 @@ hiding of done todos. These changes are needed for the MCP Apps setting:
 - **Files:** click expands the row. Double-click to the side panel is out of scope, so for now
   double-click does nothing.
 
-### 3.4 Hosts without MCP Apps — `planned`
+### 3.4 Hosts without MCP Apps — `built`
 They get the `content` data only (decision 3). The memo's fallback (render instruction plus template
 ID, with the model generating the HTML) is the slow path this phase removes; it is kept on file and
 not built.
@@ -249,6 +253,18 @@ after step 4.
   appears as soon as the single tool call returns.
 - Findings go in [test_tracker.md](test_tracker.md).
 
+**Result, 2026-10-15 (v0.5.2, Claude desktop app, as Nela):**
+- All three views rendered from one `list` call each: todos grouped by due date, leads with the LinkedIn
+  field on double-click, docs and sheets in one view.
+- Ticking a todo and pressing Save showed "Saved". The `edit` call from the view did not ask Nela to approve it.
+- Claude wrote one sentence under each view.
+- claude.ai asked to approve each `list` call. v0.5.3 marks `list` and `get` read-only, so they can be set
+  to **Always allow**.
+- Checked locally before the deploy: headless Chrome with a stand-in host, light and dark, scripted tick and Save
+  (one `edit` per change, in order, then the update to the model).
+- **Open — timing against the POC.** Needs Siniša's POC Project set-up to time the same prompt both ways.
+- **Still to confirm:** after a Save, does Claude answer "what's still open?" from the update without a new `list`?
+
 ## Later — MVP 2.0 and after
 
 - **Draw the view by context** (MVP 2.0): for example a `layout` argument on `list`, default yes, so
@@ -270,6 +286,7 @@ after step 4.
 - `scripts/smoke.sh`
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.5 (2026-10-15) — Step 3 built and checked in claude.ai; view address carries an HTML hash; step 4 except the POC timing.
 - v0.4 (2026-10-15) — Steps 1 and 2 built and checked live (migration applied; function v0.5.0).
 - v0.3 (2026-10-15) — Step 0 spike passed in claude.ai; results in §3.1.
 - v0.2 (2026-10-15) — Nela's decisions: view always on `list` (no `show` tool), emoji icons, data-only fallback, history format and full context. → DECISIONS.md 2026-10-15

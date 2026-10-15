@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v2.0 | Nela | 2026-10-14 |
+| Current | v2.1 | Nela | 2026-10-15 |
 
 How to connect Claude to Cantab OS as yourself and try the tools. About 10 minutes.
 
@@ -46,6 +46,7 @@ Ask in plain words; Claude should pick the tool itself. For example:
 | What's on my todo list? | `list` (returns your four dummy todos) |
 | Do we have any leads? | `list` |
 | Show me the Acme proposal todo | `list`, then `get` |
+| Show my leads / Show my docs and sheets | `list`; an interactive view appears |
 | Add a todo "Test - call Ada", due Friday, sales | `write_todo` |
 | Add a lead "Test - Ada Lovelace" | `write_lead` |
 | Add a note to the Acme proposal todo saying "chased by email" | `list`, then `note` |
@@ -53,6 +54,14 @@ Ask in plain words; Claude should pick the tool itself. For example:
 | Mark the Acme proposal todo as done | `list`, then `edit` |
 | Move the dentist todo to next Friday | `list`, then `edit` |
 | Delete the "Test - call Ada" todo | `list`, then `delete` (Claude asks you to confirm) |
+
+**In-chat views.** In claude.ai and the desktop app, every `list` shows an interactive view: todos grouped
+by due date (tick, then **Save**), leads and files grouped by category (click a row for details). Claude should
+write at most one sentence under it. claude.ai asks before each tool call until you choose **Always allow**.
+
+**After an update to Cantab OS,** if the view looks old or does not appear: Customize → Connectors →
+Cantab OS → **Disconnect**, then **Connect**. claude.ai reads the tool list only when it connects; the
+toggle in the chat's + menu is not enough.
 
 The other write tools are `write_sheet`, `write_doc`, `write_slide` and `write_skill`. These save
 pointers and text only. Claude does any Google work itself.
@@ -66,6 +75,7 @@ tool, a message was unclear, or the sign-in didn't work. She logs each finding i
 [test_tracker.md](test_tracker.md).
 
 **Changelog** (file history in git)
+- v2.1 (2026-10-15) — In-chat views; reconnect after an update.
 - v2.0 (2026-10-14) — Rewritten for sign-in: each tester connects as themselves through claude.ai or Claude Code; the shared key is gone.
 - v1.1 (2026-10-14) — `edit` and `delete` added (11 tools).
 - v1.0 (2026-10-14) — First version.
