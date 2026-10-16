@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Draft | v0.7 | Nela | 2026-10-15 |
+| Draft | v0.8 | Nela | 2026-10-16 |
 
 Plan for the next phase (MVP 1.x, before MVP 2.0). Nela's four design decisions are in; nothing is
 built: the step 0 spike (§3.1), the data changes (§1) and the tool changes (§2), live since 2026-10-15 as function v0.5.0, and the views (§3), checked in claude.ai on v0.5.2. Open: the POC timing comparison (§4) and the optional "+" (§3.5). Read whole. Once built, this becomes the record of
@@ -267,6 +267,38 @@ after step 4.
 - **Open — timing against the POC.** Needs Siniša's POC Project set-up to time the same prompt both ways.
 - **Retest 2026-10-15 (v0.5.3):** Save worked ("Saved", count updated; Nela did not notice an approval prompt for `edit`). Asked "what's still open?" straight after, Claude answered from memory without a new `list` and was wrong. v0.5.4: the footer shows whether Claude was told (the view only sends `ui/update-model-context` when the host announces support), and the `list` result tells Claude to list again for the current state. Deployed 2026-10-15.
 - **Retest 2026-10-15 (v0.5.4):** the footer read "Saved · Claude told", so claude.ai accepts `ui/update-model-context`. On every "what's still open?" Claude called `list` again and answered correctly. Saving several ticks was slow (about 1.2 s per todo, one after another). v0.5.5 saves them in parallel: each row sends one final state, so the calls never touch the same todo.
+- **Round 2026-10-16 (v0.5.5, test script tests 8–14; no timings taken):**
+  - Passed: test 12 (slide title changed and restored exactly, text, format and tagline); tests 9–10
+    (VACATIONTRACKER.IO amount 22.39 to 25.00 and back, total back to €1,692.55); test 14 (one files view with
+    two sections); long file names now fit (tracker #10).
+  - Not as expected: tests 13 and 14, Claude restated the rows in tables under the view (#18); test 8, opening
+    the sheet was slow and opened in the browser, not the side panel, which is out of scope (#19).
+  - Test 11: the deck was found and shown, then Claude read and summarised all nine slides, more than "show it".
+  - Not reported yet: tests 1 and 7 (7 is the email to self).
+
+## Learnings from testing, and improvements to plan
+
+What the rounds of 2026-10-15 and 2026-10-16 taught, with the tracker rows as evidence. Candidates for the
+next planning session; none is built or decided.
+
+- **Hosts cache.** claude.ai reads the tool list only when the connector connects, and caches a view by its
+  address (#6, #8). The address hash fixes the cache; after any change to the tools or the view, reconnect
+  once.
+- **A rule in the result is a soft signal.** Claude mostly obeys "do not restate; one sentence", but not
+  always (#18). Also state it in the `list` description and the server instructions.
+- **Save and sync work.** claude.ai accepts the update to the model after a Save, Claude lists again for the
+  current state, and parallel saves are fast (#11, #12).
+- **Google files are the slow part (#19).** With the Drive, Sheets and Slides connectors off in the chat,
+  Claude falls back to driving the browser (17 actions for one cell). With them on it is quicker. Ideas: turn
+  the connectors on before the round; make the `list` description say how to reach a file from its row; the
+  side panel stays with Siniša's questions ([open-questions.md](open-questions.md)). Also seen: Claude named
+  the wrong cell (E6) before reading the sheet and correcting itself (E5), so ask it to state the cell.
+- **Behaviour to decide, each overriding or extending the memo:** done todos hidden unless asked (#15);
+  "what I need to do today" from dated lead actions (#16); the lead view's no-LinkedIn message and the
+  ✉️ emoji that renders as a pale box (#17).
+- **With Lovable:** sign-out and who is signed in (#14, [COMMS.md](COMMS.md)).
+- **Still open from the plan:** timing against the POC (needs Siniša's POC set-up), and the optional "+" on
+  todos (§3.5).
 
 ## Later — MVP 2.0 and after
 
@@ -281,14 +313,16 @@ after step 4.
 - **Before real data:** the confidentiality and residency questions, and how OAuth clients are
   registered ([open-questions.md](open-questions.md)), still apply.
 
-## Where it will live
+## Where it lives
 
-- `supabase/migrations/2026101512xxxx_categories_and_action.sql`
-- `supabase/functions/mcp/`: `tools.ts`, `lib.ts`, and a new `ui/` folder with the view HTML as a
-  string module
-- `scripts/smoke.sh`
+- `supabase/migrations/20261015120000_categories_and_action.sql`
+- `supabase/functions/mcp/`: `tools.ts` and `lib.ts` (tools and checks), `ui.ts` (registers the view), `ui/list.html` (the
+  view, the source), `ui_html.ts` (generated from it; do not edit)
+- `scripts/build-ui.mjs` (rebuilds `ui_html.ts` and the view address hash; run it after editing `ui/list.html`)
+- `scripts/smoke.sh` (live checks); `docs/test-script-chat-views.md` (the scripted round)
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.8 (2026-10-16) — Round of 2026-10-16 recorded; learnings and improvement candidates added.
 - v0.7 (2026-10-15) — v0.5.4 retest passed; v0.5.5 saves ticks in parallel.
 - v0.6 (2026-10-15) — Save retest recorded; v0.5.4 deployed (save trace in the footer, list again for current state).
 - v0.5 (2026-10-15) — Step 3 built and checked in claude.ai; view address carries an HTML hash; step 4 except the POC timing.

@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.3 | Nela | 2026-10-14 |
+| Current | v0.4 | Nela | 2026-10-16 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the
 status in the same change that builds the item.
@@ -106,12 +106,12 @@ project signs tokens with ES256.
    The migration renames `owner_id`, so v0.3.0 stops working the moment it lands. No tool works
    until the deploy.
 4. **Claude:** run `smoke.sh` live and clean up the test rows.
-5. **Nela:** re-add Claude Code without the key header, then authenticate through `/mcp`.
-6. **Nela:** connect claude.ai as Nela, then Siniša for the negative test.
+5. **Nela:** re-add Claude Code without the key header, then authenticate through `/mcp`. — `built` 2026-10-15
+6. **Nela:** connect claude.ai as Nela, then Siniša for the negative test. — Nela connected 2026-10-15 (`built`); Siniša's connection and the negative test are not logged (`open`)
 7. **Nela, once both are connected:** turn **off** dynamic client registration, then run
-   `npx supabase config pull`. It has to be after both, because each client registers itself once.
+   `npx supabase config pull`. It has to be after both, because each client registers itself once. — `changed`: not done. With it off, claude.ai could not reconnect (tracker #7), so it stays **on** (Nela, 2026-10-15); revisit with a pre-registered client before real data.
 8. **Nela:** remove the secrets `CANTAB_DEV_KEY` and `CANTAB_ACTING_USER_ID`
-   (`npx supabase secrets unset …`).
+   (`npx supabase secrets unset …`). — `built` 2026-10-15
 
 ## Risks
 
@@ -126,6 +126,7 @@ project signs tokens with ES256.
   approve it.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.4 (2026-10-16) — Rollout steps 5–8 brought up to date: Claude Code and claude.ai connected, secrets unset, dynamic registration kept on. → HANDOFF.md
 - v0.3 (2026-10-14) — Migration applied, function v0.4.0 deployed, `smoke.sh` passes live (rollout steps 1–4).
 - v0.2 (2026-10-14) — Approved by Nela; built locally. TRUNCATE revoked from `authenticated`, cascade on user delete. → DECISIONS.md 2026-10-14
 - v0.1 (2026-10-14) — Plan drafted: profiles, `profile_id`, RLS, function switched to `@supabase/server`. → DECISIONS.md 2026-10-14
