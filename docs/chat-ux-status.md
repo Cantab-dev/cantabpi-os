@@ -2,11 +2,9 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Draft | v0.8 | Nela | 2026-10-16 |
+| Current | v0.9 | Nela | 2026-10-16 |
 
-Plan for the next phase (MVP 1.x, before MVP 2.0). Nela's four design decisions are in; nothing is
-built: the step 0 spike (§3.1), the data changes (§1) and the tool changes (§2), live since 2026-10-15 as function v0.5.0, and the views (§3), checked in claude.ai on v0.5.2. Open: the POC timing comparison (§4) and the optional "+" (§3.5). Read whole. Once built, this becomes the record of
-what exists, like [tools-status.md](tools-status.md).
+Plan and record for the in-chat views (MVP 1.x, before MVP 2.0), from Siniša's memo of 2026-10-15. Steps 0–4 are built and live (function v0.5.5). Open: the POC timing comparison (§4) and the optional "+" (§3.5); the improvements to plan are under "Learnings from testing". The tool contract as deployed is in [tools-status.md](tools-status.md) and the structure in [data-structure-status.md](data-structure-status.md); §1 and §2 record what changed. Read whole.
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then
 altered; note what changed) · `open` (needs a decision).
@@ -67,7 +65,7 @@ and the plan is redone before any migration runs.
 
 ## 1. Data structure
 
-Detail goes into [data-structure-status.md](data-structure-status.md) when built.
+The structure as deployed is in [data-structure-status.md](data-structure-status.md); this section records what changed.
 
 ### 1.1 Table `categories` — `built`
 - Columns: `id` integer primary key; `label` text unique (slug, such as `sales`); `name` text;
@@ -111,7 +109,7 @@ a trigger, it applies on every path, not only through the tools.
 
 ## 2. Tools
 
-Detail goes into [tools-status.md](tools-status.md) when built.
+The contract as deployed is in [tools-status.md](tools-status.md); this section records what changed.
 
 ### 2.1 `list` — `built` (the view itself is step 3)
 - **Carries the view** (§3): `_meta.ui.resourceUri` = `ui://cantab-os/list`. Every call returns:
@@ -267,14 +265,14 @@ after step 4.
 - **Open — timing against the POC.** Needs Siniša's POC Project set-up to time the same prompt both ways.
 - **Retest 2026-10-15 (v0.5.3):** Save worked ("Saved", count updated; Nela did not notice an approval prompt for `edit`). Asked "what's still open?" straight after, Claude answered from memory without a new `list` and was wrong. v0.5.4: the footer shows whether Claude was told (the view only sends `ui/update-model-context` when the host announces support), and the `list` result tells Claude to list again for the current state. Deployed 2026-10-15.
 - **Retest 2026-10-15 (v0.5.4):** the footer read "Saved · Claude told", so claude.ai accepts `ui/update-model-context`. On every "what's still open?" Claude called `list` again and answered correctly. Saving several ticks was slow (about 1.2 s per todo, one after another). v0.5.5 saves them in parallel: each row sends one final state, so the calls never touch the same todo.
-- **Round 2026-10-16 (v0.5.5, test script tests 8–14; no timings taken):**
+- **Round 2026-10-16 (v0.5.5, test script; no timings taken):**
   - Passed: test 12 (slide title changed and restored exactly, text, format and tagline); tests 9–10
     (VACATIONTRACKER.IO amount 22.39 to 25.00 and back, total back to €1,692.55); test 14 (one files view with
     two sections); long file names now fit (tracker #10).
   - Not as expected: tests 13 and 14, Claude restated the rows in tables under the view (#18); test 8, opening
     the sheet was slow and opened in the browser, not the side panel, which is out of scope (#19).
   - Test 11: the deck was found and shown, then Claude read and summarised all nine slides, more than "show it".
-  - Not reported yet: tests 1 and 7 (7 is the email to self).
+  - Tests 1 to 6 validated by Nela on 2026-10-16 (the findings from 2, 5 and 6 are tracker #15–#17). Not reported yet: test 7, the email to yourself.
 
 ## Learnings from testing, and improvements to plan
 
@@ -296,7 +294,7 @@ next planning session; none is built or decided.
 - **Behaviour to decide, each overriding or extending the memo:** done todos hidden unless asked (#15);
   "what I need to do today" from dated lead actions (#16); the lead view's no-LinkedIn message and the
   ✉️ emoji that renders as a pale box (#17).
-- **With Lovable:** sign-out and who is signed in (#14, [COMMS.md](COMMS.md)).
+- **With Lovable:** sign-out and who is signed in (#14, [COMMS.md](COMMS.md)): implemented per Nela on 2026-10-16; still to check, including that it signs out locally only.
 - **Still open from the plan:** timing against the POC (needs Siniša's POC set-up), and the optional "+" on
   todos (§3.5).
 
@@ -322,6 +320,7 @@ next planning session; none is built or decided.
 - `scripts/smoke.sh` (live checks); `docs/test-script-chat-views.md` (the scripted round)
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.9 (2026-10-16) — Swept: status Current, orientation fixed, tests 1–6 validated, sign-out implemented, contract pointers to tools-status and data-structure-status.
 - v0.8 (2026-10-16) — Round of 2026-10-16 recorded; learnings and improvement candidates added.
 - v0.7 (2026-10-15) — v0.5.4 retest passed; v0.5.5 saves ticks in parallel.
 - v0.6 (2026-10-15) — Save retest recorded; v0.5.4 deployed (save trace in the footer, list again for current state).

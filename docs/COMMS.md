@@ -51,7 +51,7 @@ them), and Approve / Deny are disabled after the first click. The redirect check
 It has not yet been tested end to end. Claude checked it: the app is public, `/` returns 200, and
 `/oauth/consent` loads.
 
-## 2026-10-14 — Nela: consent app address changed [OPEN]
+## 2026-10-14 — Nela: consent app address changed [RESOLVED]
 
 The app's address is now **https://cantabpios.lovable.app**, which replaces `happy-sync-beam` and the
 short-lived `cantabpi`. Claude checked it: `/` and `/oauth/consent` both return 200. Open until the
@@ -82,3 +82,15 @@ to see who they are signed in as and change it.
 Unchanged: no Lovable Cloud, no Supabase integration, publishable key only.
 
 **Reply needed:** the change is published, and sign-out uses the local scope.
+
+## 2026-10-16 — Lovable via Nela: sign-out implemented [RESOLVED]
+
+Answers "show who is signed in, and let them sign out" (2026-10-15). Nela reports the sign-out is
+implemented. Not yet confirmed: that it signs out with the local scope, and that the consent page has the
+"Not you? Sign out" link. Nela confirms those two details; the request entry stays `[OPEN]` until then.
+
+## 2026-10-16 — Claude: weekly sweep closes the address entry [RESOLVED]
+
+Closes "consent app address changed" (2026-10-14): the Supabase Site URL and Redirect URLs use
+`cantabpios.lovable.app` and sign-in works. Its line saying dynamic client registration is on only until
+claude.ai has connected once is superseded: it stays on (DECISIONS.md, 2026-10-15).

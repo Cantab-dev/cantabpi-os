@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v2.1 | Nela | 2026-10-15 |
+| Current | v2.2 | Nela | 2026-10-16 |
 
 How to connect Claude to Cantab OS as yourself and try the tools. About 10 minutes.
 
@@ -43,9 +43,9 @@ Ask in plain words; Claude should pick the tool itself. For example:
 
 | Ask | Expected tool |
 |---|---|
-| What's on my todo list? | `list` (returns your four dummy todos) |
+| What's on my todo list? | `list`; an interactive view of your todos |
 | Do we have any leads? | `list` |
-| Show me the Acme proposal todo | `list`, then `get` |
+| Show me the Acme proposal todo | `list` (every row already carries its notes, so no `get`) |
 | Show my leads / Show my docs and sheets | `list`; an interactive view appears |
 | Add a todo "Test - call Ada", due Friday, sales | `write_todo` |
 | Add a lead "Test - Ada Lovelace" | `write_lead` |
@@ -75,6 +75,7 @@ tool, a message was unclear, or the sign-in didn't work. She logs each finding i
 [test_tracker.md](test_tracker.md).
 
 **Changelog** (file history in git)
+- v2.2 (2026-10-16) — Expected tools updated for the views; scripted round in test-script-chat-views.md.
 - v2.1 (2026-10-15) — In-chat views; reconnect after an update.
 - v2.0 (2026-10-14) — Rewritten for sign-in: each tester connects as themselves through claude.ai or Claude Code; the shared key is gone.
 - v1.1 (2026-10-14) — `edit` and `delete` added (11 tools).
