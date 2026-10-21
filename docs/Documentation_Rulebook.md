@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | 1.0 | Nela | 2026-10-13 |
+| Current | 1.0 | Nela | 2026-10-21 |
 
 The project's document rules, in three layers that are read together and never restate each other:
 
@@ -250,7 +250,10 @@ into an existing doc rather than mint a category.
 ### §3. Status vocabulary — two ladders, picked by doc type
 
 A fixed, small vocabulary, stated in the header table of every doc that has one. **This is the single
-definition; no other file restates it, they link here.**
+definition; no other file restates it, they link here.** One exception: when this Rulebook can't ship
+inside the repo (docs and repo are separate trees) and a tool that sees only the repo must apply the
+vocabulary, `AGENTS.md` carries a copy of the ladder table **labelled as a mirror of this section** —
+change both in the same session. A link the tool can't follow is worse than a labelled copy.
 
 **Scope: documents, not rows.** This vocabulary is the status of a *document*. A status column
 *inside* a tracking table — a findings tracker's `Open` → `Verified`, a tool list's `planned` /
@@ -262,7 +265,7 @@ its ladder:
 
 | | Ladder | Terminal state |
 |---|---|---|
-| **Living docs** — reference/spec, catalog, framework, phase status | `Draft` → `Current` → `Closed` | `Closed` — its subject ended (a phase closing), kept for record |
+| **Living docs** — reference/spec, catalog, framework, phase status, evaluation/exploration | `Draft` → `Current` → `Closed` | `Closed` — its subject ended (a phase closing; an evaluation's conclusion absorbed elsewhere), kept for record |
 | **Static plans** — one-time, executable, possibly in batches | `Draft` → `Proposed` → `Approved` → `In progress` → `Executed` | `Executed` — it was carried out |
 
 **Shared exits**, available from either ladder: `Superseded` (replaced — a forward link to the
@@ -271,6 +274,18 @@ a pointer to the decision record is required).
 
 Nine words in total, but a doc's type limits it to four or five.
 
+- **Evaluation/exploration docs take the living ladder.** `Current` while their conclusion is still
+  the reference; `Closed` once it is absorbed into a log or spec; `Superseded` if a newer evaluation
+  replaces it. Then retire per §5.
+- **Paused work gets no status word of its own.** Keep the ladder status and add one line under the
+  header: `On hold: <reason>, since <date>`. Why: a new word would be a tenth state that means "not
+  this ladder"; the line keeps the ladder honest and gives the sweep (or a hook) an age to check. A
+  doc sitting at `Proposed` or `Approved` with no such line while nothing moves is the failure mode.
+- **Partly superseded:** mark the doc `Superseded` and name, in the forward link, where each
+  still-live part now lives. If most of it is still live, keep its status and tag the dead sections
+  inline (`— SUPERSEDED, see X`) — the two-axes rule, Part A §1 rule 9.
+- **A doc mixing a plan with living content** is split, or takes the ladder of its dominant part with
+  the other part tagged inline.
 - **A living doc never reaches `Executed`** — there is nothing to execute. It is amended in place.
 - **A static plan never sits at `Current`.** While it is being carried out it is `Approved` (signed
   off, not started) or `In progress` (started, not finished). Once carried out it is `Executed`.
@@ -298,6 +313,13 @@ pass — which is what makes a sweep cheap enough to actually do.
 
 The doc moves in the **same change** that sets the status, and live links to it are fixed in that
 change. Append-only logs and code comments are not rewritten — find the doc by filename.
+
+- **This includes a closed phase's status doc.** A consequence worth stating: a doc that outlives a
+  phase (an architecture record, say) must not live inside that phase's folder, or closing the phase
+  leaves a living doc stranded among retired ones.
+- **A folder another tool owns can be exempt.** If a second tool keeps its own executed plans in
+  place, record the exemption in that folder's rules (`AGENTS.md`) and in the hook's
+  `noArchiveDirs`, rather than fighting the tool's convention.
 
 ### §5. Retiring a whole doc — archive or delete?
 
@@ -340,4 +362,4 @@ decisions.
 
 ## Changelog
 
-- v1.0 (2026-10-13) — Adopted from the Cantab Pi Project Kit, kit version 0.9.1 (pre-release).
+- v1.0 (2026-10-21) — Copied unchanged from the Cantab Pi Project Kit, kit version 0.12.0 (replaces the 0.9.1 copy). Local departures go in `Kit_Exceptions.md`, never in this copy; on a kit upgrade, replace this file whole.

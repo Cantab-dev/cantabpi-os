@@ -1,12 +1,19 @@
 {
-  "_note": "Project-specific settings for doc-hygiene-check.mjs. Every key is optional; omit a key to keep the default. The status vocabulary is NOT configured here -- it lives once, in Documentation_Rulebook.md Part C section 3, and is mirrored once in the hook.",
-  "docDirs": ["docs"],
+  "_note": "Project-specific settings for doc-hygiene-check.mjs (kit 0.12.0). Every key is optional; omit a key to keep the default. Split trees: the repo is this folder, the SharePoint root is scanned through absolute paths. The status vocabulary is NOT configured here -- it lives once, in the kit's guides/Documentation_Rulebook.md Part C section 3, and is mirrored once in the hook.",
+  "docDirs": [
+    "docs",
+    "C:/Sharepoint/cantabpi.com/CantabPI - XCO001 - Consulting/Cantabpi-OS/01_analysis",
+    "C:/Sharepoint/cantabpi.com/CantabPI - XCO001 - Consulting/Cantabpi-OS/03_documentation"
+  ],
   "livingDirs": [],
   "planDirs": [],
-  "handoffFiles": ["HANDOFF.md"],
+  "handoffFiles": ["C:/Sharepoint/cantabpi.com/CantabPI - XCO001 - Consulting/Cantabpi-OS/HANDOFF.md"],
   "handoffLineLimit": 200,
   "claudeMdLineLimit": 120,
   "memoryIndex": null,
   "memoryIndexLineLimit": 40,
-  "tempAgeDays": 14
+  "tempAgeDays": 14,
+  "tempDirs": ["C:/Sharepoint/cantabpi.com/CantabPI - XCO001 - Consulting/Cantabpi-OS"],
+  "kitPath": "C:/dev/cantabpi-project-kit",
+  "kitVersion": "0.12.0"
 }
