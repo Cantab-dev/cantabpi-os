@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.5 | Nela | 2026-10-15 |
+| Current | v1.6 | Nela | 2026-10-21 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
@@ -83,6 +83,10 @@ Added 2026-10-15 for the in-chat views. Detail, seed values and the checks: [cha
 - Trigger `keep_previous_action`: overwriting `action` appends `YYYY-MM-DD: Previous action: <old>` to `context`.
 - Migration: `supabase/migrations/20261015120000_categories_and_action.sql`.
 
+### ui_views, demo_sales, bucket slide-pdfs — `built` (live views POC, 2026-10-21)
+
+`ui_views`: one row per live view slot (1–10 per user), read-only to its owner, written only through the `view_*` functions. `demo_sales`: dummy sales for the dashboard, per-user RLS, about 270 rows per user; no labels. Bucket `slide-pdfs` (private, `<user id>/<label>.pdf`): six dummy PDFs, and the matching slides' `storage_url` points at them. Realtime is on for `ui_views`, `demo_sales` and `slides`. Detail: [live-views-status.md](live-views-status.md) §2.
+
 ## Labels — `built`
 
 - Format `<entity>:<number>`, with entity one of `skill`, `todo`, `lead`, `sheet`, `doc`, `slide`.
@@ -147,6 +151,7 @@ Added 2026-10-15 for the in-chat views. Detail, seed values and the checks: [cha
 Step 2 tools (`list`, `get`, `write_*`, `note`) as an MCP edge function: see [tools-status.md](tools-status.md).
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.6 (2026-10-21) — Live views POC: `ui_views`, `demo_sales`, bucket `slide-pdfs`, Realtime. → DECISIONS.md 2026-10-21
 - v1.5 (2026-10-15) — `categories` table; `category_id`, `importance`, `action` on five tables; todo `category` moved; previous-action trigger. → DECISIONS.md 2026-10-15
 - v1.4 (2026-10-14) — `profiles` table, `owner_id` renamed `profile_id`, per-user RLS policies. → DECISIONS.md 2026-10-14
 - v1.3 (2026-10-14) — Known gap noted: labels can be changed through the Data API once users sign in. → DECISIONS.md 2026-10-14

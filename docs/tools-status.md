@@ -2,13 +2,13 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.7 | Nela | 2026-10-16 |
+| Current | v1.8 | Nela | 2026-10-21 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then altered; note what changed) · `open` (needs a decision).
 
-All eleven tools are deployed and tested against dummy data; the deployed function is v0.5.5 (2026-10-16). The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
+All twelve tools are deployed and tested against dummy data; the deployed function is v0.6.0 (2026-10-21), which added `view`. The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
 
 **Current contract.** Everything below is the contract deployed in function v0.5.5. The in-chat views, with their plan, test record and open improvements, are in [chat-ux-status.md](chat-ux-status.md); this document is the home of what each tool takes and returns.
 
@@ -121,6 +121,10 @@ Display title: "Add note".
 | Label is a skill | not retry: skills take no notes |
 | `text` empty or too long | supply text within 1,000 characters; split into several notes if needed |
 
+### view — `built` (v0.6.0, live views POC)
+
+Points the user's live view page (`https://cantabpios.lovable.app/v/<slot>`) at a slide's PDF or the `sales_overview` dashboard; without `template` it lists the user's views. Returns a confirmation and the url, never content. Errors: `not_found`, `invalid_parameter`, `slot_limit`. Contract, slot rules and the page: [live-views-status.md](live-views-status.md) §2–§4. Checked live as `claude@test.com` on 2026-10-21 (list, pdf at a page, dashboard with filters, reuse of a view, another user's slide, unknown dashboard).
+
 ## Instructions for the model and the view — `changed`
 
 The 2026-10-14 removal of render instructions (→ DECISIONS.md) is superseded by the in-chat views (→ DECISIONS.md 2026-10-15): `list` again sends `structuredContent` for the view and a first line of guidance for the model. No other tool carries an instruction.
@@ -200,6 +204,7 @@ Rows created during testing were removed; the label numbers they used are not re
 Improvements from the test rounds are listed in [chat-ux-status.md](chat-ux-status.md) (Learnings from testing). The tool contract changes only after a planning session; that is design work and needs Opus.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.8 (2026-10-21) — `view` tool added (function v0.6.0); twelve tools. → DECISIONS.md 2026-10-21
 - v1.7 (2026-10-16) — Swept: the tool sections now describe the deployed v0.5.5 contract (fields, filters, view, read-only hints); testing and file lists current.
 - v1.6 (2026-10-15) — Function v0.5.0: tool changes for the in-chat views, live; contract in chat-ux-status.md §2. → DECISIONS.md 2026-10-15
 - v1.5 (2026-10-15) — Suggestions 10 and 11 added (view by context, compact context); next phase planned in chat-ux-status.md. → DECISIONS.md 2026-10-15

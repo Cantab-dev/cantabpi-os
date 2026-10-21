@@ -6,6 +6,7 @@ import { type SupabaseContext, withOAuthProtectedResource, withSupabase } from '
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { registerTools } from './tools.ts'
 import { registerViews } from './ui.ts'
+import { registerViewTool } from './views.ts'
 
 // As in Supabase's MCP block:
 //   withOAuthProtectedResource  OAuth discovery for MCP clients (RFC 9728) and the WWW-Authenticate
@@ -17,7 +18,8 @@ import { registerViews } from './ui.ts'
 const INSTRUCTIONS =
   'Cantab OS stores todos, leads, skills and pointers to Google sheets, docs and slides. ' +
   'Every tool acts as the signed-in user and sees only their records. ' +
-  'Call list before get, edit, delete or note to find labels; never invent one.'
+  'Call list before get, edit, delete or note to find labels; never invent one. ' +
+  'view shows a slide PDF or a dashboard in the user\'s live view page, only when the user asks or clearly benefits.'
 
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -29,8 +31,9 @@ const CORS_HEADERS: Record<string, string> = {
 
 function handleMcp(request: Request, ctx: SupabaseContext): Promise<Response> {
   const handler = createMcpHandler(() => {
-    const server = new McpServer({ name: 'cantab-os', version: '0.5.5' }, { instructions: INSTRUCTIONS })
+    const server = new McpServer({ name: 'cantab-os', version: '0.6.0' }, { instructions: INSTRUCTIONS })
     registerTools(server, ctx.supabase as unknown as SupabaseClient)
+    registerViewTool(server, ctx.supabase as unknown as SupabaseClient)
     registerViews(server)
     return server
   })

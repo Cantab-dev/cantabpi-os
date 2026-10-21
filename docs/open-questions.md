@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.4 | Nela | 2026-10-16 |
+| Current | v1.5 | Nela | 2026-10-21 |
 
 Questions still waiting for a decision. Read whole; it is short.
 Answered questions are in [DECISIONS.md](DECISIONS.md). Remaining design work goes to the Opus pass
@@ -24,6 +24,7 @@ Questions for Siniša:
 5. Leads: should `url_linkedin` open in the browser pane too?
 
 Answered by Siniša's memo of 2026-10-15: the in-chat views stay, and only opening a Google file goes to the side panel (see [DECISIONS.md](DECISIONS.md), 2026-10-15).
+Still open after the live views POC was planned (2026-10-21): Google files keep this approach; PDFs and dashboards go to live views ([live-views-status.md](live-views-status.md)).
 
 ## Questions raised by multi-user (for Opus design pass)
 - Tenancy model: organisation/workspace with shared + private data, or strictly per-user data? Which entities are personal (todos?) vs shared (leads, docs)?
@@ -33,6 +34,7 @@ Answered by Siniša's memo of 2026-10-15: the in-chat views stay, and only openi
 - OAuth clients before real data: keep dynamic client registration (any MCP client can register, and a user must still approve it), or register clients such as claude.ai by hand? It is on and kept on for now: with it off, claude.ai could not reconnect (DECISIONS 2026-10-15).
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.5 (2026-10-21) — Side window: both approaches stand alongside live views. → DECISIONS.md 2026-10-21
 - v1.4 (2026-10-16) — Answered items removed (layout mechanism, feasibility spike, host authentication, side-window question 1); registration kept on. → DECISIONS.md 2026-10-15
 - v1.3 (2026-10-14) — Question added on OAuth client registration before real data.
 - v1.2 (2026-10-14) — Siniša's side-window scope recorded with six clarifying questions.
