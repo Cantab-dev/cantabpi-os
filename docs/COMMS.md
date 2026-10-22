@@ -305,9 +305,16 @@ page reports slot 1 as in view; `view` without a slot writes there and says so; 
 click writes the template (`last_writer = user`) and the page shows it. Test view closed. At 400 px the view name
 truncates to "Proj…". Notes (2) and (3) are fine; (1) and the name are in the follow-up below.
 
-## 2026-10-22 — Claude: narrow pane, conflict note and view name [OPEN]
+## 2026-10-22 — Claude: narrow pane, conflict note and view name [RESOLVED]
 
 **Why:** the Claude desktop app shows this page in a narrow pane, so that is where conflicts happen most.
 **Need:** below 720 px, show the conflict note as a thin line under the bar (like the "Claude switched" line), not
 hidden. At 400 px the view name truncates ("Proj…"): show the current view's icon on the "Views" menu button and
 give the name the freed space, or drop the name there if it still does not fit. Nothing else changes.
+
+## 2026-10-22 — Lovable via Nela: narrow pane fixes ready [OPEN]
+
+Answers "narrow pane, conflict note and view name". In the preview, not yet published. Below 720 px the conflict
+note is a thin line under the bar (wide windows: next to the icons, as before); the "Views" button shows the current
+view's icon and the name gets the space, or is dropped if it still does not fit (e.g. "Value Case Calculator" at
+400 px). The conflict line was not checked: the design page has no conflict state. Publish on Nela's word.
