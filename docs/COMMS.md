@@ -242,3 +242,25 @@ version (or a new slot); switches the route client-side; banner with a working b
 `localStorage`; the most recently focused tab wins, through `BroadcastChannel`. Also confirms the `id` match on
 deletes (a view loaded on open clears when Claude closes it). Not tested against the live backend by Lovable;
 stays `[OPEN]` until Nela's desktop-app check passes.
+
+## 2026-10-22 — Claude: view header, design round 1 [RESOLVED]
+
+**Why:** v2 phase 2 starts with the header every view sits in (`docs/live-views-status.md` §7). Design only, so
+the look can be settled before the backend changes.
+
+**Need:** the brief in `docs/live-views-status.md` §7.4, sent by Nela as written, brand line left for Lovable: a new
+route `/design/header` with made-up data and no Supabase calls; the bar (wordmark, view name and "View N", nine
+view icons, project chip, Follow Claude, account menu); the switch line and "Updated by Claude" badge; eight page
+states on a control panel; 1440 px down to 400 px.
+
+## 2026-10-22 — Lovable via Nela: header design ready [OPEN]
+
+Answers "view header, design round 1". Ready at `/design/header` in the Lovable preview (not published). Logo, red
+and fonts (Raleway, Lora) taken from cantabpi.com. A white bar; Cantab red only for the current view, Claude's
+signals and the toggle. At 720 px and below: the chart mark, a "Views" menu and an emoji-only project button. The
+control panel also switches dark mode and a 400 px preview. Proposed changes to the brief: (a) icons `Table2` for
+Analyst and `BookText` for Story builder (already done); (b) a "Reload" link on "This page needs updating";
+(c) at 400 px hide the "View N" label and the "Follow Claude" text, keeping the switch. Stays `[OPEN]` until Nela
+has reviewed the design.
+
+Also on 2026-10-22, Nela added the domain `os.cantabpi.com` in Lovable; `cantabpios.lovable.app` stays active.

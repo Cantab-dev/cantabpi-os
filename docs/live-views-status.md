@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.4 | Nela | 2026-10-22 |
+| Current | v0.6 | Nela | 2026-10-22 |
 
 Plan for a proof of concept of Siniša's memo *Server-driven UI for agent-operated apps* (received
 2026-10-21): the agent points a live browser page at a PDF or a fixed dashboard, and the open page
@@ -13,6 +13,9 @@ follows within a second or two. Approved by Nela on 2026-10-21; build in progres
 reading `slides` as the user, shows a PDF view of a slide from another project as not found after a switch.
 `ui_views` and `demo_sales` are not project-scoped. Accepted for the POC; v2 phase 2 (the views) builds on this
 POC and decides how views relate to projects ([Diagram_input.md](Diagram_input.md) §2.1).
+
+**Phase 2 has started (2026-10-22):** §7 plans the view header. Sections 1–6 are background for it, not
+constraints: the POC may be rebuilt.
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then
 altered; note what changed) · `open` (needs a decision).
@@ -208,6 +211,144 @@ races an agent write: one wins and the other gets `conflict`, never a silent ove
 
 Findings go in [test_tracker.md](test_tracker.md).
 
+## 7. Phase 2, step 1: the view header — `open`
+
+The shell every v2 view sits in (Siniša's v2 doc, "UX/UI for view"). Design split agreed by Nela on 2026-10-22:
+Claude settles what the header is and does (this section) and drafts every Lovable message; Lovable does the
+look, where it can be seen live. Claude and Lovable cannot talk to each other: Nela carries each message, and
+every sent message is also logged in [COMMS.md](COMMS.md).
+
+**Ground rules (Nela, 2026-10-22):** sections 1–6 are background, not constraints. Anything built for the POC
+may be rebuilt from scratch. Every answer below is provisional.
+
+**In scope:** the header bar, what each of its controls writes or reads, the page states around it, and the
+backend change the icons need. **Out of scope:** what each of the nine views shows (Siniša's views package),
+the domain move (A8).
+
+### 7.1 Open questions and working assumptions
+
+**Open questions** — each needs an answer before the backend change (7.2). Claude's suggestion stands until then.
+
+| # | Question | Who answers | Claude's suggestion |
+|---|---|---|---|
+| Q1 | Which view icons: the nine v2 views for every project, or a set per project? | Siniša | The nine, the same for every project |
+| Q2 | "View does not change": you stay on the same slot and address, and only the content switches? | Siniša | Yes. A click writes the template to the backend and the page redraws from its row, the same path Claude's writes take |
+| Q3 | Are slots per user or per project? | Siniša | Per user; each view shows the selected project's data |
+| Q4 | Does switching view keep the old view's settings (PDF page, filters)? | Nela | Yes, remembered per view inside the slot |
+| Q5 | Keep the POC views `pdf` and `dashboard` for Claude only, with no icon, until the v2 views replace them? | Nela | Yes |
+| Q6 | Accept Lovable's round-1 proposals: (b) a "Reload" link on "This page needs updating"; (c) at 400 px hide "View N" and the "Follow Claude" text | Nela, after the review | Accept both |
+
+**Working assumptions** — what the design and the plan use now; any of them can change.
+
+| # | Assumption | Source |
+|---|---|---|
+| A1 | Bar, left to right: Cantab OS wordmark · view name and a small "View N" · the view icons · on the right, project chip, Follow Claude toggle, account menu. No sidebar | v2 doc; round 1 |
+| A2 | The project chip shows the selected project and switches it with the existing `project_summary()` and `select_project(label)`; a project picked in chat updates it too | v2: everything follows the selected project |
+| A3 | "Claude switched to view M · Back to view N" is a thin line under the bar; "Updated by Claude" is a short-lived badge by the view name | POC behaviour, moved into the bar |
+| A4 | Page states: signed out, loading, empty slot, view not built yet, page needs updating, reconnecting, no project selected | Brief 7.4 |
+| A5 | Below about 720 px: chart mark, one "Views" menu, emoji-only project button | Round 1 |
+| A6 | Lucide icons: Engagement starter `Rocket`, Analyst `Table2`, Value calculator `Calculator`, Presentation builder `Presentation`, Project Manager `GanttChart`, Team manager `Users`, Story builder `BookText`, Agent builder `Bot`, Proposal builder `FileSignature`. A view not built yet is dimmed ("Coming soon") but can be picked | Brief; Lovable round 1 |
+| A7 | Brand from cantabpi.com: logo, red, Raleway and Lora; red only for the current view, Claude's signals and the toggle; light and dark | Lovable round 1 |
+| A8 | Address `os.cantabpi.com`, live 2026-10-22; `cantabpios.lovable.app` redirects there. Routes `/1…10` come with the wire-up (step 5) | Nela; 7.5 |
+
+### 7.2 Backend change (provisional, for after the design round)
+
+Written as a new migration; Nela runs `db push`.
+
+1. **Template keys.** `ui_views.template` accepts the nine keys `engagement_starter`, `analyst`,
+   `value_calculator`, `presentation_builder`, `project_manager`, `team_manager`, `story_builder`,
+   `agent_builder`, `proposal_builder`, plus `pdf` and `dashboard` (Q5). Views not built yet take no parameters.
+2. **Settings per template (Q4).** Replace `agent_params` / `ui_params` with one `state` map:
+   `{ "<template>": { "agent": {…}, "ui": {…} } }`. The page reads `state[template]`; a missing entry means the
+   template's defaults.
+3. **The click.** A new function `view_set_template(slot, expected_version, template)`: the page's only new
+   write. Compare-and-set like `view_update`, `last_writer = 'user'`, version up. On an empty slot it creates the row.
+4. **Project on the page (A2).** Add `profiles` to the Realtime publication so a project picked in chat reaches
+   the chip; the page reads the selected project with the existing functions.
+5. **The `view` tool** accepts the new keys, writes into `state`, and its description lists which views exist.
+6. The function versions, unit tests, [Diagram_input.md](Diagram_input.md) and the tool docs change in the same build.
+
+### 7.3 Steps
+
+| Step | What | Who | Status |
+|---|---|---|---|
+| 1 | Answer the open questions Q1–Q6 in 7.1 | Nela, Siniša | `open` |
+| 2 | **Design round 1:** Lovable builds the header on a separate route with made-up data, no backend calls (message 7.4) | Nela sends; Lovable builds; Nela reviews | `built` 2026-10-22, in the Lovable preview at `/design/header` (COMMS 2026-10-22); Nela's review next |
+| 3 | Rounds 2+: Nela's feedback to Lovable directly; Claude drafts a message only when a change touches behaviour or data | Nela, Lovable | `planned` |
+| 4 | Plan the backend change (7.2) against the chosen design; migration and tool | Claude writes; Nela runs `db push`; deploy on Nela's go | `planned` |
+| 5 | **Wire-up message:** Lovable connects the header on `/v/:slot` to the backend. Drafted by Claude after step 4 | Claude drafts; Nela sends | `planned` |
+| 6 | Test the live page headless, then Nela in the desktop app | Claude, Nela | `planned` |
+
+### 7.4 Draft message for Lovable: design round 1 (not sent)
+
+Nela: paste everything between the lines into Lovable. Fill in or delete the brand line first (A7). Tell
+Claude when it is sent, so it is logged in COMMS.
+
+---
+
+**Design the header for the Cantab OS view page. Design only: no backend, made-up data.**
+
+**Context.** `/v/:slot` shows one "view" of Cantab OS, a consulting OS that an AI assistant (Claude) also drives:
+Claude can switch the view and change what it shows, and the page follows live. We are replacing the page's
+header with a proper one. It will sit above nine different views, so it should be calm, compact and polished,
+and leave the space below to the view.
+
+**Where.** A new route **`/design/header`**. Do not change `/v/:slot`, `/login` or `/oauth/consent`, and make no
+calls to Supabase on the new route. All data is made up in the component.
+
+**The bar, left to right:**
+1. **"Cantab OS"** wordmark.
+2. **The name of the current view**, with a small muted "View 3" next to it.
+3. **Nine view icons**, Lucide, each with a tooltip giving its name: Engagement starter `Rocket`, Analyst
+   `Sheet`, Value calculator `Calculator`, Presentation builder `Presentation`, Project Manager `GanttChart`,
+   Team manager `Users`, Story builder `BookOpen`, Agent builder `Bot`, Proposal builder `FileSignature`. The
+   current one is clearly active. Views not built yet are dimmed, with the tooltip "<Name> · Coming soon", and
+   can still be clicked. Propose better icons if you see them.
+4. **On the right:** a **project chip** (emoji icon and name, e.g. "🧭 Dummy - Project Atlas"; a click opens a
+   list of two or three projects with the current one ticked), a small **"Follow Claude"** toggle, and an
+   account menu with "Sign out".
+
+**Under the bar,** when needed, a thin line: "Claude switched to view 2 · Back to view 1". Next to the view
+name, a short-lived badge "Updated by Claude" that fades after a few seconds.
+
+**Below:** a centre pane with a placeholder for the view: its icon, its name and "Coming soon".
+
+**States to show.** Put a small control panel at the bottom of the route (not part of the design) to switch
+between: normal · view not built yet · empty view ("Pick a view above, or ask Claude") · Claude just switched
+views (the line appears) · Claude just updated this view (the badge) · reconnecting (a small dot on the bar) ·
+no project selected (chip says "Pick a project") · the page needs updating ("This page needs updating").
+
+**Behaviour to fake:** clicking an icon makes it active at once, and the centre pane changes after about 400 ms
+(the real page will wait for the backend). Picking a project changes the chip.
+
+**Widths.** It must work from 1440 px down to about 400 px: the Claude desktop app shows this page in a narrow
+side pane. Below about 720 px, fold the nine icons into a single "Views" menu and shorten the wordmark.
+
+**Brand.** <Nela: add colours, logo and font here, or delete this line and let Lovable propose a restrained
+palette.> Light and dark mode both.
+
+**Please send back:** the route's URL, a sentence on the design choices, and anything in this brief you would
+change. Two variants side by side are welcome if you are unsure.
+
+---
+
+Sent by Nela on 2026-10-22 without the brand line; Lovable's answer is in COMMS.
+
+### 7.5 The address `os.cantabpi.com` (added 2026-10-22)
+
+Checked by Claude on 2026-10-22, once live: `os.cantabpi.com` serves the app over HTTPS (`/`, `/login`, `/v/1`).
+`cantabpios.lovable.app` now **redirects** every path to it, keeping the path and query
+(`/oauth/consent?authorization_id=…` included), so the OAuth consent step still works through the redirect.
+A user signed in on the old address has to sign in again on the new one (the session is stored per address).
+This brings the address switch forward from step 5 (A8); only the routes wait:
+
+| # | What | Who | Status |
+|---|---|---|---|
+| 1 | Supabase dashboard, Authentication → URL Configuration: Site URL `https://os.cantabpi.com`; add `https://os.cantabpi.com/**` to the Redirect URLs, keeping the Lovable one. `supabase/config.toml` already matches | Nela | `built` 2026-10-22 (Nela) |
+| 2 | The `view` tool's link (`VIEW_BASE_URL`) to `https://os.cantabpi.com/v/`; function v0.7.1; 39 unit tests pass | Claude; deploy on Nela's go | `built`: deployed 2026-10-22; checked live as `claude@test.com` (`view` returns `https://os.cantabpi.com/v/1`; test view closed) |
+| 3 | Routes `/1…10`, with `/v/N` redirecting there | Lovable, in the wire-up message | `planned` |
+| 4 | Check: sign in on `os.cantabpi.com`; Disconnect and Connect in claude.ai (consent on the new address); `view` returns the new link; loop test | Nela, Claude | `planned` |
+
 ## Comments for Nela (proposals, not in the build)
 
 - A "Show in view" button on slide rows in the in-chat files view would call `view` directly. It is
@@ -216,6 +357,8 @@ Findings go in [test_tracker.md](test_tracker.md).
   following agent edits made with existing tools. It is left out because Siniša asked for a dummy table.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.6 (2026-10-22) — §7.1 split into open questions (Q1–Q6) and working assumptions (A1–A8); H numbers retired.
+- v0.5 (2026-10-22) — Round 1 back from Lovable: H10 (domain added), H11, H12 updated, H14 added, §7.5 the new address (live; old one redirects; switch steps). §7 added: view header plan (phase 2, step 1), provisional answers H1–H13, draft Lovable message for design round 1. POC sections become background.
 - v0.4 (2026-10-22) — Note on projects (v0.7.0): slides follow the selected project. Phase 2 of v2 builds on this POC.
 - v0.3 (2026-10-21) — Approved; steps 1–3 written, step 4 requested; three build differences recorded in §6.
 - v0.2 (2026-10-21) — §1 answered by Nela: spec change, Lovable for the POC, both side-window approaches stand, POC first, demo in the desktop app. → DECISIONS.md 2026-10-21

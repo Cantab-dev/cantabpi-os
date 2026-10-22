@@ -6,7 +6,7 @@ import { ENTITIES, failure, finish, notFoundMessage, parseLabel, ToolError, type
 // Live views (docs/live-views-status.md §3). The page /v/<slot> lives in the Lovable app and follows its slot
 // row in ui_views through realtime. These keys and enums must match that page and view_check in the
 // 20261021120000_live_views migration: they are kept in step by hand (live-views-status.md §1.2).
-export const VIEW_BASE_URL = 'https://cantabpios.lovable.app/v/'
+export const VIEW_BASE_URL = 'https://os.cantabpi.com/v/'
 export const TEMPLATES = ['pdf', 'dashboard'] as const
 export const DASHBOARDS = ['sales_overview'] as const
 export const PERIODS = ['7d', '30d', 'qtd', 'ytd'] as const

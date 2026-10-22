@@ -8,7 +8,7 @@ This document is both the plan and the record of what exists. Each item has a st
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then altered; note what changed) · `open` (needs a decision).
 
-All fourteen tools are deployed and tested against dummy data; the deployed function is v0.7.0 (2026-10-22), which added projects (`select_project`, `write_project`; see the Projects section). v0.6.0 (2026-10-21) added `view`. The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
+All fourteen tools are deployed and tested against dummy data; the deployed function is v0.7.1 (2026-10-22), which only moved the `view` links to `https://os.cantabpi.com/v/N`; v0.7.0 (2026-10-22) added projects (`select_project`, `write_project`; see the Projects section). v0.6.0 (2026-10-21) added `view`. The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
 
 **Current contract.** Everything below is the contract deployed in function v0.5.5. The in-chat views, with their plan, test record and open improvements, are in [chat-ux-status.md](chat-ux-status.md); this document is the home of what each tool takes and returns.
 

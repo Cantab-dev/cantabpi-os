@@ -19,11 +19,11 @@ How to connect Claude to Cantab OS as yourself and try the tools. About 10 minut
 1. Settings → Connectors → **Add custom connector**.
 2. Name: `Cantab OS`. URL: `https://etofljbxzllkucmearwl.supabase.co/functions/v1/mcp`. Leave the
    advanced settings empty.
-3. Click **Connect**. A Cantab OS sign-in page opens (`cantabpios.lovable.app`). Sign in, then click
+3. Click **Connect**. A Cantab OS sign-in page opens (`os.cantabpi.com`). Sign in, then click
    **Approve**. You land back in Claude.
 4. In a new chat, turn on the Cantab OS connector (the tools menu under the message box).
 
-The page at https://cantabpios.lovable.app also shows the URL and these steps once you're signed in.
+The page at https://os.cantabpi.com also shows the URL and these steps once you're signed in.
 
 ## Connect in Claude Code (optional)
 
