@@ -312,9 +312,21 @@ truncates to "Proj…". Notes (2) and (3) are fine; (1) and the name are in the 
 hidden. At 400 px the view name truncates ("Proj…"): show the current view's icon on the "Views" menu button and
 give the name the freed space, or drop the name there if it still does not fit. Nothing else changes.
 
-## 2026-10-22 — Lovable via Nela: narrow pane fixes ready [OPEN]
+## 2026-10-22 — Lovable via Nela: narrow pane fixes ready [RESOLVED]
 
 Answers "narrow pane, conflict note and view name". In the preview, not yet published. Below 720 px the conflict
 note is a thin line under the bar (wide windows: next to the icons, as before); the "Views" button shows the current
 view's icon and the name gets the space, or is dropped if it still does not fit (e.g. "Value Case Calculator" at
 400 px). The conflict line was not checked: the design page has no conflict state. Publish on Nela's word.
+
+## 2026-10-22 — Lovable via Nela: published, with Nela's own changes [OPEN]
+
+Published on `os.cantabpi.com`: the narrow-pane fixes, plus changes Nela asked Lovable for directly: the "Updated by
+Claude" badge fades about 4 s after each Claude write; the project chip and the account menu are gone from the bar on
+`/v/N` and `/design/header`, and the page no longer calls `project_summary` or `select_project` (so there is no
+sign-out on the view page); the Follow Claude toggle is gone and following is off (`FOLLOW_CLAUDE = false` in the view
+file).
+
+**Checked by Claude, 2026-10-22,** headless at 400 px as `claude@test.com`: Claude writes to the view in front; the badge
+shows, then is gone after 5 s; a click made while Claude's change was in flight is refused, Claude's view stays, and the
+note "Claude changed this view; your click was not applied" shows as a line under the bar. Test view closed.

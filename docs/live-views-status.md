@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.13 | Nela | 2026-10-22 |
+| Current | v0.14 | Nela | 2026-10-22 |
 
 Plan for a proof of concept of Siniša's memo *Server-driven UI for agent-operated apps* (received
 2026-10-21): the agent points a live browser page at a PDF or a fixed dashboard, and the open page
@@ -245,9 +245,9 @@ the domain move (A8).
 
 | # | Assumption | Source |
 |---|---|---|
-| A1 | Bar, left to right: Cantab OS wordmark · view name and a small "View N" · the view icons · on the right, project chip, Follow Claude toggle, account menu. No sidebar | v2 doc; round 1 |
-| A2 | The project chip shows the selected project and switches it with the existing `project_summary()` and `select_project(label)`; a project picked in chat updates it too | v2: everything follows the selected project |
-| A3 | "Claude switched to view M · Back to view N" is a thin line under the bar; "Updated by Claude" is a short-lived badge by the view name | POC behaviour, moved into the bar |
+| A1 | Bar, left to right: Cantab OS wordmark · view name and a small "View N" · the ten view icons to the right edge. **Changed 2026-10-22 (Nela):** no project chip, no account menu (so no sign-out on the view page), no Follow Claude toggle. No sidebar | v2 doc; rounds 1–4 |
+| A2 | **Removed 2026-10-22 (Nela):** the page shows no project and cannot switch it; the project is picked in the chat. Q9 is moot for now | Nela |
+| A3 | "Updated by Claude" badge fades about 4 s after each Claude write. **Following Claude to another slot is off** (`FOLLOW_CLAUDE = false` in the page, Nela 2026-10-22): with the slot-in-view rule Claude writes to the open view anyway; a view named by the user in chat does not pull the page there | Nela; round 4 |
 | A4 | Page states: signed out, loading, empty slot, view not built yet, page needs updating, reconnecting, no project selected | Brief 7.4 |
 | A5 | Below about 720 px: chart mark, one "Views" menu, emoji-only project button | Round 1 |
 | A6 | Icons in phase order, no dividers and no phase in the tooltips (Nela, 2026-10-22): the tooltip is the name only. **Diagnose** (`Search`): Workflow Mapper `Workflow`, Research Analyst `FileSearch`. **Design** (`Lightbulb`): Value Case Calculator `Calculator`, GxP and AI Act Checker `ShieldCheck`. **Deliver** (`Settings`): Presentation Builder `Presentation`, Project Manager `CalendarCheck`. **Govern and learn** (`Shield`): Engagement Memory `Brain`, Red-Team Reviewer `SearchCheck`. Then two dummy views: **Dummy view 9** `Box` and **Dummy view 10** `Boxes` (keys `dummy_9`, `dummy_10`). Names from Nela's picture (2026-10-22); Lucide names are Claude's reading of it. A view not built yet is dimmed ("Coming soon") but can be picked | Nela's picture, replacing the v2 doc's nine |
@@ -481,6 +481,7 @@ backend is live. Nothing else on the page changes.
   following agent edits made with existing tools. It is left out because Siniša asked for a dummy table.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.14 (2026-10-22) — Round 4 (Nela with Lovable): chip, account menu and Follow Claude removed, badge fades; narrow-pane fixes; headless check at 400 px (conflict line shown).
 - v0.13 (2026-10-22) — Steps 5 and 6: icons wired up by Lovable, headless check 5/5; narrow-pane follow-up in COMMS.
 - v0.12 (2026-10-22) — §7.2 built (migration and v0.8.0, dry-run 16/16, 42 unit tests); Q4, Q5 as suggested; 7.8 wire-up draft for Lovable.
 - v0.11 (2026-10-22) — Round 2 published (header on the live page); dividers and phase prefixes dropped (A6).
