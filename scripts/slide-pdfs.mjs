@@ -1,4 +1,4 @@
-// Dummy slide PDFs for the live views POC (docs/live-views-status.md §2.4).
+// Dummy slide PDFs for the live views POC (docs/live-views-status.md §3, pdf).
 // For every user's "Company intro deck" (6 pages) and "Acme pitch" (4 pages): builds a PDF with a large page number
 // on each page, uploads it to the private bucket slide-pdfs at <user id>/<label>.pdf, and sets the slide's
 // storage_url to that object's address.

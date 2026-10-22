@@ -4,12 +4,12 @@ import { z } from 'zod'
 import { SCHEMA } from './engagement_pkg.ts'
 import { ENTITIES, failure, finish, notFoundMessage, parseLabel, ToolError, type ToolResult } from './lib.ts'
 
-// Live views (docs/live-views-status.md §3). The page /v/<slot> lives in the Lovable app and follows its slot
+// Live views (docs/live-views-status.md §2–§3). The page /v/<slot> lives in the Lovable app and follows its slot
 // row in ui_views through realtime. These keys and enums must match that page and view_check in the
 // 20261021120000_live_views and 20261022150000_engagement migrations: they are kept in step by hand
-// (live-views-status.md §1.2, §8.5).
+// (live-views-status.md §2, §4).
 export const VIEW_BASE_URL = 'https://os.cantabpi.com/v/'
-/** The engagement views (live-views-status.md §8, P9): the package's eleven. None takes parameters; each reads its
+/** The engagement views (live-views-status.md §2): the package's eleven. None takes parameters; each reads its
  * slot's project. */
 export const HEADER_VIEWS: Record<string, string> = Object.fromEntries(
   Object.entries(SCHEMA.views as Record<string, { label: string }>).map(([k, v]) => [k, v.label]),
@@ -178,7 +178,7 @@ async function viewTool(db: SupabaseClient, args: Row): Promise<ToolResult> {
   return finish({ status: 'ok', slot, url: viewUrl(slot), message: applyMessage(slot, shows, out) })
 }
 
-/** What the model is told after a write (live-views-status.md §7.6); never the content. */
+/** What the model is told after a write (live-views-status.md §2, slot rule); never the content. */
 export function applyMessage(slot: number, shows: string, out: Row): string {
   const giveUrl = 'give them the url once (in the Claude desktop app it opens in the browser pane).'
   const tail = ' Do not describe the content: you have not seen it.'

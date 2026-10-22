@@ -1,4 +1,4 @@
-// Builds supabase/functions/mcp/engagement_pkg.ts from Siniša's package in vendor/bpag (docs/live-views-status.md §8):
+// Builds supabase/functions/mcp/engagement_pkg.ts from Siniša's package in vendor/bpag (docs/live-views-status.md §4):
 // the schema, the seed (with the deck's public address) and the reference validator, unchanged, as a module the MCP
 // function can import. Run after any change to vendor/bpag:   node scripts/build-engagement.mjs
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs'

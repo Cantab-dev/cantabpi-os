@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { failure, ToolError, type ToolResult } from './lib.ts'
 import { applyWrite, SCHEMA, SEED } from './engagement_pkg.ts'
 
-// Siniša's views package, ported onto Supabase (docs/live-views-status.md §8, interface §8.5). The five tools follow
+// Siniša's views package, ported onto Supabase (docs/live-views-status.md §4). The five tools follow
 // the package's data tool (vendor/bpag/spec/02-data-tool.md). Reads act as the user (RLS). Saves follow Aleph's
 // pattern (P13): the package's validator runs here, then the admin client saves through engagement_commit, which
 // only the service role may call, passing the verified user.

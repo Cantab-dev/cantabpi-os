@@ -1,4 +1,4 @@
-// The package's views as self-contained pages (docs/live-views-status.md §8.5, P6b).
+// The package's views as self-contained pages (docs/live-views-status.md §4, Pages).
 // For every view in vendor/bpag/data/_schema.json → views: takes its HTML file, inlines theme.css, the ported runtime
 // (templates/bpag/runtime.js) and the schema as window.CP_SCHEMA, and writes templates/bpag/dist/<key>.html.
 //

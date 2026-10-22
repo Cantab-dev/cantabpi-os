@@ -125,7 +125,7 @@ Display title: "Add note".
 
 **v0.8.0 (deployed and checked live 2026-10-22):** also takes the ten header views
 (no parameters yet), writes to the view the user has open unless the user names a slot, keeps the replaced view's
-settings, and no longer returns `slot_limit`. 42 unit tests pass. [live-views-status.md](live-views-status.md) §7.2, §7.6.
+settings, and no longer returns `slot_limit`. 42 unit tests pass. [live-views-status.md](live-views-status.md) §2.
 
 Points the user's live view page (`https://os.cantabpi.com/v/<slot>`) at a slide's PDF or the `sales_overview` dashboard; without `template` it lists the user's views. Returns a confirmation and the url, never content. Errors: `not_found`, `invalid_parameter`, `slot_limit`. Contract, slot rules and the page: [live-views-status.md](live-views-status.md) §2–§4. Checked live as `claude@test.com` on 2026-10-21 (list, pdf at a page, dashboard with filters, reuse of a view, another user's slide, unknown dashboard).
 
@@ -135,7 +135,7 @@ Points the user's live view page (`https://os.cantabpi.com/v/<slot>`) at a slide
 (`vendor/bpag/spec/02-data-tool.md`) on the selected project. Writes run the package's validator unchanged
 (`engagement_pkg.ts`, built by `scripts/build-engagement.mjs`) and save with the admin client through
 `engagement_commit`, which only the service role may call (Aleph's pattern, P13). 51 unit tests (the package demo
-included); checked live 2026-10-22, 21/21. Plan: [live-views-status.md](live-views-status.md) §8.
+included); checked live 2026-10-22, 21/21. Design: [live-views-status.md](live-views-status.md) §4.
 
 ### Projects — `built` (v0.7.0, v2 phase 1)
 

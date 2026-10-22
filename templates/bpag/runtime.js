@@ -2,7 +2,7 @@
    Fixed code: views call CP.boot({ view, base, render }) and draw only from the ctx they receive.
    Responsibilities: load schema and tables, check the contract version, guard records, render the header and agent rail,
    fill placeholders, mark agent changes, and poll for new data versions. */
-/* Cantab OS port (docs/live-views-status.md §8.5). A copy of vendor/bpag/assets/runtime.js; what changed:
+/* Cantab OS port (docs/live-views-status.md §4, Pages). A copy of vendor/bpag/assets/runtime.js; what changed:
    1. Host. When the page runs in the Lovable page's iframe, window.parent.CP_HOST
       { supabaseUrl, publishableKey, projectId, getToken, openView } is the data source. Without it the runtime
       behaves as in the package (files under data/).
