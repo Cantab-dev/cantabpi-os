@@ -202,6 +202,15 @@ cascade); `sold_on` date not null; `region` text check in (`emea`, `amer`, `apac
 (`Atlas`, `Beacon`, `Compass`, `Delta`); `amount` numeric(12,2) > 0; `created_at`. Index (`profile_id`,
 `sold_on`). No labels.
 
+**`engagement_datasets`, `engagement_tables`, `engagement_log`** [built v0.9.0] — Siniša's views package, one dataset per
+project: `engagement_tables` holds one row per package table (`tbl`, `records` jsonb array, `version`); the dataset
+holds `global_version` and `table_versions`; the log keeps the last 200 changes. RLS: read own. Saves only through
+`engagement_commit` / `engagement_replace`, service role only.
+
+**`view_templates`** [built v0.9.0] — `key` PK (the eleven engagement view keys), `html` (one self-contained page),
+`contract_version`. Read: any signed-in user; written with the service key by `scripts/templates.mjs`. Storage: public
+bucket `engagement-assets` (the deck).
+
 **Planned and candidate tables**
 
 | Table | Purpose | State |
@@ -242,7 +251,9 @@ cascade); `sold_on` date not null; `region` text check in (`emea`, `amer`, `apac
 | `view_update(p_slot, p_expected_version, p_agent_patch, p_ui_patch)` | jsonb | definer | live page | [POC] |
 | `view_agent_apply(p_template, p_agent_params, p_focus, p_slot)` | jsonb | definer | `view` | [POC]; v0.8.0: slot in view, keeps settings in `state` |
 | `view_close(p_slot)` | jsonb | definer | live page | [POC] |
-| `view_header_templates()` | text[] | — | view functions | [built v0.8.0] |
+| `view_header_templates()` | text[] | — | view functions | [built v0.8.0]; v0.9.0: the package's eleven keys |
+| `engagement_read(p_project, p_tables)`, `engagement_version(p_project)`, `engagement_log_read(p_project, p_since, p_limit)` | jsonb | invoker | pages, engagement tools | [built v0.9.0] |
+| `engagement_commit(p_profile, p_project, p_expected_version, p_version, p_tables, p_log)`, `engagement_replace(…)`, `engagement_owns(…)` | jsonb | definer, **service role only** | `engagement_write`, `engagement_reset` | [built v0.9.0] |
 | `view_seen(p_slot)` | jsonb | definer | live page | [built v0.8.0] |
 | `view_set_template(p_slot, p_expected_version, p_template)` | jsonb | definer | live page (icon click) | [built v0.8.0] |
 | `dashboard_sales_overview(p_period, p_region)` | jsonb | invoker | live page | [POC] |

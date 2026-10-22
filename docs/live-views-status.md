@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.19 | Nela | 2026-10-22 |
+| Current | v0.20 | Nela | 2026-10-22 |
 
 Plan for a proof of concept of Siniša's memo *Server-driven UI for agent-operated apps* (received
 2026-10-21): the agent points a live browser page at a PDF or a fixed dashboard, and the open page
@@ -538,8 +538,8 @@ Each recommendation stands until Nela (or Siniša, where marked) answers.
 | Step | What | Who | Status |
 |---|---|---|---|
 | 0 | Answer P1–P14; interface 8.5 | Nela, Claude | `built` 2026-10-22: as recommended, P6b; interface written |
-| 1 | Migration: `engagement_*` tables, RLS, `engagement_commit`, read functions for the runtime, new template keys (P9). Dry-run on live in a rolled-back transaction | Claude; Nela runs `db push` | `planned` |
-| 2 | Function v0.9.0: the five tools, the validator module, the seed bundled; unit tests; the package's demo run through `engagement_write` | Claude; deploy on Nela's go | `planned` |
+| 1 | Migration: `engagement_*` tables, RLS, `engagement_commit`, read functions for the runtime, new template keys (P9). Dry-run on live in a rolled-back transaction | Claude; Nela runs `db push` | `built` 2026-10-22: `20261022150000_engagement.sql`, dry-run 18/18, applied by Nela |
+| 2 | Function v0.9.0: the five tools, the validator module, the seed bundled; unit tests; the package's demo run through `engagement_write` | Claude; deploy on Nela's go | `built` 2026-10-22: 51 unit tests; deployed; live as `claude@test.com` 21/21 (project `project:10` "Dummy - Big Pharma AG"; demo steps 1–9 at 7–15 in about 1 s each, step 10 refused; a browser save refused with 403); demo reset to the seed afterwards |
 | 3 | Templates into the Lovable repo under `public/bpag/`; `runtime.js` data source and embed mode | Claude, in the GitHub repo | `planned` |
 | 4 | Lovable message: header icons to the ten, the iframe in the centre pane, home in an empty slot | Claude drafts; Nela sends | `planned` |
 | 5 | Check headless: each template against the seed and after its demo write (redraw under 2 s, change marker); then the full demo in claude.ai | Claude, Nela | `planned` |
@@ -648,6 +648,7 @@ shows it in a frame under our header. Nothing else on the page changes.
   following agent edits made with existing tools. It is left out because Siniša asked for a dummy table.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.20 (2026-10-22) — §8.4 steps 1 and 2 built: migration applied, function v0.9.0 deployed and checked live.
 - v0.19 (2026-10-22) — §8.6 Lovable message drafted; P9 empty slot kept as is.
 - v0.18 (2026-10-22) — P1–P12 as recommended; §8.5 the interface for the parallel sessions; package copied to `vendor/bpag/`.
 - v0.17 (2026-10-22) — P6b chosen (templates in a table, deck in public Storage), replacing P6 and P8.
