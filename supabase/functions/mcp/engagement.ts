@@ -19,10 +19,10 @@ export const TABLES = Object.keys(SCHEMA.tables) as string[]
 const NO_PROJECT =
   'No project selected. Select a project first: call list with entity "projects", then select_project with one label.'
 const EMPTY =
-  'This project has no engagement data yet. Call engagement_reset with confirm true to load the Big Pharma AG demo, ' +
+  'This project has no engagement data yet. Call reset with confirm true to load the Big Pharma AG demo, ' +
   'or select the project that holds the engagement.'
 const WRITE_CRASH =
-  'The write may or may not have been saved. Call engagement_log with limit 1 to see the last change, then decide.'
+  'The write may or may not have been saved. Call log with limit 1 to see the last change, then decide.'
 
 /** A result whose records keep their package ids (tk-08 …); the database's own ids never reach this module. */
 function done(data: Row, lead?: string): ToolResult {
@@ -158,12 +158,12 @@ export function registerEngagementTools(
   const READ_CRASH = 'The engagement data could not be read. Try again once; if it fails again, tell the user.'
   const ro = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
 
-  server.registerTool('engagement_contract', {
+  server.registerTool('contract', {
     title: 'Engagement contract',
     description:
       'Orientation for one of the ten engagement agents in the selected project: the tables and their limits, what ' +
       'each view shows, the rules (invariants), and what this agent may change. Call it first, before ' +
-      'engagement_query or engagement_write, as the agent you act as. Agents: ' + AGENTS.join(', ') + '.',
+      'query or write, as the agent you act as. Agents: ' + AGENTS.join(', ') + '.',
     inputSchema: z.object({ agent: z.string().describe(`The agent you act as: ${AGENTS.join(', ')}.`) }),
     annotations: ro,
   }, (args) => guard(async () => {
@@ -172,7 +172,7 @@ export function registerEngagementTools(
     return done(contract(agent, version, (data.engagement?.[0]?.as_of as string) ?? null))
   }, READ_CRASH))
 
-  server.registerTool('engagement_query', {
+  server.registerTool('query', {
     title: 'Read engagement data',
     description:
       'Read records from one table of the selected project\'s engagement. Optional: where (field equality; a list ' +
@@ -195,11 +195,11 @@ export function registerEngagementTools(
     return done({ table, version: version.global, records: query(data, args as Row) })
   }, READ_CRASH))
 
-  server.registerTool('engagement_write', {
+  server.registerTool('write', {
     title: 'Change engagement data',
     description:
       'Apply one batch of operations to the selected project\'s engagement, as one agent and within its write scope ' +
-      '(see engagement_contract). The whole batch is checked against every rule and saved together, or not at all; a ' +
+      '(see contract). The whole batch is checked against every rule and saved together, or not at all; a ' +
       'refusal lists each error with the rule and what is allowed, so fix the request and retry. Ops: {op "update", ' +
       'table, id, set}, {op "create", table, record, tmp?}, {op "delete", table, id}. A create never has id or ' +
       '_meta; "$<tmp>" refers to a record created earlier in the batch. reason is one line, shown to viewers next to ' +
@@ -226,7 +226,7 @@ export function registerEngagementTools(
     return done(out, out.committed ? undefined : (out.dry_run ? 'Dry run: nothing saved.' : 'Refused: nothing saved.'))
   }, WRITE_CRASH))
 
-  server.registerTool('engagement_log', {
+  server.registerTool('log', {
     title: 'Engagement change log',
     description: 'The latest changes to the selected project\'s engagement, newest last: since_version, or the last limit entries.',
     inputSchema: z.object({
@@ -243,7 +243,7 @@ export function registerEngagementTools(
     return done({ entries: res.data as Row[] })
   }, READ_CRASH))
 
-  server.registerTool('engagement_reset', {
+  server.registerTool('reset', {
     title: 'Reset engagement demo',
     description:
       'Replace the selected project\'s engagement with the Big Pharma AG demo seed (version 6), or load it into a ' +
@@ -258,5 +258,5 @@ export function registerEngagementTools(
     })
     if (res.error) throw res.error
     return done({ version: { global: SEED.version.global } }, 'The engagement is reset to the demo seed.')
-  }, 'The reset may or may not have happened. Call engagement_log with limit 1 to check.'))
+  }, 'The reset may or may not have happened. Call log with limit 1 to check.'))
 }

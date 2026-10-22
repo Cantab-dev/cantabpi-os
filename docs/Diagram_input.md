@@ -260,7 +260,7 @@ which builds each page from `vendor/bpag` with `templates/bpag/runtime.js` (data
 | `view_close(p_slot)` | jsonb | definer | live page | [POC] |
 | `view_header_templates()` | text[] | — | view functions | [built v0.8.0]; v0.9.0: the package's eleven keys |
 | `engagement_read(p_project, p_tables)`, `engagement_version(p_project)`, `engagement_log_read(p_project, p_since, p_limit)` | jsonb | invoker | pages, engagement tools | [built v0.9.0] |
-| `engagement_commit(p_profile, p_project, p_expected_version, p_version, p_tables, p_log)`, `engagement_replace(…)`, `engagement_owns(…)` | jsonb | definer, **service role only** | `engagement_write`, `engagement_reset` | [built v0.9.0] |
+| `engagement_commit(p_profile, p_project, p_expected_version, p_version, p_tables, p_log)`, `engagement_replace(…)`, `engagement_owns(…)` | jsonb | definer, **service role only** | `write`, `reset` | [built v0.9.0] |
 | `view_seen(p_slot)` | jsonb | definer | live page | [built v0.8.0] |
 | `view_set_template(p_slot, p_expected_version, p_template)` | jsonb | definer | live page (icon click) | [built v0.8.0] |
 | `dashboard_sales_overview(p_period, p_region)` | jsonb | invoker | live page | [POC] |
@@ -320,6 +320,8 @@ selected and names the project in the reply. "Project calls" work without a sele
 | `edit` | `categories` | update the record's fields; trigger may append to `context`; `updated_at` | [built] |
 | `delete` | for a project: `project_summary()` (refuses when it holds items) | delete the record | [built] |
 | `view` | `views_list()` (ui_views); `slides` (id, label, storage_url) | `ui_views` via `view_agent_apply()` | [POC] |
+| `contract`, `query`, `log` | `engagement_read()` (`engagement_datasets`, the schema `engagement`), `engagement_log_read()` | — | [built v0.9.0, renamed v0.10.0] |
+| `write`, `reset` | `engagement_read()` | `engagement_commit()` / `engagement_replace()` with the service role: `engagement_datasets`, the schema `engagement`, `engagement_log` | [built v0.9.0, renamed v0.10.0] |
 
 Not tools, for completeness: the live page (A2) calls `view_open`, `view_update`, `view_close`, `views_list`,
 `dashboard_sales_overview`, signs `slide-pdfs` urls and subscribes to Realtime.
@@ -349,4 +351,5 @@ erDiagram
 
 ## Changelog
 
+- v0.2 (2026-10-22) — Engagement data as 27 tables in the schema `engagement`; the five engagement tools in §2.7 under their new names (function v0.10.0).
 - v0.1 (2026-10-22) — First version, at function v0.7.0 (projects).

@@ -2,9 +2,9 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.2 | Nela | 2026-10-22 |
+| Current | v1.3 | Nela | 2026-10-22 |
 
-**What is live (function v0.9.0, 2026-10-22):** a browser page at `https://os.cantabpi.com/v/1…10` that Claude
+**What is live (function v0.10.0, 2026-10-22):** a browser page at `https://os.cantabpi.com/v/1…10` that Claude
 steers from claude.ai. Each of the ten views (slots) shows one thing; Claude changes it with the `view` tool and the
 open page follows within about a second. The page has a header with ten agent icons and shows Siniša's engagement
 views (Big Pharma AG demo), the POC's slide PDF, or the POC's sales dashboard.
@@ -19,7 +19,7 @@ Section numbers cited in COMMS, DECISIONS and the applied migrations before 2026
 ```
 claude.ai ──MCP──▶ mcp function (19 tools, acts as the signed-in user)
    │                 ├─ view ───────────────▶ ui_views (slot → template, project)          ◀── Realtime ──┐
-   │                 └─ engagement_* ─ package validator ─▶ engagement_commit (service role) ─▶ engagement.<27 tables>
+   │                 └─ contract/query/write/log/reset ─ validator ─▶ engagement_commit (service role) ─▶ engagement.<27 tables>
    │                                                                                                     │
 os.cantabpi.com/v/N (Lovable): header + centre pane                                                       │
    ├─ engagement views: view_templates.html in <iframe srcdoc>, runtime polls engagement_version ─────────┘ (every 2 s)
@@ -113,11 +113,11 @@ the admin client, passing the user; the function checks that the project is thei
 
 | Tool | Does |
 |---|---|
-| `engagement_contract {agent}` | Tables and limits, views, invariants, and that agent's write scope |
-| `engagement_query {table, where?, fields?, expand?, limit?}` | Records of one table; `expand` resolves references one level |
-| `engagement_write {agent, reason, ops, dry_run?, if_version?}` | One batch, checked against every rule and saved whole or not at all; refusals list each rule and what is allowed |
-| `engagement_log {since_version? \| limit?}` | Recent changes, newest last |
-| `engagement_reset {confirm: true}` | Loads the demo seed (version 6) into the selected project, replacing what is there |
+| `contract {agent}` | Tables and limits, views, invariants, and that agent's write scope |
+| `query {table, where?, fields?, expand?, limit?}` | Records of one table; `expand` resolves references one level |
+| `write {agent, reason, ops, dry_run?, if_version?}` | One batch, checked against every rule and saved whole or not at all; refusals list each rule and what is allowed |
+| `log {since_version? \| limit?}` | Recent changes, newest last |
+| `reset {confirm: true}` | Loads the demo seed (version 6) into the selected project, replacing what is there |
 
 Claude plays each of the ten agents by naming it in `agent`; the validator enforces that agent's scope.
 
@@ -136,7 +136,7 @@ seed with the deck's public address, demo requests, validator). Rerun after any 
 
 | What | Result |
 |---|---|
-| Unit tests (`deno test` in `supabase/functions/mcp`) | 51 pass, including the package's demo through `engagement_write`: steps 1–9 commit at versions 7–15, step 10 refused ("text is 122 characters, allowed ≤ 110"), the result still valid |
+| Unit tests (`deno test` in `supabase/functions/mcp`) | 51 pass, including the package's demo through `write`: steps 1–9 commit at versions 7–15, step 10 refused ("text is 122 characters, allowed ≤ 110"), the result still valid |
 | Migrations, dry-run on live in a rolled-back transaction | View header 16/16; engagement 18/18 (saves refused to the browser and to another user, conflict, Siniša sees none of the test user's data, the new keys) |
 | Engagement tools live as `claude@test.com` (project `project:10` "Dummy - Big Pharma AG") | 21/21: reset, contract, query, the ten demo steps in about 1 s each, log, page read, browser save refused |
 | Pages offline (session 2's harness, `templates/bpag/test/`) | 25/25: each page at 1280 and 400 px, empty state, empty → data, redraw with marker |
@@ -182,6 +182,8 @@ Replace one JSON row per table with one Postgres table per package table, so the
 
 ### 7.2 Tool names as in the package
 
+**Built and live 2026-10-22 (function v0.10.0):** [engagement-tools-status.md](engagement-tools-status.md). Was:
+
 Rename `engagement_contract`, `engagement_query`, `engagement_write`, `engagement_log`, `engagement_reset` to the
 package's verbs `contract`, `query`, `write`, `log`, `reset` (none clashes with an existing tool). Tests, docs, a
 claude.ai reconnect. About 30 min.
@@ -203,7 +205,7 @@ plan (Supabase serves no HTML from functions). About 2–3 h.
 ### 7.4 The other tools under Aleph's pattern (P14)
 
 Decided by Nela on 2026-10-22: the remaining tools run their database work under the service role with explicit user and
-project filters in code, as `engagement_write` does; RLS stays for browser paths; a test proves another user's rows stay
+project filters in code, as `write` does; RLS stays for browser paths; a test proves another user's rows stay
 invisible. About 3–5 h.
 
 ### 7.5 The ten agents — Nela to decide
@@ -217,6 +219,7 @@ agent fixed, one claude.ai connector each, about 2–3 h; C) autonomous agents t
 - A dashboard over the real `todos` table would show the page following agent edits made with existing tools.
 
 **Changelog** (rationale in DECISIONS.md; file history in git; Lovable rounds in COMMS.md)
+- v1.3 (2026-10-22) — §7.2 live: the five tools renamed (`contract`, `query`, `write`, `log`, `reset`), function v0.10.0. → DECISIONS.md 2026-10-22
 - v1.2 (2026-10-22) — §7.1 live and rechecked (§5).
 - v1.1 (2026-10-22) — §7.1 built (real tables in the schema `engagement`); §1 and §4 updated. → DECISIONS.md 2026-10-22
 - v1.0 (2026-10-22) — Rewritten as a living reference: what is built by layer, tests, open items, the next session's

@@ -100,3 +100,20 @@ Deno.test('contract gives the agent its own write scope', () => {
   assert('tasks' in (c.writes as Row))
   assert(!('sources' in (c.writes as Row)))
 })
+
+Deno.test('tool names: the package\'s verbs, none clashing with the other tools', async () => {
+  const { registerTools } = await import('./tools.ts')
+  const { registerViewTool } = await import('./views.ts')
+  const { registerEngagementTools } = await import('./engagement.ts')
+  const names: string[] = []
+  const server = { registerTool: (name: string) => { names.push(name) }, registerResource: () => {} } as never
+  const db = {} as never
+  const before = names.length
+  registerEngagementTools(server, db, db, null)
+  assertEquals(names.slice(before), ['contract', 'query', 'write', 'log', 'reset'])
+  registerTools(server, db)
+  registerViewTool(server, db)
+  assertEquals(new Set(names).size, names.length, `duplicate tool name in ${names.join(', ')}`)
+  assertEquals(names.length, 19)
+  assert(!names.some((n) => n.startsWith('engagement_')))
+})

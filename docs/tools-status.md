@@ -2,13 +2,13 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.9 | Nela | 2026-10-22 |
+| Current | v1.10 | Nela | 2026-10-22 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then altered; note what changed) · `open` (needs a decision).
 
-All nineteen tools are deployed and tested against dummy data; the deployed function is v0.9.0 (2026-10-22: five `engagement_*` tools for Siniša's views package, see the Engagement section); v0.8.0 (2026-10-22: `view` takes the ten header views and writes to the view in front of the user); v0.7.1 moved the `view` links to `https://os.cantabpi.com/v/N`; v0.7.0 (2026-10-22) added projects (`select_project`, `write_project`; see the Projects section). v0.6.0 (2026-10-21) added `view`. The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
+All nineteen tools are deployed and tested against dummy data; the deployed function is v0.10.0 (2026-10-22: the five engagement tools renamed to the package's verbs `contract`, `query`, `write`, `log`, `reset`); v0.9.0 (2026-10-22: five `engagement_*` tools for Siniša's views package, see the Engagement section); v0.8.0 (2026-10-22: `view` takes the ten header views and writes to the view in front of the user); v0.7.1 moved the `view` links to `https://os.cantabpi.com/v/N`; v0.7.0 (2026-10-22) added projects (`select_project`, `write_project`; see the Projects section). v0.6.0 (2026-10-21) added `view`. The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
 
 **Current contract.** Everything below is the contract deployed in function v0.5.5. The in-chat views, with their plan, test record and open improvements, are in [chat-ux-status.md](chat-ux-status.md); this document is the home of what each tool takes and returns.
 
@@ -129,9 +129,9 @@ settings, and no longer returns `slot_limit`. 42 unit tests pass. [live-views-st
 
 Points the user's live view page (`https://os.cantabpi.com/v/<slot>`) at a slide's PDF or the `sales_overview` dashboard; without `template` it lists the user's views. Returns a confirmation and the url, never content. Errors: `not_found`, `invalid_parameter`, `slot_limit`. Contract, slot rules and the page: [live-views-status.md](live-views-status.md) §2–§4. Checked live as `claude@test.com` on 2026-10-21 (list, pdf at a page, dashboard with filters, reuse of a view, another user's slide, unknown dashboard).
 
-### Engagement — `built` (v0.9.0, v2 phase 2)
+### Engagement — `changed` (v0.9.0, v2 phase 2; renamed in v0.10.0)
 
-`engagement_contract`, `engagement_query`, `engagement_write`, `engagement_log`, `engagement_reset`: the package's data tool
+`contract`, `query`, `write`, `log`, `reset` (until v0.10.0 `engagement_contract` … `engagement_reset`): the package's data tool
 (`vendor/bpag/spec/02-data-tool.md`) on the selected project. Writes run the package's validator unchanged
 (`engagement_pkg.ts`, built by `scripts/build-engagement.mjs`) and save with the admin client through
 `engagement_commit`, which only the service role may call (Aleph's pattern, P13). 51 unit tests (the package demo
@@ -220,6 +220,7 @@ Rows created during testing were removed; the label numbers they used are not re
 Improvements from the test rounds are listed in [chat-ux-status.md](chat-ux-status.md) (Learnings from testing). The tool contract changes only after a planning session; that is design work and needs Opus.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.10 (2026-10-22) — Function v0.10.0: the engagement tools renamed to the package's verbs. → DECISIONS.md 2026-10-22
 - v1.8 (2026-10-21) — `view` tool added (function v0.6.0); twelve tools. → DECISIONS.md 2026-10-21
 - v1.7 (2026-10-16) — Swept: the tool sections now describe the deployed v0.5.5 contract (fields, filters, view, read-only hints); testing and file lists current.
 - v1.6 (2026-10-15) — Function v0.5.0: tool changes for the in-chat views, live; contract in chat-ux-status.md §2. → DECISIONS.md 2026-10-15
