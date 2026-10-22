@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.22 | Nela | 2026-10-22 |
+| Current | v0.23 | Nela | 2026-10-22 |
 
 Plan for a proof of concept of Siniša's memo *Server-driven UI for agent-operated apps* (received
 2026-10-21): the agent points a live browser page at a PDF or a fixed dashboard, and the open page
@@ -540,10 +540,16 @@ Each recommendation stands until Nela (or Siniša, where marked) answers.
 | 0 | Answer P1–P14; interface 8.5 | Nela, Claude | `built` 2026-10-22: as recommended, P6b; interface written |
 | 1 | Migration: `engagement_*` tables, RLS, `engagement_commit`, read functions for the runtime, new template keys (P9). Dry-run on live in a rolled-back transaction | Claude; Nela runs `db push` | `built` 2026-10-22: `20261022150000_engagement.sql`, dry-run 18/18, applied by Nela |
 | 2 | Function v0.9.0: the five tools, the validator module, the seed bundled; unit tests; the package's demo run through `engagement_write` | Claude; deploy on Nela's go | `built` 2026-10-22: 51 unit tests; deployed; live as `claude@test.com` 21/21 (project `project:10` "Dummy - Big Pharma AG"; demo steps 1–9 at 7–15 in about 1 s each, step 10 refused; a browser save refused with 403); demo reset to the seed afterwards |
-| 3 | Pages: `templates/bpag/runtime.js` (data source, embed mode), `scripts/templates.mjs` (P6b) | Session 2 | `built` 2026-10-22: branch `pages` merged; pages and deck uploaded by Nela |
+| 3 | Pages: `templates/bpag/runtime.js` (data source, embed mode), `scripts/templates.mjs` (P6b) | Session 2 | `built` 2026-10-22: branch `pages` (commit `0b7457b`) merged; offline harness 25/25 (each page at 1280 and 400 px, the empty state, empty → data, a redraw with marker); pages and deck uploaded by Nela |
 | 4 | Lovable message: header icons to the ten, the iframe in the centre pane, the wordmark for home (8.6) | Claude drafts; Nela sends | `built` 2026-10-22, published; the frame-lag fix checked (COMMS) |
-| 5 | Check headless: each template against the seed and after its demo write (redraw under 2 s, change marker); then the full demo in claude.ai | Claude, Nela | Headless 2026-10-22: all eleven pages render live; a write redraws and marks in about 0.5 s; view switches show the right page (after Lovable's fix). Wordmark click not checked headless. Nela's claude.ai demo open |
+| 5 | Check headless: each template against the seed and after its demo write (redraw under 2 s, change marker); then the full demo in claude.ai | Claude, Nela | Headless 2026-10-22: all eleven pages render live; a write redraws and marks in about 0.5 s; view switches show the right page (after Lovable's fix); the deck renders from Storage through pdf.js ("Slide 1 of 6"). Wordmark click not checked headless. Nela's claude.ai demo open |
 | 6 | Docs: tools-status, Diagram_input, DECISIONS, HANDOFF, Document Log | Claude, with each step | `planned` |
+
+**Session 2's notes (2026-10-22), accepted:** (1) `CP_HOST.openView` is wired but unused: in the package only the
+brand and the agent rail link to other views, and embed mode hides both; switching is through the header. (2) The deck
+needs an https `pdf_url`; the bundled seed has the Storage address (checked live). (3) Pages load IBM Plex from
+Google Fonts and pdf.js from cdnjs. (4) Without a token the read is refused and the page shows the package's "could
+not be loaded", not the empty message.
 
 **Acceptance (from the package):** the seed validates with 0 errors; steps 1–9 commit at versions 7–15 and step 10 is
 refused with "text is 122 characters, allowed ≤ 110"; every view redraws within 2 s of a commit and marks the changed
@@ -648,6 +654,7 @@ shows it in a frame under our header. Nothing else on the page changes.
   following agent edits made with existing tools. It is left out because Siniša asked for a dummy table.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.23 (2026-10-22) — Session 2's report recorded; deck checked live.
 - v0.22 (2026-10-22) — Frame-lag fix checked; steps 3–5 done except Nela's claude.ai demo and the wordmark.
 - v0.21 (2026-10-22) — Steps 3–5: pages merged and uploaded, Lovable round 5 published, headless check; frame-lag bug sent to Lovable.
 - v0.20 (2026-10-22) — §8.4 steps 1 and 2 built: migration applied, function v0.9.0 deployed and checked live.

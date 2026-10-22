@@ -208,8 +208,10 @@ holds `global_version` and `table_versions`; the log keeps the last 200 changes.
 `engagement_commit` / `engagement_replace`, service role only.
 
 **`view_templates`** [built v0.9.0] — `key` PK (the eleven engagement view keys), `html` (one self-contained page),
-`contract_version`. Read: any signed-in user; written with the service key by `scripts/templates.mjs`. Storage: public
-bucket `engagement-assets` (the deck).
+`contract_version`. Read: any signed-in user. Written with the service key by `scripts/templates.mjs` (run by Nela),
+which builds each page from `vendor/bpag` with `templates/bpag/runtime.js` (data from `engagement_read` and
+`engagement_version` through `window.parent.CP_HOST`) and uploads the deck. Storage: public bucket `engagement-assets`
+(the deck, `bpag/scale-up-proposal.pdf`). The Lovable page shows a page in an `<iframe srcdoc>` and sets `CP_HOST`.
 
 **Planned and candidate tables**
 
