@@ -21,8 +21,11 @@ The purpose of Cantab OS v2 is to build a semi-functional mockup for a consultin
 * Add select project tool (changes project by selecting ID)
 * Add mcp widgets to the tool as for 'aleph'
 * Tools for view doc, sheet, ppt view only documents for the selected project
+* Add to profiles (or users) selected_project
 
-## Views
+Principles: there is a selected, backend held project for each user. All artifacts are always considered only for the selected project. Project_id is NOT argument for tools; it is implicit. Changes on select (project)
+
+## Templates
 
 We need to implement the following views
 
@@ -45,6 +48,22 @@ Each view will display certain set of (partially dummy) data in a polished envir
 * Centerpane - displayed default data
 * Each view (for Cantab OS, for a single mockup project only) displays a fixed data set (or document)
 * Some of this data set can be changed by an agent. TBD on a case to case basis
+
+Principles:
+
+There are 10 slots, with addresses os.cantabpi.com/1, os.cantabpi.com/2 etc.
+
+Data structure
+* user_id (FK)
+* slot (1-10)
+* template (enum, available views)
+* json with parameters (e.g. label of pdf shown). Json depends on template
+
+Actions:
+
+* UX/UI: single slot shown. On pressing icon, template for that slot changes in backend. View does not change
+
+* Agent: can by invoking the tool assign to each slot a template and parameters
 
 # Views
 
