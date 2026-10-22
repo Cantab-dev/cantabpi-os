@@ -2,13 +2,13 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.8 | Nela | 2026-10-21 |
+| Current | v1.9 | Nela | 2026-10-22 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then altered; note what changed) · `open` (needs a decision).
 
-All twelve tools are deployed and tested against dummy data; the deployed function is v0.6.0 (2026-10-21), which added `view`. The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
+All fourteen tools are deployed and tested against dummy data; the deployed function is v0.7.0 (2026-10-22), which added projects (`select_project`, `write_project`; see the Projects section). v0.6.0 (2026-10-21) added `view`. The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
 
 **Current contract.** Everything below is the contract deployed in function v0.5.5. The in-chat views, with their plan, test record and open improvements, are in [chat-ux-status.md](chat-ux-status.md); this document is the home of what each tool takes and returns.
 
@@ -124,6 +124,10 @@ Display title: "Add note".
 ### view — `built` (v0.6.0, live views POC)
 
 Points the user's live view page (`https://cantabpios.lovable.app/v/<slot>`) at a slide's PDF or the `sales_overview` dashboard; without `template` it lists the user's views. Returns a confirmation and the url, never content. Errors: `not_found`, `invalid_parameter`, `slot_limit`. Contract, slot rules and the page: [live-views-status.md](live-views-status.md) §2–§4. Checked live as `claude@test.com` on 2026-10-21 (list, pdf at a page, dashboard with filters, reuse of a view, another user's slide, unknown dashboard).
+
+### Projects — `built` (v0.7.0, v2 phase 1)
+
+The user works in one selected project. Without one, every call fails with "No project selected. Select a project first…", except project calls: `list` with entity `projects`, `select_project`, `write_project`, and `get`, `edit`, `note`, `delete` on `project:` labels. Every successful reply starts with `Project: <name> (<label>).` and carries `project` in its data. Todos, sheets, docs and slides come from the selected project only and carry their `project`; new ones go into it. `select_project` takes one `label` and replies with every project's counts; `write_project` takes `name` and `icon`; a project with items cannot be deleted. Contract and decisions: [projects-status.md](projects-status.md) §1, §3. Checked live as `claude@test.com` on 2026-10-22 (`smoke.sh` projects section: switch, hidden labels, another user's project, non-empty delete, no selection).
 
 ## Instructions for the model and the view — `changed`
 

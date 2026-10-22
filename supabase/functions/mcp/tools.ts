@@ -41,15 +41,51 @@ const EDIT_CRASH =
 const DELETE_CRASH =
   'The record may or may not have been deleted. Do not retry blindly: call get with this label to check, then decide.'
 
-async function run(fn: () => Promise<ToolResult>, onCrash: string): Promise<ToolResult> {
+const NO_PROJECT =
+  'No project selected. Select a project first: call list with entity "projects" to see the projects, then ' +
+  'select_project with one label. To start a new project, call write_project.'
+
+type Project = { label: string; name: string; icon: string | null }
+
+async function currentProject(db: SupabaseClient): Promise<Project | null> {
+  const res = await db.rpc('current_project')
+  if (res.error) throw res.error
+  return ((res.data as Project[])[0]) ?? null
+}
+
+/**
+ * Runs a tool. Unless `open` (calls that manage projects), it needs a selected project and fails without one
+ * (docs/projects-status.md D4). Every successful reply names the project, as a first line and as `project` in
+ * the data, so the model always knows where it works.
+ */
+async function run(
+  db: SupabaseClient,
+  fn: () => Promise<ToolResult>,
+  onCrash: string,
+  open = false,
+): Promise<ToolResult> {
   try {
-    return await fn()
+    if (!open && !(await currentProject(db))) return failure(NO_PROJECT)
+    const result = await fn()
+    if (result.isError) return result
+    const project = await currentProject(db)
+    const line = project ? `Project: ${project.name} (${project.label}).` : 'No project selected.'
+    result.content[0].text = `${line}\n${result.content[0].text}`
+    if (result.structuredContent) result.structuredContent.project = project
+    return result
   } catch (e) {
     if (e instanceof ToolError) return failure(e.message)
     console.error(e)
     return failure(onCrash)
   }
 }
+
+/** True when every given label is a project label: such calls work without a selected project. */
+const onlyProjects = (...labels: unknown[]) =>
+  labels.length > 0 && labels.every((l) => {
+    const p = parseLabel(l)
+    return p.ok && p.def.key === 'projects'
+  })
 
 const writeToolName = (def: EntityDef) => `write_${def.prefix}`
 
@@ -202,12 +238,34 @@ async function writeTool(db: SupabaseClient, def: EntityDef, args: Row): Promise
   return finish({ label: record.label, created: true, record })
 }
 
+async function projectSummary(db: SupabaseClient): Promise<Row[]> {
+  const res = await db.rpc('project_summary')
+  if (res.error) throw res.error
+  return res.data as Row[]
+}
+
+async function selectProjectTool(db: SupabaseClient, labelArg: unknown): Promise<ToolResult> {
+  const p = parseLabel(labelArg)
+  if (!p.ok || p.def.key !== 'projects') {
+    throw new ToolError(`"${labelArg}" is not a project label. Call list with entity "projects" to see them, for example project:1.`)
+  }
+  const sel = await db.rpc('select_project', { p_label: p.label })
+  if (sel.error) {
+    if (/not found/i.test(sel.error.message)) {
+      throw new ToolError(`No project with label ${p.label}. Nothing was changed. Call list with entity "projects" to see the labels.`)
+    }
+    throw sel.error
+  }
+  const lead = 'Project selected. Todos, sheets, docs and slides now come from this project only, and new ones go into it.'
+  return finish({ selected: p.label, projects: await projectSummary(db) }, lead)
+}
+
 async function noteTool(db: SupabaseClient, labelArg: unknown, textArg: unknown): Promise<ToolResult> {
   const p = parseLabel(labelArg)
   if (!p.ok) throw new ToolError(p.message)
   if (!p.def.hasContext) {
     throw new ToolError(
-      `${p.label} is a skill, and skills take no notes. Do not retry; notes work on todos, leads, sheets, docs and slides.`,
+      `${p.label} is a skill, and skills take no notes. Do not retry; notes work on todos, leads, sheets, docs, slides and projects.`,
     )
   }
   const text = validateNoteText(textArg)
@@ -236,6 +294,17 @@ async function deleteTool(db: SupabaseClient, labelArg: unknown): Promise<ToolRe
   const p = parseLabel(labelArg)
   if (!p.ok) throw new ToolError(p.message)
   const nameCol = p.def.hasContext ? 'name' : 'description'
+  // Items always belong to a project, so only an empty project can be deleted (the database refuses too).
+  if (p.def.key === 'projects') {
+    const hit = (await projectSummary(db)).find((r) => r.label === p.label)
+    const kinds = ['todos', 'sheets', 'docs', 'slides'].filter((k) => Number(hit?.[k] ?? 0) > 0)
+    if (hit && kinds.length > 0) {
+      throw new ToolError(
+        `${p.label} still holds ${kinds.map((k) => `${hit[k]} ${k}`).join(', ')}, and a project can only be deleted ` +
+          'when empty. Tell the user; delete its items first only if they ask.',
+      )
+    }
+  }
   const res = await db.from(p.def.key).delete().eq('label', p.label).select(`label,${nameCol}`).maybeSingle()
   if (res.error) throw res.error
   if (!res.data) throw new ToolError(notFoundMessage(p.label, p.def))
@@ -334,6 +403,19 @@ const WRITE_TOOLS: { entity: keyof typeof ENTITIES; title: string; description: 
     },
   },
   {
+    entity: 'projects',
+    title: 'Add project',
+    description:
+      'Call this when the user asks to create a new project. It always creates a new project and does not select it; ' +
+      'call list with entity "projects" first to check it does not already exist, and select_project afterwards if the ' +
+      'user wants to work in it. Example: "Start a project for the Acme engagement" -> write_project with name and an ' +
+      'emoji icon. To record the goal or background, call note with the label this returns.',
+    shape: {
+      name: required('name', 'Required. Name of the project.'),
+      icon: text('icon', 'One emoji for the project, such as "🧭".').optional(),
+    },
+  },
+  {
     entity: 'skills',
     title: 'Add skill',
     description:
@@ -358,8 +440,11 @@ export function registerTools(server: McpServer, db: SupabaseClient): void {
         '"Do we have Ada as a lead?" -> list with entity "leads". ' +
         '"Which skills are there?" -> list with entity "skills", then get the one you need. ' +
         '"Show my docs and sheets" -> list with entity ["docs", "sheets"]. "Which todos are overdue?" -> list with entity ' +
-        '"todos", status false and due_before yesterday. Every row comes with its category, importance, action and notes ' +
-        '(as "context"), so no get is needed to show a list. The user sees the result as an interactive view.',
+        '"todos", status false and due_before yesterday. "Which projects do I have?" -> list with entity "projects". ' +
+        'Every row comes with its category, importance, action and notes (as "context"), and todos, sheets, docs and ' +
+        'slides with their project, so no get is needed to show a list. Todos, sheets, docs and slides come from the ' +
+        'selected project only; leads and skills are shared by all projects. Without a selected project only ' +
+        'entity "projects" works. The user sees the result as an interactive view.',
       inputSchema: z.object({
         entity: z.union([z.string(), z.array(z.string())], { error: `"entity" must be one of: ${LIST_KEYS.join(', ')}.` })
           .describe(`One of: ${LIST_KEYS.join(', ')}. Or a list combining ${FILE_KEYS.join(', ')}.`),
@@ -374,7 +459,7 @@ export function registerTools(server: McpServer, db: SupabaseClient): void {
       // Both keys, as ext-apps' registerAppTool sets them: some hosts still read the flat legacy key.
       _meta: { ui: { resourceUri: LIST_VIEW_URI }, 'ui/resourceUri': LIST_VIEW_URI },
     },
-    (args) => run(() => listTool(db, args as Row), READ_CRASH),
+    (args) => run(db, () => listTool(db, args as Row), READ_CRASH, String(args.entity ?? '').trim().toLowerCase() === 'projects'),
   )
 
   server.registerTool(
@@ -392,7 +477,7 @@ export function registerTools(server: McpServer, db: SupabaseClient): void {
       }),
       annotations: { readOnlyHint: true },
     },
-    ({ labels }) => run(() => getTool(db, labels), READ_CRASH),
+    ({ labels }) => run(db, () => getTool(db, labels), READ_CRASH, Array.isArray(labels) && onlyProjects(...labels)),
   )
 
   for (const tool of WRITE_TOOLS) {
@@ -400,16 +485,34 @@ export function registerTools(server: McpServer, db: SupabaseClient): void {
     server.registerTool(
       writeToolName(def),
       { title: tool.title, description: tool.description, inputSchema: z.object(tool.shape) },
-      (args) => run(() => writeTool(db, def, args as Row), WRITE_CRASH),
+      (args) => run(db, () => writeTool(db, def, args as Row), WRITE_CRASH, def.key === 'projects'),
     )
   }
+
+  server.registerTool(
+    'select_project',
+    {
+      title: 'Select project',
+      description:
+        'Call this when the user wants to work in a project or switch to another one. The user always works in one ' +
+        'project; the choice is kept until changed. Todos, sheets, docs and slides belong to one project each: every ' +
+        'other tool sees only the selected project\'s, and new ones go into it. Without a selected project the other ' +
+        'tools fail, except for project calls. Examples: "Let\'s work on Atlas" -> list with entity "projects" to find ' +
+        'its label, then select_project with "project:1". Replies with the item counts per project.',
+      inputSchema: z.object({
+        label: required('label', 'Label of the project, such as "project:1". Find it with list with entity "projects".'),
+      }),
+      annotations: { destructiveHint: false, idempotentHint: true },
+    },
+    ({ label }) => run(db, () => selectProjectTool(db, label), EDIT_CRASH, true),
+  )
 
   server.registerTool(
     'note',
     {
       title: 'Add note',
       description:
-        'Call this to record something learned about an existing todo, lead, sheet, doc or slide. Not for skills. ' +
+        'Call this to record something learned about an existing todo, lead, sheet, doc, slide or project. Not for skills. ' +
         'Examples: "Ada said she\'s back in March" -> list with entity "leads" to find her label, then note with that label and the text. ' +
         '"The client asked for a revised price" on a known todo -> note with its label. ' +
         'Notes come back from get and list in the "context" field, one dated line each.',
@@ -418,7 +521,7 @@ export function registerTools(server: McpServer, db: SupabaseClient): void {
         text: required('text', 'What to record, up to 1000 characters.'),
       }),
     },
-    ({ label, text }) => run(() => noteTool(db, label, text), WRITE_CRASH),
+    ({ label, text }) => run(db, () => noteTool(db, label, text), WRITE_CRASH, onlyProjects(label)),
   )
 
   server.registerTool(
@@ -426,14 +529,15 @@ export function registerTools(server: McpServer, db: SupabaseClient): void {
     {
       title: 'Edit record',
       description:
-        'Call this to change fields of an existing todo, lead, sheet, doc, slide or skill. Give the label and only the fields ' +
+        'Call this to change fields of an existing todo, lead, sheet, doc, slide, skill or project. Give the label and only the fields ' +
         'to change; each one overwrites the stored value, and an empty string clears an optional field. Notes are added with ' +
         'note, not edit. Examples: "Mark the Acme proposal as done" -> list with entity "todos" to find its label, then edit ' +
         'with that label and status true. "Move the dentist to next Friday" -> edit with the label and due. ' +
         '"Ada\'s email is ada@new.com" -> edit with her lead label and email.',
       inputSchema: z.looseObject({
         label: required('label', 'Label of the record to change, such as "todo:1". Find it with list.'),
-        name: text('name', 'Todos, leads, sheets, docs, slides: new name. Cannot be emptied.').optional(),
+        name: text('name', 'Todos, leads, sheets, docs, slides, projects: new name. Cannot be emptied.').optional(),
+        icon: text('icon', 'Projects: one emoji. To select a project, call select_project instead.').optional(),
         category: text('category', 'Todos, leads, sheets, docs, slides: category label, such as "sales". list with entity "categories" shows them all.').optional(),
         importance: importance('Todos, leads, sheets, docs, slides: 1 low, 2 medium, 3 high.').optional(),
         action: text('action', `Todos, leads, sheets, docs, slides: the one current next action, up to ${MAX_ACTION_CHARS} characters. The previous action is kept in the notes.`).optional(),
@@ -449,7 +553,7 @@ export function registerTools(server: McpServer, db: SupabaseClient): void {
       }),
       annotations: { destructiveHint: false, idempotentHint: true },
     },
-    (args) => run(() => editTool(db, args as Row), EDIT_CRASH),
+    (args) => run(db, () => editTool(db, args as Row), EDIT_CRASH, onlyProjects(args.label)),
   )
 
   server.registerTool(
@@ -457,14 +561,15 @@ export function registerTools(server: McpServer, db: SupabaseClient): void {
     {
       title: 'Delete record',
       description:
-        'Call this only when the user asks to remove a record. It deletes the whole todo, lead, sheet, doc, slide or skill ' +
-        'and cannot be undone; the label is never reused. Example: "Delete the dentist todo" -> list with entity "todos" ' +
-        'to find its label, then delete with that label.',
+        'Call this only when the user asks to remove a record. It deletes the whole todo, lead, sheet, doc, slide, skill ' +
+        'or project and cannot be undone; the label is never reused. A project can be deleted only when it holds no ' +
+        'todos, sheets, docs or slides. Example: "Delete the dentist todo" -> list with entity "todos" to find its ' +
+        'label, then delete with that label.',
       inputSchema: z.object({
         label: required('label', 'Label of the record to delete, such as "todo:1". Find it with list.'),
       }),
       annotations: { destructiveHint: true, idempotentHint: false },
     },
-    ({ label }) => run(() => deleteTool(db, label), DELETE_CRASH),
+    ({ label }) => run(db, () => deleteTool(db, label), DELETE_CRASH, onlyProjects(label)),
   )
 }

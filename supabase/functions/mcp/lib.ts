@@ -6,7 +6,7 @@ export const MAX_NOTE_CHARS = 1000
 export const MAX_RESULT_CHARS = 40000
 export const MAX_ACTION_CHARS = 500
 
-export type EntityKey = 'skills' | 'todos' | 'leads' | 'sheets' | 'docs' | 'slides'
+export type EntityKey = 'skills' | 'todos' | 'leads' | 'sheets' | 'docs' | 'slides' | 'projects'
 
 type FieldSpec =
   | { kind: 'text'; max: number; required?: boolean }
@@ -23,14 +23,19 @@ export interface EntityDef {
   listCols: string[]
   getCols: string[]
   hasContext: boolean
+  /** Rows belong to a project and follow the selection (docs/projects-status.md D1). */
+  scoped: boolean
   fields: Record<string, FieldSpec>
 }
 
 // The category comes back as an object {label, name, icon} or null, through the category_id foreign key.
 const CATEGORY = 'category:categories(label,name,icon)'
+// The project the same way, through project_id; null when the row has no project.
+const PROJECT = 'project:projects(label,name,icon)'
 
 /** Columns every view needs, on todos, leads, sheets, docs and slides. */
 const RENDER_COLS = ['label', 'name', CATEGORY, 'importance', 'action', 'context']
+const SCOPED_COLS = [...RENDER_COLS, PROJECT]
 
 const renderFields: Record<string, FieldSpec> = {
   name: { kind: 'text', max: 200, required: true },
@@ -51,6 +56,7 @@ export const ENTITIES: Record<EntityKey, EntityDef> = {
     listCols: ['label', 'description'],
     getCols: ['label', 'description', 'guideline'],
     hasContext: false,
+    scoped: false,
     fields: {
       description: { kind: 'text', max: 500, required: true },
       guideline: { kind: 'text', max: MAX_GUIDELINE_CHARS },
@@ -59,9 +65,10 @@ export const ENTITIES: Record<EntityKey, EntityDef> = {
   todos: {
     key: 'todos',
     prefix: 'todo',
-    listCols: [...RENDER_COLS, 'due', 'status'],
-    getCols: [...RENDER_COLS, 'due', 'status'],
+    listCols: [...SCOPED_COLS, 'due', 'status'],
+    getCols: [...SCOPED_COLS, 'due', 'status'],
     hasContext: true,
+    scoped: true,
     fields: {
       ...renderFields,
       due: { kind: 'date' },
@@ -74,6 +81,7 @@ export const ENTITIES: Record<EntityKey, EntityDef> = {
     listCols: [...RENDER_COLS, 'full_name', 'email', 'url_linkedin'],
     getCols: [...RENDER_COLS, 'full_name', 'email', 'url_linkedin'],
     hasContext: true,
+    scoped: false,
     fields: {
       ...renderFields,
       full_name: { kind: 'text', max: 200 },
@@ -84,26 +92,42 @@ export const ENTITIES: Record<EntityKey, EntityDef> = {
   sheets: {
     key: 'sheets',
     prefix: 'sheet',
-    listCols: [...RENDER_COLS, 'url'],
-    getCols: [...RENDER_COLS, 'url'],
+    listCols: [...SCOPED_COLS, 'url'],
+    getCols: [...SCOPED_COLS, 'url'],
     hasContext: true,
+    scoped: true,
     fields: fileFields,
   },
   docs: {
     key: 'docs',
     prefix: 'doc',
-    listCols: [...RENDER_COLS, 'url'],
-    getCols: [...RENDER_COLS, 'url'],
+    listCols: [...SCOPED_COLS, 'url'],
+    getCols: [...SCOPED_COLS, 'url'],
     hasContext: true,
+    scoped: true,
     fields: fileFields,
   },
   slides: {
     key: 'slides',
     prefix: 'slide',
-    listCols: [...RENDER_COLS, 'url', 'storage_url'],
-    getCols: [...RENDER_COLS, 'url', 'storage_url'],
+    listCols: [...SCOPED_COLS, 'url', 'storage_url'],
+    getCols: [...SCOPED_COLS, 'url', 'storage_url'],
     hasContext: true,
+    scoped: true,
     fields: { ...fileFields, storage_url: { kind: 'url' } },
+  },
+  projects: {
+    key: 'projects',
+    prefix: 'project',
+    listCols: ['label', 'name', 'icon', 'context'],
+    getCols: ['label', 'name', 'icon', 'context'],
+    hasContext: true,
+    scoped: false,
+    // The selection lives on the profile and changes only through select_project.
+    fields: {
+      name: { kind: 'text', max: 200, required: true },
+      icon: { kind: 'text', max: 16 },
+    },
   },
 }
 
@@ -156,7 +180,11 @@ export function parseLabel(raw: unknown): ParsedLabel {
 }
 
 export function notFoundMessage(label: string, def: EntityDef): string {
-  return `No record with label ${label}. Call list with entity "${def.key}" to see which labels exist.`
+  return `No record with label ${label}. Call list with entity "${def.key}" to see which labels exist.` +
+    (def.scoped
+      ? ' It may belong to another project: list with entity "projects" shows them, and ' +
+        'select_project switches project.'
+      : '')
 }
 
 function isRealDate(value: string): boolean {
@@ -294,7 +322,7 @@ const ALL_FILTERS = [...TODO_FILTERS, 'category', 'importance_min']
 export function parseFilters(def: EntityDef, args: Record<string, unknown>): ListFilters {
   const out: ListFilters = {}
   for (const f of ALL_FILTERS.filter((f) => !isEmpty(args[f]))) {
-    if (def.key === 'skills' || (TODO_FILTERS.includes(f) && def.key !== 'todos')) {
+    if (def.key === 'skills' || def.key === 'projects' || (TODO_FILTERS.includes(f) && def.key !== 'todos')) {
       throw new ToolError(`"${f}" does not work for ${def.key}. Call list again without it.`)
     }
     const v = trimmed(args[f])
@@ -345,7 +373,7 @@ export function fitRows<T>(rows: T[], maxChars = MAX_RESULT_CHARS): { rows: T[];
   return { rows: kept, cut: kept.length < rows.length }
 }
 
-const FORBIDDEN_KEYS = new Set(['id', 'profile_id', 'created_at', 'updated_at', 'label_no'])
+const FORBIDDEN_KEYS = new Set(['id', 'profile_id', 'project_id', 'created_at', 'updated_at', 'label_no'])
 
 /** The single exit check: plain JSON values only, and no database id or internal column anywhere. */
 export function assertSafe(value: unknown, path = 'result'): void {

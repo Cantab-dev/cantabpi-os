@@ -61,8 +61,8 @@ Deno.test('valid labels resolve to their entity', () => {
 
 Deno.test('not-found message names the list call', () => {
   assertEquals(
-    notFoundMessage('todo:999', ENTITIES.todos),
-    'No record with label todo:999. Call list with entity "todos" to see which labels exist.',
+    notFoundMessage('lead:999', ENTITIES.leads),
+    'No record with label lead:999. Call list with entity "leads" to see which labels exist.',
   )
 })
 
@@ -218,4 +218,28 @@ Deno.test('finish puts the lead line before the data in content, not in structur
   const r = finish({ entity: 'todos', rows: [] }, 'Do not restate.')
   assert(r.content[0].text.startsWith('Do not restate.\n{'))
   assertEquals(r.structuredContent, { entity: 'todos', rows: [] })
+})
+
+Deno.test('project labels parse, and projects take name and icon only', () => {
+  const p = parseLabel('Project:3')
+  assert(p.ok && p.def.key === 'projects' && p.label === 'project:3')
+  assertEquals(validateWrite(ENTITIES.projects, { name: ' Atlas ', icon: '🧭', selected: true }), { name: 'Atlas', icon: '🧭' })
+  assert(message(() => validateEdit(ENTITIES.projects, { label: 'project:1', selected: true })).includes('name, icon'))
+})
+
+Deno.test('projects take no list filters', () => {
+  assert(message(() => parseFilters(ENTITIES.projects, { category: 'sales' })).includes('does not work for projects'))
+})
+
+Deno.test('not found on a project-scoped entity points at the selection', () => {
+  assert(notFoundMessage('todo:9', ENTITIES.todos).includes('select_project'))
+  assert(!notFoundMessage('lead:9', ENTITIES.leads).includes('select_project'))
+})
+
+Deno.test('the four scoped entities return their project; project_id never leaves', () => {
+  for (const k of ['todos', 'sheets', 'docs', 'slides'] as const) {
+    assert(ENTITIES[k].scoped && ENTITIES[k].listCols.some((c) => c.startsWith('project:')))
+  }
+  assert(!ENTITIES.leads.scoped && !ENTITIES.skills.scoped && !ENTITIES.projects.scoped)
+  assertThrows(() => assertSafe({ record: { project_id: 'x' } }))
 })

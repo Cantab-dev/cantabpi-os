@@ -16,7 +16,10 @@ import { registerViewTool } from './views.ts'
 //   handleMcp                   A fresh MCP server per request, bound to that user's client.
 
 const INSTRUCTIONS =
-  'Cantab OS stores todos, leads, skills and pointers to Google sheets, docs and slides. ' +
+  'Cantab OS stores todos, leads, skills and pointers to Google sheets, docs and slides, grouped in projects. ' +
+  'The user works in one project at a time, chosen with select_project; todos, sheets, docs and slides belong to ' +
+  'one project each, and every reply names the selected one. Without a selected project only project calls work. ' +
+  'Leads and skills are shared by all projects. ' +
   'Every tool acts as the signed-in user and sees only their records. ' +
   'Call list before get, edit, delete or note to find labels; never invent one. ' +
   'view shows a slide PDF or a dashboard in the user\'s live view page, only when the user asks or clearly benefits.'
@@ -31,7 +34,7 @@ const CORS_HEADERS: Record<string, string> = {
 
 function handleMcp(request: Request, ctx: SupabaseContext): Promise<Response> {
   const handler = createMcpHandler(() => {
-    const server = new McpServer({ name: 'cantab-os', version: '0.6.0' }, { instructions: INSTRUCTIONS })
+    const server = new McpServer({ name: 'cantab-os', version: '0.7.0' }, { instructions: INSTRUCTIONS })
     registerTools(server, ctx.supabase as unknown as SupabaseClient)
     registerViewTool(server, ctx.supabase as unknown as SupabaseClient)
     registerViews(server)

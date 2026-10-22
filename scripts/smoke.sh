@@ -113,3 +113,32 @@ call get '{"labels":["todo:39"]}'
 call edit '{"label":"todo:39","status":true}'
 call note '{"label":"todo:39","text":"x"}'
 call delete '{"label":"todo:39"}'
+
+# Projects (docs/projects-status.md): claude@test.com owns project:1 (Atlas, selected at the start) and
+# project:2 (Birch); todo:1-3 are in Atlas and todo:4 in Birch. project:3 is Nela's. The checks above run
+# in Atlas. Ends with Atlas selected again.
+call list '{"entity":"projects"}'
+call write_todo '{"name":"Test - in Atlas"}'
+call select_project '{"label":"project:2"}'
+call list '{"entity":"todos"}'
+call get '{"labels":["todo:1","todo:4"]}'
+call edit '{"label":"todo:1","status":true}'
+call select_project '{"label":"project:3"}'
+call select_project '{"label":"todo:1"}'
+call delete '{"label":"project:2"}'
+call list '{"entity":"projects","category":"sales"}'
+PLBL="$(rpc tools/call '{"name":"write_project","arguments":{"name":"Test - project","icon":"🧪"}}' | grep -o '"label":"project:[0-9]*"' | head -1 | cut -d'"' -f4)"
+echo "--- test project: $PLBL (selected, so the other tools fail until Atlas is selected again)"
+call select_project "{\"label\":\"$PLBL\"}"
+call list '{"entity":"todos"}'
+call note "{\"label\":\"$PLBL\",\"text\":\"Goal: smoke test.\"}"
+call edit "{\"label\":\"$PLBL\",\"icon\":\"🧫\"}"
+call edit "{\"label\":\"$PLBL\",\"selected\":true}"
+call delete "{\"label\":\"$PLBL\"}"
+echo "--- no project selected now: expect the select-a-project error, except for project calls"
+call list '{"entity":"todos"}'
+call list '{"entity":"leads"}'
+call write_todo '{"name":"Test - no project"}'
+call list '{"entity":"projects"}'
+call get "{\"labels\":[\"project:1\"]}"
+call select_project '{"label":"project:1"}'
