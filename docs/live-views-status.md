@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.14 | Nela | 2026-10-22 |
+| Current | v0.15 | Nela | 2026-10-22 |
 
 Plan for a proof of concept of Siniša's memo *Server-driven UI for agent-operated apps* (received
 2026-10-21): the agent points a live browser page at a PDF or a fixed dashboard, and the open page
@@ -250,7 +250,7 @@ the domain move (A8).
 | A3 | "Updated by Claude" badge fades about 4 s after each Claude write. **Following Claude to another slot is off** (`FOLLOW_CLAUDE = false` in the page, Nela 2026-10-22): with the slot-in-view rule Claude writes to the open view anyway; a view named by the user in chat does not pull the page there | Nela; round 4 |
 | A4 | Page states: signed out, loading, empty slot, view not built yet, page needs updating, reconnecting, no project selected | Brief 7.4 |
 | A5 | Below about 720 px: chart mark, one "Views" menu, emoji-only project button | Round 1 |
-| A6 | Icons in phase order, no dividers and no phase in the tooltips (Nela, 2026-10-22): the tooltip is the name only. **Diagnose** (`Search`): Workflow Mapper `Workflow`, Research Analyst `FileSearch`. **Design** (`Lightbulb`): Value Case Calculator `Calculator`, GxP and AI Act Checker `ShieldCheck`. **Deliver** (`Settings`): Presentation Builder `Presentation`, Project Manager `CalendarCheck`. **Govern and learn** (`Shield`): Engagement Memory `Brain`, Red-Team Reviewer `SearchCheck`. Then two dummy views: **Dummy view 9** `Box` and **Dummy view 10** `Boxes` (keys `dummy_9`, `dummy_10`). Names from Nela's picture (2026-10-22); Lucide names are Claude's reading of it. A view not built yet is dimmed ("Coming soon") but can be picked | Nela's picture, replacing the v2 doc's nine |
+| A6 | **Superseded 2026-10-22 by §8 P9 (Siniša's ten views).** Was: icons in phase order, no dividers and no phase in the tooltips (Nela, 2026-10-22): the tooltip is the name only. **Diagnose** (`Search`): Workflow Mapper `Workflow`, Research Analyst `FileSearch`. **Design** (`Lightbulb`): Value Case Calculator `Calculator`, GxP and AI Act Checker `ShieldCheck`. **Deliver** (`Settings`): Presentation Builder `Presentation`, Project Manager `CalendarCheck`. **Govern and learn** (`Shield`): Engagement Memory `Brain`, Red-Team Reviewer `SearchCheck`. Then two dummy views: **Dummy view 9** `Box` and **Dummy view 10** `Boxes` (keys `dummy_9`, `dummy_10`). Names from Nela's picture (2026-10-22); Lucide names are Claude's reading of it. A view not built yet is dimmed ("Coming soon") but can be picked | Nela's picture, replacing the v2 doc's nine |
 | A7 | Brand from cantabpi.com: logo, red, Raleway and Lora; red only for the current view, Claude's signals and the toggle; light and dark | Lovable round 1 |
 | A8 | Address `os.cantabpi.com`, live 2026-10-22; `cantabpios.lovable.app` redirects there. Routes `/1…10` come with the wire-up (step 5) | Nela; 7.5 |
 
@@ -473,6 +473,82 @@ backend is live. Nothing else on the page changes.
 
 ---
 
+## 8. Phase 2: Siniša's views package, ported onto Supabase — `open`
+
+**Input (received 2026-10-22):** `03_documentation/input/bpag-final.zip` in the SharePoint root (contract 2.0, "Cantab Pi
+agentic consulting environment: mock-up package") and the deck PDF next to it
+(`Scaling-field-sales-AI-agents-across-the-EU.pdf`, the package's missing `deck/scale-up-proposal.pdf`). Demo client
+Big Pharma AG (fictional), engagement "Agentic AI for field sales: pilot to scale". Ten agent views plus a home page,
+27 tables of dummy data, a validator that refuses any write that would break a view, and a ten-step demo script.
+
+**Decided by Nela, 2026-10-22:**
+1. **Port it onto Supabase and our `view` tool**, instead of running the package's own file-based data tool.
+2. **Siniša's list of views is the one.** The eight agents and two dummies in §7 (A6) are dropped.
+
+### 8.1 What the package is
+
+| Part | In the package | Fixed or data |
+|---|---|---|
+| Schema `data/_schema.json` | 27 tables, field limits, invariants (I01–I27, W01–W04), views and what each reads, placeholders, each agent's write scope | Fixed per contract version |
+| Data `data/*.json` | One array of records per table; every record has `_meta {version, updated_at, updated_by, reason}`; `_version.json` `{global, tables}`; `_log.json` | Data, changed only by `write` |
+| Validator `validator/validate.js` | `applyWrite(schema, data, request, {version, now})`: authorise by agent scope, apply, renumber, stamp, validate the whole dataset, all or nothing. Pure functions; only `loadDataset`/`saveDataset` touch files | Fixed: wrap, do not rewrite |
+| Data tool | Five MCP verbs: `contract`, `query`, `write`, `log`, `reset` | To build |
+| Templates `index.html`, `views/*.html`, `assets/runtime.js`, `assets/theme.css` | Finished HTML. Every page calls `CP.boot`; the runtime fetches `data/<table>.json`, polls `_version.json` every 2 s, redraws and marks changed records | Fixed |
+| Demo `demo/*.json`, `spec/03-demo-script.md` | Ten write requests: steps 1–9 commit at versions 7–15, step 10 is refused (text too long) | Acceptance test |
+
+The ten agents and views: Engagement starter, Analyst, Value estimator, Presentation builder, Project manager, Team
+manager, Story builder, Agent builder, Proposal builder, Model builder; plus Engagement home.
+
+The runtime reads data in **one place** (`getJSON`, about ten lines). That is what makes the port small: the
+templates stay as they are, and only the runtime's data source changes from files to Supabase.
+
+### 8.2 The port, in one picture
+
+```
+claude.ai ──MCP──▶ mcp function ── engagement_* tools ── validate.js (unchanged) ──▶ engagement_commit()
+          └─ view ─▶ ui_views (slot → template, project)                                      │
+os.cantabpi.com/v/N (Lovable): header + <iframe src="/bpag/views/<view>.html?project=…">     ▼
+   template + runtime.js (data source swapped) ── supabase-js as the user ──▶ engagement tables
+```
+
+### 8.3 Questions and Claude's recommendations
+
+Each recommendation stands until Nela (or Siniša, where marked) answers.
+
+| # | Question | Recommendation | Why |
+|---|---|---|---|
+| P1 | How is the data stored? | **One row per package table:** `engagement_tables (project_id, tbl, records jsonb, version)`, 27 rows per project, plus `engagement_datasets (project_id, global_version, contract_version)` and `engagement_log`. Not 27 relational tables | Mirrors the files 1:1, so the validator and the runtime work unchanged and the schema stays the single source of truth. Cost: the data is not queryable table by table through the Data API, and `list`/`get` do not see it (not needed for the mock-up) |
+| P2 | Where does the validator run? | **In the MCP function.** A build script turns `validate.js` into a module the function imports, unchanged (like `build-ui.mjs`). A write loads the dataset, runs `applyWrite`, and commits the touched tables through `engagement_commit(project, expected_version, tables, log)`, which refuses if the version moved; the tool then retries once | The package says wrap, not reimplement. The version check gives the "one write at a time" the spec asks for |
+| P3 | Which project holds the engagement? | **The selected one**, like every other tool. A project with no engagement data says so; `engagement_reset` loads the Big Pharma AG seed into it. Claude suggests a new project "Dummy - Big Pharma AG" per user | Fits v2 (project implicit) and Siniša's Q3 (each slot has a project): a view reads its slot's project |
+| P4 | The tools | **Five tools named after the verbs:** `engagement_contract`, `engagement_query`, `engagement_write` (`agent`, `reason`, `ops`, `dry_run`, `if_version`), `engagement_log`, `engagement_reset` (needs `confirm`). Inputs and outputs as in `spec/02-data-tool.md`. 14 tools become 19 | Keeps the package's contract word for word; the prefix keeps them apart from `list` and `get` |
+| P5 | Who are the ten agents? | **Claude in claude.ai plays each one**, naming it in `agent`; the validator enforces that agent's write scope. The log also records the signed-in user | No agent framework exists yet; the scopes still hold |
+| P6 | Where do the templates live? | **In the Lovable app, as static files** under `public/bpag/` (templates, assets, `_schema.json`, the deck), shown in an iframe below our header. Same address, so the iframe shares the sign-in. **Needs the Lovable project connected to GitHub** (parked on 2026-10-21) so Claude can add the 30 files and the runtime change; pasting them through Lovable's chat is not workable | Templates stay fixed and in one place, and the page code is no longer out of our reach |
+| P7 | What changes in `runtime.js`? | Only the data source: `getJSON('data/<t>.json')` reads the iframe's project from Supabase; `_version.json` reads the dataset's versions; polling every 2 s stays. With `?embed=1` it skips its own brand and agent rail (our header has them) and keeps the engagement line (client, engagement, phase, week, as-of) | The smallest change that keeps every template as it is |
+| P8 | The deck PDF | **A static file next to the templates** (`public/bpag/deck/scale-up-proposal.pdf`), so the seed's relative `pdf_url` works unchanged. No Google Drive, no Storage for now; a later deck can be any https URL | No change to data or template. Dummy content, so public is acceptable; revisit before real decks |
+| P9 | Header icons and template keys | **Siniša's ten**, grouped as the package does (Client-facing · Team), keys as in the schema (`engagement_starter` … `model_builder`). The wordmark and an empty slot show Engagement home (`home`). A migration swaps the keys and clears views on the old ones | One list everywhere: schema, header, `view` tool |
+| P10 | Data per user? | **Yes, per user and project:** each user's demo is their own copy, reset on its own | Demos do not trip over each other |
+| P11 | Fonts | The package uses IBM Plex; our header uses Raleway and Lora. **Parked** with colour (Q8) | Not needed to prove the port |
+| P12 | Left out | The package's HTTP server (Lovable serves the files) and its `tools/*.js` scripts (used only to check our seed matches). As in the package: no undo beyond reset, no formula engine | |
+
+**Known gap, accepted for the mock-up:** `engagement_commit` runs as the signed-in user, so a user could call it from
+the browser with data the validator never saw. It only breaks their own demo. Same trade-off as the POC (§2.2).
+
+### 8.4 Steps
+
+| Step | What | Who | Status |
+|---|---|---|---|
+| 0 | Answer P1–P12; connect the Lovable project to GitHub (P6) | Nela | `open` |
+| 1 | Migration: `engagement_*` tables, RLS, `engagement_commit`, read functions for the runtime, new template keys (P9). Dry-run on live in a rolled-back transaction | Claude; Nela runs `db push` | `planned` |
+| 2 | Function v0.9.0: the five tools, the validator module, the seed bundled; unit tests; the package's demo run through `engagement_write` | Claude; deploy on Nela's go | `planned` |
+| 3 | Templates into the Lovable repo under `public/bpag/`; `runtime.js` data source and embed mode | Claude, in the GitHub repo | `planned` |
+| 4 | Lovable message: header icons to the ten, the iframe in the centre pane, home in an empty slot | Claude drafts; Nela sends | `planned` |
+| 5 | Check headless: each template against the seed and after its demo write (redraw under 2 s, change marker); then the full demo in claude.ai | Claude, Nela | `planned` |
+| 6 | Docs: tools-status, Diagram_input, DECISIONS, HANDOFF, Document Log | Claude, with each step | `planned` |
+
+**Acceptance (from the package):** the seed validates with 0 errors; steps 1–9 commit at versions 7–15 and step 10 is
+refused with "text is 122 characters, allowed ≤ 110"; every view redraws within 2 s of a commit and marks the changed
+records; `engagement_reset` restores the seed exactly; Siniša sees none of Nela's engagement data.
+
 ## Comments for Nela (proposals, not in the build)
 
 - A "Show in view" button on slide rows in the in-chat files view would call `view` directly. It is
@@ -481,6 +557,7 @@ backend is live. Nothing else on the page changes.
   following agent edits made with existing tools. It is left out because Siniša asked for a dummy table.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.15 (2026-10-22) — §8 added: phase 2 plan, Siniša's views package ported onto Supabase (P1–P12). The §7 icon list (A6) is replaced by Siniša's ten.
 - v0.14 (2026-10-22) — Round 4 (Nela with Lovable): chip, account menu and Follow Claude removed, badge fades; narrow-pane fixes; headless check at 400 px (conflict line shown).
 - v0.13 (2026-10-22) — Steps 5 and 6: icons wired up by Lovable, headless check 5/5; narrow-pane follow-up in COMMS.
 - v0.12 (2026-10-22) — §7.2 built (migration and v0.8.0, dry-run 16/16, 42 unit tests); Q4, Q5 as suggested; 7.8 wire-up draft for Lovable.
