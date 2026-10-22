@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.16 | Nela | 2026-10-22 |
+| Current | v0.17 | Nela | 2026-10-22 |
 
 Plan for a proof of concept of Siniša's memo *Server-driven UI for agent-operated apps* (received
 2026-10-21): the agent points a live browser page at a PDF or a fixed dashboard, and the open page
@@ -531,7 +531,7 @@ Each recommendation stands until Nela (or Siniša, where marked) answers.
 | P12 | Left out | The package's HTTP server (Lovable serves the files) and its `tools/*.js` scripts (used only to check our seed matches). As in the package: no undo beyond reset, no formula engine | |
 | P13 | Who may save engagement data? | **Decided by Nela, 2026-10-22: Aleph's pattern.** `engagement_commit` is callable by the service role only; the MCP function verifies the user's token, runs the validator, then commits with the service role, passing the user's id; the function checks that the project is that user's. The browser can read but never write. The key is already in the function's environment (`SUPABASE_SECRET_KEYS`, provided by Supabase), so nothing for Nela to set | Closes the gap where a browser could save data the validator never saw |
 | P14 | The other tools | **Decided by Nela, 2026-10-22: move them to the same pattern on 2026-10-23** (separate plan: tool code under the service role filters by user and project, RLS stays for browser paths, as in Aleph). Today only `engagement_commit` | One access model for all tools |
-| P6b | Templates in a table instead of Lovable static files (Nela, 2026-10-22: "HTMLs can be shared via table") | Option to weigh against P6: a build script inlines `runtime.js` and `theme.css` into each page and stores it in a `view_templates` table (key, html, contract version); the Lovable page loads it into the iframe with `srcdoc`. No GitHub connection needed; the deck still needs a URL (P8: Storage, public bucket) | Avoids the Lovable–GitHub connection; costs a build step and a Storage file for the deck |
+| P6b | Templates in a table instead of Lovable static files | **Chosen by Nela, 2026-10-22 (replaces P6).** a build script inlines `runtime.js` and `theme.css` into each page and stores it in a `view_templates` table (key, html, contract version); the Lovable page loads it into the iframe with `srcdoc`. No GitHub connection needed. `scripts/templates.mjs` (run by Nela with `CANTAB_SERVICE_KEY`, like `slide-pdfs.mjs`) inlines and upserts the pages and uploads the deck to a public Storage bucket; the seed's `pdf_url` becomes that https address (replaces P8) | Avoids the Lovable–GitHub connection; costs a build step and a Storage file for the deck |
 
 ### 8.4 Steps
 
@@ -557,6 +557,7 @@ records; `engagement_reset` restores the seed exactly; Siniša sees none of Nela
   following agent edits made with existing tools. It is left out because Siniša asked for a dummy table.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.17 (2026-10-22) — P6b chosen (templates in a table, deck in public Storage), replacing P6 and P8.
 - v0.16 (2026-10-22) — P13 (Aleph pattern for `engagement_commit`), P14 (other tools tomorrow), P6b (templates in a table) added.
 - v0.15 (2026-10-22) — §8 added: phase 2 plan, Siniša's views package ported onto Supabase (P1–P12). The §7 icon list (A6) is replaced by Siniša's ten.
 - v0.14 (2026-10-22) — Round 4 (Nela with Lovable): chip, account menu and Follow Claude removed, badge fades; narrow-pane fixes; headless check at 400 px (conflict line shown).
