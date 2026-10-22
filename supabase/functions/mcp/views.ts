@@ -1,26 +1,19 @@
 import type { McpServer } from '@modelcontextprotocol/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { z } from 'zod'
+import { SCHEMA } from './engagement_pkg.ts'
 import { ENTITIES, failure, finish, notFoundMessage, parseLabel, ToolError, type ToolResult } from './lib.ts'
 
 // Live views (docs/live-views-status.md §3). The page /v/<slot> lives in the Lovable app and follows its slot
 // row in ui_views through realtime. These keys and enums must match that page and view_check in the
-// 20261021120000_live_views and 20261022140000_view_header migrations: they are kept in step by hand
-// (live-views-status.md §1.2, §7.2).
+// 20261021120000_live_views and 20261022150000_engagement migrations: they are kept in step by hand
+// (live-views-status.md §1.2, §8.5).
 export const VIEW_BASE_URL = 'https://os.cantabpi.com/v/'
-/** The header views (live-views-status.md §7, A6), in header order; none takes parameters yet. */
-export const HEADER_VIEWS: Record<string, string> = {
-  workflow_mapper: 'Workflow Mapper',
-  research_analyst: 'Research Analyst',
-  value_case_calculator: 'Value Case Calculator',
-  gxp_ai_act_checker: 'GxP and AI Act Checker',
-  presentation_builder: 'Presentation Builder',
-  project_manager: 'Project Manager',
-  engagement_memory: 'Engagement Memory',
-  red_team_reviewer: 'Red-Team Reviewer',
-  dummy_9: 'Dummy view 9',
-  dummy_10: 'Dummy view 10',
-}
+/** The engagement views (live-views-status.md §8, P9): the package's eleven. None takes parameters; each reads its
+ * slot's project. */
+export const HEADER_VIEWS: Record<string, string> = Object.fromEntries(
+  Object.entries(SCHEMA.views as Record<string, { label: string }>).map(([k, v]) => [k, v.label]),
+)
 export const TEMPLATES = [...Object.keys(HEADER_VIEWS), 'pdf', 'dashboard'] as const
 const HEADER_LIST = Object.entries(HEADER_VIEWS).map(([k, n]) => `"${k}" (${n})`).join(', ')
 export const DASHBOARDS = ['sales_overview'] as const
@@ -209,8 +202,8 @@ export function registerViewTool(server: McpServer, db: SupabaseClient): void {
         'deliberate act: call it when the user asks to see something or would clearly benefit, never just because you ' +
         'changed data. Call it without "template" to list the user\'s views. It changes the view the user has open unless ' +
         'the user names another view number. Templates: "pdf" (the PDF of a slide deck, optionally at a page; find the ' +
-        'label with list entity "slides"), "dashboard" (a predefined dashboard, with optional filters), and the agent ' +
-        `views, which take no parameters yet: ${HEADER_LIST}. ` +
+        'label with list entity "slides"), "dashboard" (a predefined dashboard, with optional filters), and the engagement ' +
+        `views of the selected project, which take no parameters: ${HEADER_LIST}. ` +
         'Examples: "Show me the company intro deck at page 3" -> view with template "pdf", document ' +
         '"slide:5", page 3. "Sales dashboard for EMEA this quarter" -> view with template "dashboard", dashboard ' +
         '"sales_overview", filters {period "qtd", region "emea"}. Nothing comes back except a confirmation and the url.',

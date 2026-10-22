@@ -4,6 +4,7 @@ import { createMcpHandler, McpServer } from '@modelcontextprotocol/server'
 import { pipeline } from '@supabase/middleware'
 import { type SupabaseContext, withOAuthProtectedResource, withSupabase } from '@supabase/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { registerEngagementTools } from './engagement.ts'
 import { registerTools } from './tools.ts'
 import { registerViews } from './ui.ts'
 import { registerViewTool } from './views.ts'
@@ -22,7 +23,9 @@ const INSTRUCTIONS =
   'Leads and skills are shared by all projects. ' +
   'Every tool acts as the signed-in user and sees only their records. ' +
   'Call list before get, edit, delete or note to find labels; never invent one. ' +
-  'view shows a slide PDF or a dashboard in the user\'s live view page, only when the user asks or clearly benefits.'
+  'view shows something in the user\'s live view page, only when the user asks or clearly benefits: a slide PDF, a ' +
+  'dashboard, or one of the engagement views. The engagement_* tools read and change the selected project\'s ' +
+  'engagement (the ten agents\' data); call engagement_contract first, as the agent you act as.'
 
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -34,9 +37,13 @@ const CORS_HEADERS: Record<string, string> = {
 
 function handleMcp(request: Request, ctx: SupabaseContext): Promise<Response> {
   const handler = createMcpHandler(() => {
-    const server = new McpServer({ name: 'cantab-os', version: '0.8.0' }, { instructions: INSTRUCTIONS })
+    const server = new McpServer({ name: 'cantab-os', version: '0.9.0' }, { instructions: INSTRUCTIONS })
     registerTools(server, ctx.supabase as unknown as SupabaseClient)
     registerViewTool(server, ctx.supabase as unknown as SupabaseClient)
+    registerEngagementTools(
+      server, ctx.supabase as unknown as SupabaseClient, ctx.supabaseAdmin as unknown as SupabaseClient,
+      ctx.userClaims?.id ?? null,
+    )
     registerViews(server)
     return server
   })

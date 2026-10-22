@@ -64,8 +64,8 @@ Deno.test('registry matches the migration', () => {
 })
 
 Deno.test('header views take no parameters', () => {
-  assertEquals(parseViewArgs({ template: 'Workflow_Mapper' }), { kind: 'header', template: 'workflow_mapper', slot: undefined })
-  assertEquals(parseViewArgs({ template: 'dummy_10', slot: 4 }), { kind: 'header', template: 'dummy_10', slot: 4 })
+  assertEquals(parseViewArgs({ template: 'Model_Builder' }), { kind: 'header', template: 'model_builder', slot: undefined })
+  assertEquals(parseViewArgs({ template: 'home', slot: 4 }), { kind: 'header', template: 'home', slot: 4 })
   assert(message(() => parseViewArgs({ template: 'project_manager', document: 'slide:1' })).includes('takes no parameters'))
 })
 
@@ -75,7 +75,7 @@ Deno.test('the message says whether the view is the one in front of the user', (
   assert(applyMessage(5, 'X', { in_view: false, seen_lately: false }).includes('If the user has view 5 open'))
 })
 
-Deno.test('header views match the view header migration', () => {
-  const sql = Deno.readTextFileSync(new URL('../../migrations/20261022140000_view_header.sql', import.meta.url))
+Deno.test('engagement views match the engagement migration', () => {
+  const sql = Deno.readTextFileSync(new URL('../../migrations/20261022150000_engagement.sql', import.meta.url))
   for (const k of Object.keys(HEADER_VIEWS)) assert(sql.includes(`'${k}'`), k)
 })
