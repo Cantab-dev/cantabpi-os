@@ -5,9 +5,24 @@ import { ENTITIES, failure, finish, notFoundMessage, parseLabel, ToolError, type
 
 // Live views (docs/live-views-status.md §3). The page /v/<slot> lives in the Lovable app and follows its slot
 // row in ui_views through realtime. These keys and enums must match that page and view_check in the
-// 20261021120000_live_views migration: they are kept in step by hand (live-views-status.md §1.2).
+// 20261021120000_live_views and 20261022140000_view_header migrations: they are kept in step by hand
+// (live-views-status.md §1.2, §7.2).
 export const VIEW_BASE_URL = 'https://os.cantabpi.com/v/'
-export const TEMPLATES = ['pdf', 'dashboard'] as const
+/** The header views (live-views-status.md §7, A6), in header order; none takes parameters yet. */
+export const HEADER_VIEWS: Record<string, string> = {
+  workflow_mapper: 'Workflow Mapper',
+  research_analyst: 'Research Analyst',
+  value_case_calculator: 'Value Case Calculator',
+  gxp_ai_act_checker: 'GxP and AI Act Checker',
+  presentation_builder: 'Presentation Builder',
+  project_manager: 'Project Manager',
+  engagement_memory: 'Engagement Memory',
+  red_team_reviewer: 'Red-Team Reviewer',
+  dummy_9: 'Dummy view 9',
+  dummy_10: 'Dummy view 10',
+}
+export const TEMPLATES = [...Object.keys(HEADER_VIEWS), 'pdf', 'dashboard'] as const
+const HEADER_LIST = Object.entries(HEADER_VIEWS).map(([k, n]) => `"${k}" (${n})`).join(', ')
 export const DASHBOARDS = ['sales_overview'] as const
 export const PERIODS = ['7d', '30d', 'qtd', 'ytd'] as const
 export const REGIONS = ['emea', 'amer', 'apac'] as const
@@ -19,6 +34,7 @@ export type ViewRequest =
   | { kind: 'list' }
   | { kind: 'pdf'; label: string; page?: number; slot?: number }
   | { kind: 'dashboard'; params: { dashboard: string; filters: Row }; slot?: number }
+  | { kind: 'header'; template: string; slot?: number }
 
 const oneOf = (list: readonly string[]) => list.join(', ')
 
@@ -43,6 +59,12 @@ export function parseViewArgs(args: Row): ViewRequest {
     return { kind: 'list' }
   }
   const slot = wholeNumber('slot', args.slot, 1, MAX_SLOT)
+
+  if (template in HEADER_VIEWS) {
+    const wrong = given(['document', 'page', 'dashboard', 'filters'])
+    if (wrong.length) throw new ToolError(`invalid_parameter: ${template} takes no parameters yet; leave out ${wrong.join(', ')}.`)
+    return { kind: 'header', template, slot }
+  }
 
   if (template === 'pdf') {
     const wrong = given(['dashboard', 'filters'])
@@ -89,6 +111,7 @@ const viewUrl = (slot: number) => VIEW_BASE_URL + slot
 
 /** A short description of what a slot shows, for the model; never the content. */
 function describe(template: string, agent: Row, ui: Row, slideLabels: Map<string, string>): string {
+  if (template in HEADER_VIEWS) return HEADER_VIEWS[template]
   if (template === 'pdf') {
     const label = slideLabels.get(String(agent.slide_id)) ?? 'a slide no longer available'
     return ui.page ? `${label} at page ${ui.page}` : label
@@ -140,6 +163,11 @@ async function viewTool(db: SupabaseClient, args: Row): Promise<ToolResult> {
     params = { slide_id: s.data.id }
     focus = req.page ? { page: req.page } : {}
     shows = req.page ? `${req.label} at page ${req.page}` : req.label
+  } else if (req.kind === 'header') {
+    template = req.template
+    params = {}
+    focus = {}
+    shows = HEADER_VIEWS[req.template]
   } else {
     template = 'dashboard'
     params = req.params
@@ -153,22 +181,19 @@ async function viewTool(db: SupabaseClient, args: Row): Promise<ToolResult> {
     throw res.error
   }
   const out = res.data as Row
-  if (out.status === 'slot_limit') {
-    const views = await listViews(db)
-    return failure(
-      `slot_limit: all ${MAX_SLOT} views are in use. Call view again with "slot" set to the one to replace. Views: ` +
-        JSON.stringify(views),
-    )
-  }
   const slot = (out.view as Row).slot as number
-  return finish({
-    status: 'ok',
-    slot,
-    url: viewUrl(slot),
-    message:
-      `View ${slot} shows ${shows}. If the user has view ${slot} open it has updated; otherwise give them the url once ` +
-      '(in the Claude desktop app it opens in the browser pane). Do not describe the content: you have not seen it.',
-  })
+  return finish({ status: 'ok', slot, url: viewUrl(slot), message: applyMessage(slot, shows, out) })
+}
+
+/** What the model is told after a write (live-views-status.md §7.6); never the content. */
+export function applyMessage(slot: number, shows: string, out: Row): string {
+  const giveUrl = 'give them the url once (in the Claude desktop app it opens in the browser pane).'
+  const tail = ' Do not describe the content: you have not seen it.'
+  if (out.in_view && out.seen_lately) return `View ${slot}, the one the user has open, now shows ${shows}. It has updated.` + tail
+  if (out.in_view) {
+    return `View ${slot}, the one the user last had open, now shows ${shows}. The user may not have it open: ${giveUrl}` + tail
+  }
+  return `View ${slot} shows ${shows}. If the user has view ${slot} open it has updated; otherwise ${giveUrl}` + tail
 }
 
 const VIEW_CRASH =
@@ -182,9 +207,11 @@ export function registerViewTool(server: McpServer, db: SupabaseClient): void {
       description:
         'Show something to the user in a live view: a browser page next to the chat that follows this tool. Showing is a ' +
         'deliberate act: call it when the user asks to see something or would clearly benefit, never just because you ' +
-        'changed data. Call it without "template" to list the user\'s views. Templates: "pdf" (the PDF of a slide deck, ' +
-        'optionally at a page; find the label with list entity "slides") and "dashboard" (a predefined dashboard, with ' +
-        'optional filters). Examples: "Show me the company intro deck at page 3" -> view with template "pdf", document ' +
+        'changed data. Call it without "template" to list the user\'s views. It changes the view the user has open unless ' +
+        'the user names another view number. Templates: "pdf" (the PDF of a slide deck, optionally at a page; find the ' +
+        'label with list entity "slides"), "dashboard" (a predefined dashboard, with optional filters), and the agent ' +
+        `views, which take no parameters yet: ${HEADER_LIST}. ` +
+        'Examples: "Show me the company intro deck at page 3" -> view with template "pdf", document ' +
         '"slide:5", page 3. "Sales dashboard for EMEA this quarter" -> view with template "dashboard", dashboard ' +
         '"sales_overview", filters {period "qtd", region "emea"}. Nothing comes back except a confirmation and the url.',
       inputSchema: z.object({
@@ -202,7 +229,7 @@ export function registerViewTool(server: McpServer, db: SupabaseClient): void {
         }, { error: '"filters" must be an object with period and/or region.' })
           .describe('dashboard: filter values; leave out for the defaults.').optional(),
         slot: z.union([z.number(), z.string()], { error: `"slot" must be a whole number from 1 to ${MAX_SLOT}.` })
-          .describe('View number from the list. Leave out to reuse the view of the same template, or else open a new one.')
+          .describe('View number. Leave out unless the user names one: the view the user has open is used.')
           .optional(),
       }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },

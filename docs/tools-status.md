@@ -121,9 +121,13 @@ Display title: "Add note".
 | Label is a skill | not retry: skills take no notes |
 | `text` empty or too long | supply text within 1,000 characters; split into several notes if needed |
 
-### view — `built` (v0.6.0, live views POC)
+### view — `built` (v0.6.0, live views POC); `changed` v0.8.0 planned
 
-Points the user's live view page (`https://cantabpios.lovable.app/v/<slot>`) at a slide's PDF or the `sales_overview` dashboard; without `template` it lists the user's views. Returns a confirmation and the url, never content. Errors: `not_found`, `invalid_parameter`, `slot_limit`. Contract, slot rules and the page: [live-views-status.md](live-views-status.md) §2–§4. Checked live as `claude@test.com` on 2026-10-21 (list, pdf at a page, dashboard with filters, reuse of a view, another user's slide, unknown dashboard).
+**v0.8.0 (built, not deployed; waits for migration `20261022140000_view_header`):** also takes the ten header views
+(no parameters yet), writes to the view the user has open unless the user names a slot, keeps the replaced view's
+settings, and no longer returns `slot_limit`. 42 unit tests pass. [live-views-status.md](live-views-status.md) §7.2, §7.6.
+
+Points the user's live view page (`https://os.cantabpi.com/v/<slot>`) at a slide's PDF or the `sales_overview` dashboard; without `template` it lists the user's views. Returns a confirmation and the url, never content. Errors: `not_found`, `invalid_parameter`, `slot_limit`. Contract, slot rules and the page: [live-views-status.md](live-views-status.md) §2–§4. Checked live as `claude@test.com` on 2026-10-21 (list, pdf at a page, dashboard with filters, reuse of a view, another user's slide, unknown dashboard).
 
 ### Projects — `built` (v0.7.0, v2 phase 1)
 

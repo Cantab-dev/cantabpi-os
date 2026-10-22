@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.11 | Nela | 2026-10-22 |
+| Current | v0.12 | Nela | 2026-10-22 |
 
 Plan for a proof of concept of Siniša's memo *Server-driven UI for agent-operated apps* (received
 2026-10-21): the agent points a live browser page at a PDF or a fixed dashboard, and the open page
@@ -235,8 +235,8 @@ the domain move (A8).
 | Q2 | Which slot does a change go to? | Nela | **Answered 2026-10-22:** the slot the user has in view, unless the user names another. Not covered by the POC rule; designed in 7.6 |
 | Q3 | Are slots per user or per project? | Siniša | **Answered 2026-10-22 (Siniša):** per user; each slot has a project foreign key. Claude's reading: ten slots per user; a slot shows the project set on it, which is the selected project when Claude or the user last wrote it (7.2 item 7) |
 | Q9 | With a project on each slot: does the header chip show the slot's project or the selected one? | Nela | **Answered 2026-10-22, first iteration (simplest):** the chip shows the selected project and picking one only changes the selection (`select_project`), as in message 7.7. Slots are not moved. **To reconsider later:** a slot can then show a different project from the chip |
-| Q4 | Does switching view keep the old view's settings (PDF page, filters)? | Nela | Yes, remembered per view inside the slot |
-| Q5 | Keep the POC views `pdf` and `dashboard` for Claude only, with no icon, until the v2 views replace them? | Nela | Yes |
+| Q4 | Does switching view keep the old view's settings (PDF page, filters)? | Nela | **Answered 2026-10-22:** yes, as suggested (built, 7.2) |
+| Q5 | Keep the POC views `pdf` and `dashboard` for Claude only, with no icon, until the v2 views replace them? | Nela | **Answered 2026-10-22:** yes, as suggested (built, 7.2) |
 | Q7 | The ninth and tenth icons? | Nela | **Answered 2026-10-22:** the eight agents plus two dummy views (A6) |
 | Q8 | Colour: the picture's blues or round 1's Cantab red? | Nela | **Parked 2026-10-22:** ignore for now; round 1's colours stay |
 | Q6 | Accept Lovable's round-1 proposals: (b) a "Reload" link on "This page needs updating"; (c) at 400 px hide "View N" and the "Follow Claude" text | Nela, after the review | Accept both |
@@ -254,9 +254,21 @@ the domain move (A8).
 | A7 | Brand from cantabpi.com: logo, red, Raleway and Lora; red only for the current view, Claude's signals and the toggle; light and dark | Lovable round 1 |
 | A8 | Address `os.cantabpi.com`, live 2026-10-22; `cantabpios.lovable.app` redirects there. Routes `/1…10` come with the wire-up (step 5) | Nela; 7.5 |
 
-### 7.2 Backend change (provisional, for after the design round)
+### 7.2 Backend change — `built`, not applied
 
-Written as a new migration; Nela runs `db push`.
+Migration `supabase/migrations/20261022140000_view_header.sql`; Nela runs `db push`, then Claude deploys function
+v0.8.0. Dry-run on the live database in a rolled-back transaction on 2026-10-22, as `claude@test.com`: 16 checks
+passed (slot in view, slot given, slot 1 with none seen; icon click on a full and an empty slot; conflict; settings kept
+in `state` and the switched-to view's removed; refusals of a non-header click, parameters on a header view and slot 11;
+`view_open` and `view_update` unchanged; no direct write). 42 unit tests pass.
+
+**As built:** the page needs no change to keep working. `agent_params` and `ui_params` stay the current view's
+settings; `state` holds only the views switched away from (so Q4 is answered as suggested). Q5 as suggested: the icon
+click (`view_set_template`) accepts only the ten header views. `project_id` is set on agent writes and clicks, not on the
+page's own filter changes. Not done: `profiles` in the Realtime publication (the chip refreshes on focus, 7.7), and
+the page reading a slide through the slot's project (later, with Q9).
+
+As planned:
 
 1. **Template keys.** `ui_views.template` accepts the agent keys `workflow_mapper`, `research_analyst`,
    `value_case_calculator`, `gxp_ai_act_checker`, `presentation_builder`, `project_manager`, `engagement_memory`,
@@ -289,8 +301,8 @@ already exist.
 | 1 | Answer the open questions Q1–Q6 in 7.1 | Nela, Siniša | `open` |
 | 2 | **Design round 1:** Lovable builds the header on a separate route with made-up data, no backend calls (message 7.4) | Nela sends; Lovable builds; Nela reviews | `built` 2026-10-22, in the Lovable preview at `/design/header` (COMMS 2026-10-22); Nela's review next |
 | 3 | Rounds 2+: Nela's feedback to Lovable directly; Claude drafts a message only when a change touches behaviour or data | Nela, Lovable | `planned` |
-| 4 | Plan the backend change (7.2) against the chosen design; migration and tool | Claude writes; Nela runs `db push`; deploy on Nela's go | `planned` |
-| 5 | **Wire-up message:** Lovable connects the header on `/v/:slot` to the backend. Drafted by Claude after step 4 | Claude drafts; Nela sends | `planned` |
+| 4 | Plan the backend change (7.2) against the chosen design; migration and tool | Claude writes; Nela runs `db push`; deploy on Nela's go | `built` 2026-10-22, waiting for `db push`, then deploy |
+| 5 | **Wire-up message:** Lovable connects the header on `/v/:slot` to the backend (7.8) | Claude drafts; Nela sends after the deploy | `planned` |
 | 6 | Test the live page headless, then Nela in the desktop app | Claude, Nela | `planned` |
 
 ### 7.4 Draft message for Lovable: design round 1 (not sent)
@@ -426,6 +438,39 @@ changes.
 
 ---
 
+### 7.8 Draft message for Lovable: wire up the icons and the slot in view (round 3)
+
+Nela: send this **after** Claude has deployed v0.8.0 (it says so). Paste everything between the lines.
+
+---
+
+**Make the header icons work on `/v/:slot`, and tell the backend which view is in front of the user.** The
+backend is live. Nothing else on the page changes.
+
+1. **View keys.** The ten icons map to these `template` values, in header order: `workflow_mapper`,
+   `research_analyst`, `value_case_calculator`, `gxp_ai_act_checker`, `presentation_builder`, `project_manager`,
+   `engagement_memory`, `red_team_reviewer`, `dummy_9`, `dummy_10`. `pdf` and `dashboard` stay as they are and have
+   no icon.
+2. **Active icon.** The icon whose key is the view's `template` is active; none for `pdf`, `dashboard` or empty.
+   Icons are no longer dimmed; tooltip is the name only.
+3. **Click.** `rpc('view_set_template', { p_slot, p_expected_version: view.version, p_template: key })`. On an empty
+   slot pass `p_expected_version: null`. It returns `{status: 'ok', view}`, `{status: 'conflict', view}` (Claude
+   changed it first: show the returned view, and the note "Claude changed this view; your click was not applied" next
+   to the icons) or `{status: 'gone'}` (show empty). Highlight the clicked icon at once; render from the returned view
+   and from Realtime as now. Clicking the active icon does nothing.
+4. **Centre pane for the ten views.** Their parameters are empty for now: show the placeholder from the design
+   (icon, name, "Coming soon"). Not "This page needs updating"; that stays for keys the page does not know.
+5. **View name** in the bar: the view's name for the ten (e.g. "Workflow Mapper").
+6. **Slot in view.** Call `rpc('view_seen', { p_slot })` on load (after `SUBSCRIBED`, next to `view_open`), when the
+   tab becomes visible, and when the window gets focus; at most once every 5 seconds. Claude now changes the view the
+   user has in front of them, so this decides where Claude's next change goes.
+7. **Unchanged:** Follow Claude, the badge and the back line, the project chip, `view_update` for page and filters,
+   the delete handling, no direct table writes.
+
+**Please send back:** published, and anything that did not work as written.
+
+---
+
 ## Comments for Nela (proposals, not in the build)
 
 - A "Show in view" button on slide rows in the in-chat files view would call `view` directly. It is
@@ -434,6 +479,7 @@ changes.
   following agent edits made with existing tools. It is left out because Siniša asked for a dummy table.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.12 (2026-10-22) — §7.2 built (migration and v0.8.0, dry-run 16/16, 42 unit tests); Q4, Q5 as suggested; 7.8 wire-up draft for Lovable.
 - v0.11 (2026-10-22) — Round 2 published (header on the live page); dividers and phase prefixes dropped (A6).
 - v0.10 (2026-10-22) — Q9 answered: simplest first iteration, to reconsider.
 - v0.9 (2026-10-22) — Q3 answered by Siniša (per user, project FK on the slot): 7.2 item 7; Q9 added.

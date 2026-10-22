@@ -1,6 +1,6 @@
 import { assert, assertEquals } from 'jsr:@std/assert@1'
 import { ToolError } from './lib.ts'
-import { DASHBOARDS, parseViewArgs, PERIODS, REGIONS } from './views.ts'
+import { applyMessage, DASHBOARDS, HEADER_VIEWS, parseViewArgs, PERIODS, REGIONS } from './views.ts'
 
 const message = (fn: () => unknown): string => {
   try {
@@ -61,4 +61,21 @@ Deno.test('registry matches the migration', () => {
   for (const d of DASHBOARDS) assert(sql.includes(`'${d}'`), d)
   assert(sql.includes(`in (${PERIODS.map((p) => `'${p}'`).join(', ')})`), 'periods')
   assert(sql.includes(`in (${REGIONS.map((r) => `'${r}'`).join(', ')})`), 'regions')
+})
+
+Deno.test('header views take no parameters', () => {
+  assertEquals(parseViewArgs({ template: 'Workflow_Mapper' }), { kind: 'header', template: 'workflow_mapper', slot: undefined })
+  assertEquals(parseViewArgs({ template: 'dummy_10', slot: 4 }), { kind: 'header', template: 'dummy_10', slot: 4 })
+  assert(message(() => parseViewArgs({ template: 'project_manager', document: 'slide:1' })).includes('takes no parameters'))
+})
+
+Deno.test('the message says whether the view is the one in front of the user', () => {
+  assert(applyMessage(3, 'X', { in_view: true, seen_lately: true }).includes('the one the user has open'))
+  assert(applyMessage(3, 'X', { in_view: true, seen_lately: false }).includes('may not have it open'))
+  assert(applyMessage(5, 'X', { in_view: false, seen_lately: false }).includes('If the user has view 5 open'))
+})
+
+Deno.test('header views match the view header migration', () => {
+  const sql = Deno.readTextFileSync(new URL('../../migrations/20261022140000_view_header.sql', import.meta.url))
+  for (const k of Object.keys(HEADER_VIEWS)) assert(sql.includes(`'${k}'`), k)
 })

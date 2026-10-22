@@ -123,6 +123,7 @@ TRUNCATE. Conventions: primary key `id`, foreign key `<table>_id`, owner column 
 | email | text | |
 | display_name | text | |
 | selected_project_id | uuid | FK → `projects.id` on delete set null. The one selected project [built v0.7.0] |
+| current_slot, current_slot_at | smallint 1–10, timestamptz | The live view slot in front of the user, set by `view_seen` [planned v0.8.0, migration `20261022140000_view_header`] |
 | created_at, updated_at | timestamptz | not null, default now(); `updated_at` by trigger |
 
 **`projects`** [built v0.7.0]
@@ -186,9 +187,11 @@ null), `full_name`, `email`, `url_linkedin`, `importance` (1–3), `action`, `co
 | id | uuid | PK |
 | profile_id | uuid | not null, default auth.uid(), FK → `profiles.id` on delete cascade |
 | slot_no | smallint | not null, check 1–10; **unique (`profile_id`, `slot_no`)** |
-| template | text | not null, check in (`pdf`, `dashboard`) → **[candidate]** the nine v2 view templates |
+| template | text | not null, check in the ten header views (`workflow_mapper`, `research_analyst`, `value_case_calculator`, `gxp_ai_act_checker`, `presentation_builder`, `project_manager`, `engagement_memory`, `red_team_reviewer`, `dummy_9`, `dummy_10`), `pdf`, `dashboard` [planned v0.8.0, migration `20261022140000_view_header`] |
 | agent_params | jsonb | not null, default `{}`, must be an object |
 | ui_params | jsonb | not null, default `{}`, must be an object |
+| state | jsonb | not null, default `{}`: settings of the views switched away from, `{template: {agent, ui}}` [planned v0.8.0, migration `20261022140000_view_header`] |
+| project_id | uuid | FK → `projects.id` on delete set null; the selected project at the last agent write or click [planned v0.8.0, migration `20261022140000_view_header`] |
 | version | integer | not null, default 1 (compare-and-set) |
 | last_writer | text | not null, default `user`, check in (`user`, `agent`) |
 | last_active_at | timestamptz | not null, default now() |
@@ -237,8 +240,11 @@ cascade); `sold_on` date not null; `region` text check in (`emea`, `amer`, `apac
 | `views_list()` | jsonb | definer | `view`, live page | [POC] |
 | `view_open(p_slot)` | jsonb | definer | live page | [POC] |
 | `view_update(p_slot, p_expected_version, p_agent_patch, p_ui_patch)` | jsonb | definer | live page | [POC] |
-| `view_agent_apply(p_template, p_agent_params, p_focus, p_slot)` | jsonb | definer | `view` | [POC] |
+| `view_agent_apply(p_template, p_agent_params, p_focus, p_slot)` | jsonb | definer | `view` | [POC]; v0.8.0: slot in view, keeps settings in `state` |
 | `view_close(p_slot)` | jsonb | definer | live page | [POC] |
+| `view_header_templates()` | text[] | — | view functions | [planned v0.8.0, migration `20261022140000_view_header`] |
+| `view_seen(p_slot)` | jsonb | definer | live page | [planned v0.8.0, migration `20261022140000_view_header`] |
+| `view_set_template(p_slot, p_expected_version, p_template)` | jsonb | definer | live page (icon click) | [planned v0.8.0, migration `20261022140000_view_header`] |
 | `dashboard_sales_overview(p_period, p_region)` | jsonb | invoker | live page | [POC] |
 
 Removed on 2026-10-22: `project_scope()`, `select_projects(text[])` (the several-projects model, replaced the same
