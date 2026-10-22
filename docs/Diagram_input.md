@@ -202,7 +202,7 @@ cascade); `sold_on` date not null; `region` text check in (`emea`, `amer`, `apac
 (`Atlas`, `Beacon`, `Compass`, `Delta`); `amount` numeric(12,2) > 0; `created_at`. Index (`profile_id`,
 `sold_on`). No labels.
 
-**`engagement_datasets`, `engagement_log`, schema `engagement`** [built v0.9.0; tables built 2026-10-22, awaiting push] —
+**`engagement_datasets`, `engagement_log`, schema `engagement`** [built v0.9.0; tables live 2026-10-22] —
 Siniša's views package, one dataset per project. The schema `engagement` holds one table per package table (27, e.g.
 `engagement.people`), generated from `_schema.json` by `scripts/gen-engagement-tables.mjs`: `project_id`, `profile_id`,
 `pos` (array order), the package `id` (PK with `project_id`), one typed column per field (`date`, `integer`, `numeric`,

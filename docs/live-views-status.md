@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.1 | Nela | 2026-10-22 |
+| Current | v1.2 | Nela | 2026-10-22 |
 
 **What is live (function v0.9.0, 2026-10-22):** a browser page at `https://os.cantabpi.com/v/1…10` that Claude
 steers from claude.ai. Each of the ten views (slots) shows one thing; Claude changes it with the `view` tool and the
@@ -99,8 +99,7 @@ validator that refuses any write that would break a view, a ten-step demo script
 **Data.** One dataset per project (`engagement_datasets`: global version, per-table versions), one Postgres table per
 package table in the schema `engagement` (`engagement.people`, `engagement.tasks`, …; generated from `_schema.json` by
 `scripts/gen-engagement-tables.mjs`, design in [engagement-tables-status.md](engagement-tables-status.md)), and
-`engagement_log` (last 200 changes). RLS: read own. The schema `_schema.json` is the single source of truth. *Until Nela
-pushes migration `20261022160000`, live still holds one JSON row per table (`engagement_tables`).*
+`engagement_log` (last 200 changes). RLS: read own. The schema `_schema.json` is the single source of truth.
 
 **Reads** (as the user): `engagement_read(project, tables?)`, `engagement_version(project)` (the package's
 `_version.json`), `engagement_log_read(project, since?, limit?)`; `status: 'empty'` when the project has no engagement.
@@ -143,6 +142,7 @@ seed with the deck's public address, demo requests, validator). Rerun after any 
 | Pages offline (session 2's harness, `templates/bpag/test/`) | 25/25: each page at 1280 and 400 px, empty state, empty → data, redraw with marker |
 | Pages live, headless on `os.cantabpi.com` | All eleven render with the Big Pharma data, no notice or script error, no rail, no horizontal scroll at 400 px; a write redraws and marks the change about 0.5 s after the save, without reloading the frame; view switches show the right page; the deck renders through pdf.js |
 | Header live, headless | Slot in view, Claude writes there, click saves and shows, conflict line at 400 px, badge fades |
+| After the tables migration (§7.1), live | Database, tools (demo 1–9 at 7–15, 10 refused, browser save 403) and the eleven pages at 1280 and 400 px rechecked; a write marks Home about 0.6 s after the save. Details: [engagement-tables-status.md](engagement-tables-status.md) §4 |
 | POC loop (2026-10-21) | 9/9: PDF at a page, page follows in about 1 s, dashboard, a new sale moves it, closed view empties, another user's slide not found |
 
 The test user is left with the demo at the seed and Atlas selected. Findings go in [test_tracker.md](test_tracker.md).
@@ -164,7 +164,7 @@ Scope agreed by Nela on 2026-10-22. Plan each item on Opus before building; orde
 
 ### 7.1 The 27 package tables as real tables
 
-**Built 2026-10-22, waiting for `db push`:** [engagement-tables-status.md](engagement-tables-status.md).
+**Built and live 2026-10-22:** [engagement-tables-status.md](engagement-tables-status.md).
 
 Replace one JSON row per table with one Postgres table per package table, so the data can be queried with SQL.
 
@@ -217,6 +217,7 @@ agent fixed, one claude.ai connector each, about 2–3 h; C) autonomous agents t
 - A dashboard over the real `todos` table would show the page following agent edits made with existing tools.
 
 **Changelog** (rationale in DECISIONS.md; file history in git; Lovable rounds in COMMS.md)
+- v1.2 (2026-10-22) — §7.1 live and rechecked (§5).
 - v1.1 (2026-10-22) — §7.1 built (real tables in the schema `engagement`); §1 and §4 updated. → DECISIONS.md 2026-10-22
 - v1.0 (2026-10-22) — Rewritten as a living reference: what is built by layer, tests, open items, the next session's
   scope (§7). The POC plan, the header plan and the port plan are carried out; their answers and briefs are compressed
