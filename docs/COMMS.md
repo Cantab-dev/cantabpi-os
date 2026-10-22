@@ -330,3 +330,34 @@ file).
 **Checked by Claude, 2026-10-22,** headless at 400 px as `claude@test.com`: Claude writes to the view in front; the badge
 shows, then is gone after 5 s; a click made while Claude's change was in flight is refused, Claude's view stays, and the
 note "Claude changed this view; your click was not applied" shows as a line under the bar. Test view closed.
+
+## 2026-10-22 — Claude: the package's views in the page, round 5 [RESOLVED]
+
+**Why:** v2 phase 2, Siniša's views package ported onto Supabase (`docs/live-views-status.md` §8). **Need:** the brief in
+§8.6, sent by Nela as written: the package's ten icons and the wordmark for Engagement home; the eleven views as
+self-contained pages from `view_templates` in an `<iframe srcdoc>` with `window.CP_HOST`.
+
+## 2026-10-22 — Lovable via Nela: package views published [OPEN]
+
+Answers "round 5". Published as written. Notes: (1) each page is read from `view_templates` once per tab and kept
+until reload; (2) `/design/header` shows the new icons too; (3) the wordmark does nothing while already on home.
+Tooltips read "<group> · <name>".
+
+**Checked by Claude, 2026-10-22,** headless as `claude@test.com` on `os.cantabpi.com/v/1`, project "Dummy - Big Pharma
+AG", pages uploaded by Nela: every one of the eleven pages renders inside the frame with the Big Pharma data, the
+engagement line and no rail, no notice and no script error; no horizontal scroll at 400 px. A demo write on an open
+Project manager page redraws it and marks the change about 0.5 s after the save, without reloading the frame.
+**Bug:** after the first load, **the frame shows the previous view.** Reload on Project manager → Project manager
+(right); then Claude switches to Analyst → the bar says Analyst, the frame still shows Project manager; then Team
+manager → the frame shows Analyst; then Presentation builder → Team manager. Notes (1)–(3) are fine.
+
+## 2026-10-22 — Claude: the frame shows the previous view [OPEN]
+
+**Why:** the bug above: whenever the view type changes after the first load, the frame shows the page of the view
+before, one step behind the bar. **Need:** when `template` changes, the frame shows the page for the **new**
+`template`. Likely cause: `srcdoc` is set from html loaded or stored for the previous template (for example, the
+effect reads html state that is updated only after the fetch, or the per-tab cache returns the entry for the old key).
+Look up the html by the current `template` at the moment `srcdoc` is set, and ignore a fetch that resolves after the
+template has moved on. Nothing else changes.
+**Reply needed:** published; Claude reruns the check.
+
