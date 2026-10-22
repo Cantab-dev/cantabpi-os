@@ -1,15 +1,16 @@
 import { assert, assertEquals, assertThrows } from 'jsr:@std/assert@1'
 import {
   assertSafe,
-  authorised,
   clipRecord,
   ENTITIES,
   finish,
   fitRows,
   MAX_CONTEXT_CHARS,
   MAX_GUIDELINE_CHARS,
+  MAX_ACTION_CHARS,
   notFoundMessage,
   parseEntity,
+  parseFilters,
   parseLabel,
   parsePage,
   ToolError,
@@ -78,7 +79,7 @@ Deno.test('write: bad date', () => {
 })
 
 Deno.test('write: importance outside 1 to 3', () => {
-  for (const importance of [0, 4, 2.5, '2']) {
+  for (const importance of [0, 4, 2.5, '4', 'high']) {
     assert(message(() => validateWrite(ENTITIES.todos, { name: 'x', importance })).includes('1 (low), 2 (medium) or 3 (high)'))
   }
 })
@@ -102,7 +103,7 @@ Deno.test('write: clean row keeps only known fields and drops empty optionals', 
     importance: 3,
     status: false,
     id: 'x',
-    owner_id: 'y',
+    profile_id: 'y',
     label: 'todo:1',
   })
   assertEquals(row, { name: 'Send proposal', due: '2026-11-30', importance: 3, status: false })
@@ -139,7 +140,7 @@ Deno.test('fitRows cuts rows from the end when over the cap', () => {
 
 Deno.test('assertSafe refuses ids, internal columns and non-JSON values', () => {
   assertSafe({ data: { rows: [{ label: 'todo:1', due: '2026-11-30', importance: 2, status: false, context: null }] } })
-  for (const key of ['id', 'owner_id', 'created_at', 'updated_at', 'label_no']) {
+  for (const key of ['id', 'profile_id', 'created_at', 'updated_at', 'label_no']) {
     assertThrows(() => assertSafe({ data: { rows: [{ label: 'todo:1', [key]: 'x' }] } }))
   }
   assertThrows(() => assertSafe({ when: new Date() }))
@@ -154,23 +155,15 @@ Deno.test('finish returns the data only, and runs the exit check', () => {
   assertThrows(() => finish({ id: 'x' }))
 })
 
-Deno.test('authorised needs the exact bearer key', () => {
-  assert(authorised('Bearer secret', 'secret'))
-  assert(!authorised('Bearer wrong!', 'secret'))
-  assert(!authorised('secret', 'secret'))
-  assert(!authorised(null, 'secret'))
-  assert(!authorised('Bearer ', ''))
-})
-
 Deno.test('edit needs at least one field and names the editable ones', () => {
   const m = message(() => validateEdit(ENTITIES.todos, { label: 'todo:1' }))
-  assert(m.includes('name, category, due, importance, status'))
+  assert(m.includes('name, category, importance, action, due, status'))
 })
 
 Deno.test('edit refuses fields that are not on the entity, and points context to note', () => {
   assert(message(() => validateEdit(ENTITIES.leads, { label: 'lead:1', due: '2026-11-30' })).includes('"due" cannot be changed on a lead'))
   assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', context: 'x' })).includes('call note'))
-  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', owner_id: 'x' })).includes('cannot be changed'))
+  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', profile_id: 'x' })).includes('cannot be changed'))
 })
 
 Deno.test('edit overwrites given fields only, with the same checks as write', () => {
@@ -184,4 +177,45 @@ Deno.test('edit clears optional fields with an empty string but not required one
   assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', name: '  ' })).includes('cannot be emptied'))
   assert(message(() => validateEdit(ENTITIES.skills, { label: 'skill:1', description: '' })).includes('cannot be emptied'))
   assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', status: '' })).includes('cannot be emptied'))
+})
+
+Deno.test('importance accepts 1 to 3 as a number or as text (POC bug: edit rejected "2")', () => {
+  assertEquals(validateEdit(ENTITIES.todos, { label: 'todo:1', importance: '2' }), { importance: 2 })
+  assertEquals(validateEdit(ENTITIES.leads, { label: 'lead:1', importance: 3 }), { importance: 3 })
+  assertEquals(validateWrite(ENTITIES.docs, { name: 'A', importance: '1' }), { name: 'A', importance: 1 })
+  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', importance: '4' })).includes('1 (low)'))
+  assert(message(() => validateEdit(ENTITIES.todos, { label: 'todo:1', importance: '2.0' })).includes('1 (low)'))
+})
+
+Deno.test('category and action are on all five record entities, not on skills', () => {
+  for (const key of ['todos', 'leads', 'sheets', 'docs', 'slides'] as const) {
+    assertEquals(validateWrite(ENTITIES[key], { name: 'A', category: ' Sales ', action: 'Call back' }), {
+      name: 'A',
+      category: 'sales',
+      action: 'Call back',
+    })
+    assert(ENTITIES[key].listCols.some((c) => c.startsWith('category:categories(')))
+  }
+  assert(message(() => validateEdit(ENTITIES.skills, { label: 'skill:1', action: 'x' })).includes('cannot be changed'))
+  assert(message(() => validateWrite(ENTITIES.todos, { name: 'A', action: 'x'.repeat(MAX_ACTION_CHARS + 1) })).includes('limit'))
+  assertEquals(validateEdit(ENTITIES.sheets, { label: 'sheet:1', category: '', action: '' }), { category: null, action: null })
+})
+
+Deno.test('list filters: todo-only ones refuse other entities; dates and importance are checked', () => {
+  assertEquals(parseFilters(ENTITIES.todos, { status: false, due_before: '2026-10-15', importance_min: '2', category: 'Sales' }), {
+    status: false,
+    due_before: '2026-10-15',
+    importance_min: 2,
+    category: 'sales',
+  })
+  assertEquals(parseFilters(ENTITIES.leads, { category: 'client' }), { category: 'client' })
+  assert(message(() => parseFilters(ENTITIES.leads, { status: true })).includes('does not work for leads'))
+  assert(message(() => parseFilters(ENTITIES.skills, { category: 'sales' })).includes('does not work for skills'))
+  assert(message(() => parseFilters(ENTITIES.todos, { due_after: '15/10/2026' })).includes('YYYY-MM-DD'))
+})
+
+Deno.test('finish puts the lead line before the data in content, not in structuredContent', () => {
+  const r = finish({ entity: 'todos', rows: [] }, 'Do not restate.')
+  assert(r.content[0].text.startsWith('Do not restate.\n{'))
+  assertEquals(r.structuredContent, { entity: 'todos', rows: [] })
 })

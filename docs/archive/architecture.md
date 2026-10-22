@@ -2,9 +2,9 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Draft | v0.1 | Nela | 2026-10-13 |
+| Superseded | v0.1 | Nela | 2026-10-16 |
 
-Parked proposal, kept as input for step 3. Nothing here is built. Items marked **DECIDE** need an answer from Nela before implementation.
+Superseded on 2026-10-16 by what was built: [sign-in-status.md](../sign-in-status.md) (consent page on Lovable, per-user data under RLS, email sign-in) and [chat-ux-status.md](../chat-ux-status.md) (MCP Apps views). All three **DECIDE** items below were settled; the rest is kept for the record only.
 
 ## 1. Platform facts this design rests on
 
