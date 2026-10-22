@@ -2,11 +2,17 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.3 | Nela | 2026-10-21 |
+| Current | v0.4 | Nela | 2026-10-22 |
 
 Plan for a proof of concept of Siniša's memo *Server-driven UI for agent-operated apps* (received
 2026-10-21): the agent points a live browser page at a PDF or a fixed dashboard, and the open page
 follows within a second or two. Approved by Nela on 2026-10-21; build in progress (§6 Progress). Read whole.
+
+**Since 2026-10-22 (projects, function v0.7.0):** `slides` follow the user's selected project
+([projects-status.md](projects-status.md)). The `view` tool finds only the selected project's slides, and the page,
+reading `slides` as the user, shows a PDF view of a slide from another project as not found after a switch.
+`ui_views` and `demo_sales` are not project-scoped. Accepted for the POC; v2 phase 2 (the views) builds on this
+POC and decides how views relate to projects ([Diagram_input.md](Diagram_input.md) §2.1).
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then
 altered; note what changed) · `open` (needs a decision).
@@ -210,6 +216,7 @@ Findings go in [test_tracker.md](test_tracker.md).
   following agent edits made with existing tools. It is left out because Siniša asked for a dummy table.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.4 (2026-10-22) — Note on projects (v0.7.0): slides follow the selected project. Phase 2 of v2 builds on this POC.
 - v0.3 (2026-10-21) — Approved; steps 1–3 written, step 4 requested; three build differences recorded in §6.
 - v0.2 (2026-10-21) — §1 answered by Nela: spec change, Lovable for the POC, both side-window approaches stand, POC first, demo in the desktop app. → DECISIONS.md 2026-10-21
 - v0.1 (2026-10-21) — First draft from Siniša's memo and his two answers.

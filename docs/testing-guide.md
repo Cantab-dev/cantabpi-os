@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v2.2 | Nela | 2026-10-16 |
+| Current | v2.3 | Nela | 2026-10-22 |
 
 How to connect Claude to Cantab OS as yourself and try the tools. About 10 minutes.
 
@@ -54,6 +54,15 @@ Ask in plain words; Claude should pick the tool itself. For example:
 | Mark the Acme proposal todo as done | `list`, then `edit` |
 | Move the dentist todo to next Friday | `list`, then `edit` |
 | Delete the "Test - call Ada" todo | `list`, then `delete` (Claude asks you to confirm) |
+| Which projects do I have? | `list` with projects |
+| Switch to Birch | `list` with projects, then `select_project` |
+| Start a project "Test - Acme engagement" | `write_project` (does not switch to it) |
+
+**Projects (since v0.7.0).** You always work in one project; every reply names it. Todos, sheets, docs and
+slides belong to one project each, and you see only the selected project's; leads and skills are shared. Each
+user starts in *Dummy - Project Atlas*. Rows from before projects are in *Unsorted (from v1)*. With no project
+selected, Claude gets "No project selected. Select a project first" and should offer your projects. A project
+can be deleted only when it is empty.
 
 **In-chat views.** In claude.ai and the desktop app, every `list` shows an interactive view: todos grouped
 by due date (tick, then **Save**), leads and files grouped by category (click a row for details). Claude should
@@ -75,6 +84,7 @@ tool, a message was unclear, or the sign-in didn't work. She logs each finding i
 [test_tracker.md](test_tracker.md).
 
 **Changelog** (file history in git)
+- v2.3 (2026-10-22) — Projects (function v0.7.0): three prompts and how the selection behaves.
 - v2.2 (2026-10-16) — Expected tools updated for the views; scripted round in test-script-chat-views.md.
 - v2.1 (2026-10-15) — In-chat views; reconnect after an update.
 - v2.0 (2026-10-14) — Rewritten for sign-in: each tester connects as themselves through claude.ai or Claude Code; the shared key is gone.

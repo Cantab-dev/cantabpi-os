@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.5 | Nela | 2026-10-21 |
+| Current | v1.6 | Nela | 2026-10-22 |
 
 Questions still waiting for a decision. Read whole; it is short.
 Answered questions are in [DECISIONS.md](DECISIONS.md). Remaining design work goes to the Opus pass
@@ -26,7 +26,17 @@ Questions for Siniša:
 Answered by Siniša's memo of 2026-10-15: the in-chat views stay, and only opening a Google file goes to the side panel (see [DECISIONS.md](DECISIONS.md), 2026-10-15).
 Still open after the live views POC was planned (2026-10-21): Google files keep this approach; PDFs and dashboards go to live views ([live-views-status.md](live-views-status.md)).
 
+## Projects (v2 phase 1, built 2026-10-22)
+Detail: [projects-status.md](projects-status.md) §1 and Open.
+- Confirm Claude's three choices: only an empty project can be deleted; older rows in `Unsorted (from v1)`;
+  Atlas selected at the start. (Nela, Siniša)
+- Moving an item to another project: not possible today. Needed?
+- Do the live views and the v2 view slots belong to a project? (Phase 2)
+- Oria connector: what it is and who calls it ([Diagram_input.md](Diagram_input.md) §1). (Nela)
+
 ## Questions raised by multi-user (for Opus design pass)
+Partly answered by projects: a project has one owner; todos, sheets, docs and slides are per project; leads and
+skills are shared by all of a user's projects. Sharing a project with a team is still open.
 - Tenancy model: organisation/workspace with shared + private data, or strictly per-user data? Which entities are personal (todos?) vs shared (leads, docs)?
 - Roles/permissions: who can read/write what? Who manages users?
 - Label uniqueness scope: global, per-workspace or per-user? (Per-entity counters must be concurrency-safe and never reused.)
@@ -34,6 +44,7 @@ Still open after the live views POC was planned (2026-10-21): Google files keep 
 - OAuth clients before real data: keep dynamic client registration (any MCP client can register, and a user must still approve it), or register clients such as claude.ai by hand? It is on and kept on for now: with it off, claude.ai could not reconnect (DECISIONS 2026-10-15).
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.6 (2026-10-22) — Projects section: open points after the build; multi-user partly answered. → DECISIONS.md 2026-10-22
 - v1.5 (2026-10-21) — Side window: both approaches stand alongside live views. → DECISIONS.md 2026-10-21
 - v1.4 (2026-10-16) — Answered items removed (layout mechanism, feasibility spike, host authentication, side-window question 1); registration kept on. → DECISIONS.md 2026-10-15
 - v1.3 (2026-10-14) — Question added on OAuth client registration before real data.
