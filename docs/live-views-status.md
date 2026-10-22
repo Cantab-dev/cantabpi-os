@@ -148,7 +148,7 @@ retries once. Status shows inline next to the control, not as a toast.
 | Memo item | Why it is left out |
 |---|---|
 | Locks (§1.2, `locked`) | Nothing to protect yet; add when users keep views they care about |
-| Presence and the leader tab's "Assistant opened view N — Open" (§1.7–8) | For the POC the user opens the url once; the tool's message covers the case of no open view |
+| Presence and the leader tab's "Assistant opened view N — Open" (§1.7–8) | For the POC the user opens the url once. Changed 2026-10-21: the open page follows Claude to another view itself (DECISIONS 2026-10-21); presence is still left out |
 | Idle pruning, home view, `/` → home (§1.11) | Slots are few and dummy; add with the full rollout |
 | `chat` template, workspace scope | The chat is the host's; we have no workspaces (open multi-user question) |
 | `ui_v2` / `dev_mode` flags, side-by-side rollout (§1.14) | There is no old UI to run alongside |
@@ -175,8 +175,10 @@ retries once. Status shows inline next to the control, not as a toast.
 | 1 Migration | `built` | `supabase/migrations/20261021120000_live_views.sql`. Dry-run on the live database inside a rolled-back transaction: 19 checks passed (slot choice, conflict, refusals, RLS for Siniša, dashboard query, no direct insert). Applied by Nela on 2026-10-21. Checked live: private bucket, Realtime on the three tables, 252–281 sales rows per user |
 | 2 PDFs | `built` | `scripts/slide-pdfs.mjs`, run by Nela on 2026-10-21: six slides (each user's intro deck and Acme pitch). Checked as `claude@test.com`: own PDF signs and downloads (6 pages); Nela's is refused |
 | 3 Tool | `built` | `views.ts`, function v0.6.0; 35 unit tests pass, including a check that the enums match the migration. Deployed on Nela's go on 2026-10-21 and checked live as `claude@test.com` (list, pdf at a page, dashboard, view reuse, another user's slide, unknown dashboard); test views removed. Reconnect in claude.ai to see it |
-| 4 Page | requested | COMMS 2026-10-21 "live view page"; Nela carries it to Lovable |
-| 5 Loop test | waiting for step 4 | The headless test needs the page's markup |
+| 4 Page | `built` | Published by Lovable at `/v/1` on 2026-10-21 (COMMS). Realtime test by Claude found two gaps: deletes never reach a filtered subscription, and a change right after subscribing can be missed. Fixes requested (COMMS 2026-10-21, two Realtime fixes) Both fixed; `id` on the returned view (migration `20261021130000`); follow-Claude added (DECISIONS 2026-10-21) |
+| 5 Loop test | `built` | Headless Chromium as `claude@test.com` against the live page, 2026-10-21: 9/9 pass. Covered: PDF at a page on open; an agent page change reaches the open page (1.2 s); the page follows Claude to a new view (1.0 s) with the banner and no reload; the dashboard renders; a new sale moves it (0.7 s); a closed view shows empty (0.4 s); another user's slide is not found. Not covered here: the conflict race (checked in SQL on 2026-10-21). Nela's desktop-app check is next |
+
+**Realtime, as tested on 2026-10-21:** inserts and updates arrive in 0.3–0.7 s. Delete events cannot be filtered, so the page needs an unfiltered delete listener, which also receives other users' row ids (the id only, no data). That is acceptable with dummy data; revisit before real data (for example, mark a slot cleared with an update instead of deleting it).
 
 **Differences from v0.2, decided during the build:**
 - `storage_url` holds the object's Storage address, not a bare path. The write and edit tools only accept a web

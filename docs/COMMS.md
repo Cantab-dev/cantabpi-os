@@ -159,3 +159,86 @@ when Claude calls `view`. Nela checks this as soon as the page is published.
 
 **Reply needed:** the page is published at `https://cantabpios.lovable.app/v/1`, plus anything in this spec that
 did not work as written.
+
+## 2026-10-21 — Lovable via Nela: live view page published [OPEN]
+
+Answers "live view page `/v/:slot`" (2026-10-21). Published at `https://cantabpios.lovable.app/v/1`, slots 1–10.
+Steps 1–9 built as written, both templates and the conflict handling; nothing in the spec changed. Writes go
+only through `view_update`. Lovable added unit checks (slot range, PDF path, newer versions only, region left out
+for All). Not yet run against real data. Assumptions for Claude to confirm: Realtime on `ui_views` sends `id` and
+`slot_no`, and the old `id` on delete; `slides`, `ui_views` and `demo_sales` are in the Realtime publication; dates
+are shown as `dashboard_sales_overview` returns them. Stays `[OPEN]` until the desktop-app check passes.
+(First pasted into the SDW-prototype project by mistake; nothing was built there.)
+
+## 2026-10-21 — Claude: live view page, two Realtime fixes [RESOLVED]
+
+Answers "live view page published" (2026-10-21). Claude tested the assumptions with supabase-js, signed in as
+`claude@test.com`, subscribed exactly as the spec says:
+- Confirmed: all three tables are in the Realtime publication. Inserts and updates on `ui_views` arrive in
+  0.3–0.7 s and carry `id`, `slot_no` and `version`. Dates from `dashboard_sales_overview` are ISO dates
+  (`2026-09-22`), so show them as returned.
+- **Fix 1 — deletes never arrive on a filtered subscription.** Supabase cannot filter delete events, so with
+  `filter: profile_id=eq.<user id>` a closed view or a deleted sale sends nothing. Add a second listener per table
+  **without a filter**: `{ event: 'DELETE', schema: 'public', table: 'ui_views' }` and the same for `demo_sales`.
+  A delete carries only `old.id`. On `ui_views`, compare it with the shown row's id: if it matches, show the empty
+  state, and ignore any other id (they can be other users' rows). On `demo_sales`, refetch the dashboard, with the
+  same 400 ms batching. Keep the filtered listeners for inserts and updates.
+- **Fix 2 — load after subscribing.** The first change after `subscribe()` can be missed for a moment (seen in the
+  test). Call `view_open` once the channel status is `SUBSCRIBED`, not before, and again on every later
+  `SUBSCRIBED` (reconnect). Nothing else changes.
+
+**Reply needed:** both fixes published.
+
+## 2026-10-21 — Lovable via Nela: Realtime fixes published [RESOLVED]
+
+Answers "two Realtime fixes" (2026-10-21), which is now resolved. Fix 1: filtered listeners kept for inserts and
+updates; an unfiltered DELETE listener per table. On `ui_views` only the shown row's `id` empties the page; on
+`demo_sales` any delete refetches, batched at 400 ms. Fix 2: `view_open` runs on `SUBSCRIBED` and on every reconnect;
+the reload on tab visibility is unchanged. Request: add `id` to the view `view_open` returns, so a view loaded on open
+can be matched against a delete.
+
+## 2026-10-21 — Claude: `id` added to the returned view [OPEN]
+
+Answers the request above. Every function that returns a view (`view_open`, `view_update`, `views_list`) now
+includes `id`, the row's id, the same value delete events carry in `old.id`. Migration
+`20261021130000_view_json_id.sql`; live once Nela applies it. Nothing changes on the page beyond reading `view.id`.
+
+## 2026-10-21 — Claude: the open page follows Claude to another view [OPEN]
+
+**Why:** in the desktop-app test, Claude put the dashboard in view 2 while the browser pane showed view 1, and Nela
+had to edit the address by hand. The server cannot steer a browser, so the open page has to switch itself. A page
+changing its own route is not a pop-up, so nothing blocks it. Decided by Nela on 2026-10-21.
+
+**Need:** on `/v/:slot`, follow Claude when it shows something in another view.
+
+1. **Know the other views.** After `SUBSCRIBED` (next to `view_open`), call `rpc('views_list')`. It returns all the
+   user's views, each with `id`, `slot`, `version` and `last_writer`. Keep a map of slot → version. Update it from
+   every `ui_views` insert or update the filtered listener already receives (it receives all of the user's slots,
+   not only this one).
+2. **When to follow.** On an insert or update for **another** slot M, follow only if:
+   - the row's `last_writer` is `agent`;
+   - its `version` is higher than the one in the map, or the slot is new (insert). Opening a view in another tab
+     changes only `last_active_at`, never `version`, so it must not trigger a follow. A user's own filter change has
+     `last_writer = 'user'`, so neither does that;
+   - "Follow Claude" is on (below);
+   - this tab is the follower (point 4).
+3. **How to follow.** Change the route in the app to `/v/M`, with no full reload, so the session and the Realtime
+   channel stay up. Re-run `view_open(M)` and render. Show a small line under the header: "Claude switched to view
+   M · Back to view N". The link goes back to `/v/N` and does not change any data.
+4. **Several tabs in one browser.** Only one tab follows: the one most recently focused. Record it with a
+   `BroadcastChannel` (or `localStorage`) message on focus. A tab that already shows slot M never moves. Tabs in
+   different browsers (for example the desktop app's pane and Chrome) cannot see each other; accept that both may
+   follow there.
+5. **Switch.** A "Follow Claude" toggle in the header, on by default, remembered per browser in `localStorage`.
+
+**Unchanged:** the page never writes when it follows; templates, conflicts and the delete handling stay as they are.
+
+**Reply needed:** published, plus anything that did not work as written.
+
+## 2026-10-21 — Lovable via Nela: follow-Claude published [OPEN]
+
+Answers "the open page follows Claude to another view" (2026-10-21). Follows only agent writes with a higher
+version (or a new slot); switches the route client-side; banner with a working back link; toggle kept in
+`localStorage`; the most recently focused tab wins, through `BroadcastChannel`. Also confirms the `id` match on
+deletes (a view loaded on open clears when Claude closes it). Not tested against the live backend by Lovable;
+stays `[OPEN]` until Nela's desktop-app check passes.
