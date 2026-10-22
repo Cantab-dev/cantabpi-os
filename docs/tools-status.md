@@ -8,7 +8,7 @@ This document is both the plan and the record of what exists. Each item has a st
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then altered; note what changed) · `open` (needs a decision).
 
-All fourteen tools are deployed and tested against dummy data; the deployed function is v0.7.1 (2026-10-22), which only moved the `view` links to `https://os.cantabpi.com/v/N`; v0.7.0 (2026-10-22) added projects (`select_project`, `write_project`; see the Projects section). v0.6.0 (2026-10-21) added `view`. The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
+All fourteen tools are deployed and tested against dummy data; the deployed function is v0.8.0 (2026-10-22: `view` takes the ten header views and writes to the view in front of the user); v0.7.1 moved the `view` links to `https://os.cantabpi.com/v/N`; v0.7.0 (2026-10-22) added projects (`select_project`, `write_project`; see the Projects section). v0.6.0 (2026-10-21) added `view`. The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
 
 **Current contract.** Everything below is the contract deployed in function v0.5.5. The in-chat views, with their plan, test record and open improvements, are in [chat-ux-status.md](chat-ux-status.md); this document is the home of what each tool takes and returns.
 
@@ -121,9 +121,9 @@ Display title: "Add note".
 | Label is a skill | not retry: skills take no notes |
 | `text` empty or too long | supply text within 1,000 characters; split into several notes if needed |
 
-### view — `built` (v0.6.0, live views POC); `changed` v0.8.0 planned
+### view — `changed` (v0.8.0, 2026-10-22)
 
-**v0.8.0 (built, not deployed; waits for migration `20261022140000_view_header`):** also takes the ten header views
+**v0.8.0 (deployed and checked live 2026-10-22):** also takes the ten header views
 (no parameters yet), writes to the view the user has open unless the user names a slot, keeps the replaced view's
 settings, and no longer returns `slot_limit`. 42 unit tests pass. [live-views-status.md](live-views-status.md) §7.2, §7.6.
 

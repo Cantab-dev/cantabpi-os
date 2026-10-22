@@ -254,10 +254,12 @@ the domain move (A8).
 | A7 | Brand from cantabpi.com: logo, red, Raleway and Lora; red only for the current view, Claude's signals and the toggle; light and dark | Lovable round 1 |
 | A8 | Address `os.cantabpi.com`, live 2026-10-22; `cantabpios.lovable.app` redirects there. Routes `/1…10` come with the wire-up (step 5) | Nela; 7.5 |
 
-### 7.2 Backend change — `built`, not applied
+### 7.2 Backend change — `built`
 
-Migration `supabase/migrations/20261022140000_view_header.sql`; Nela runs `db push`, then Claude deploys function
-v0.8.0. Dry-run on the live database in a rolled-back transaction on 2026-10-22, as `claude@test.com`: 16 checks
+Migration `supabase/migrations/20261022140000_view_header.sql`, applied by Nela on 2026-10-22; function v0.8.0
+deployed the same day. Checked live as `claude@test.com`: `view` writes to the slot in view and says so, a named slot
+is used, an unknown key is refused; a click on an empty and a full slot works, a stale click gets `conflict`; test
+views closed. Dry-run on the live database in a rolled-back transaction on 2026-10-22, as `claude@test.com`: 16 checks
 passed (slot in view, slot given, slot 1 with none seen; icon click on a full and an empty slot; conflict; settings kept
 in `state` and the switched-to view's removed; refusals of a non-header click, parameters on a header view and slot 11;
 `view_open` and `view_update` unchanged; no direct write). 42 unit tests pass.
@@ -301,7 +303,7 @@ already exist.
 | 1 | Answer the open questions Q1–Q6 in 7.1 | Nela, Siniša | `open` |
 | 2 | **Design round 1:** Lovable builds the header on a separate route with made-up data, no backend calls (message 7.4) | Nela sends; Lovable builds; Nela reviews | `built` 2026-10-22, in the Lovable preview at `/design/header` (COMMS 2026-10-22); Nela's review next |
 | 3 | Rounds 2+: Nela's feedback to Lovable directly; Claude drafts a message only when a change touches behaviour or data | Nela, Lovable | `planned` |
-| 4 | Plan the backend change (7.2) against the chosen design; migration and tool | Claude writes; Nela runs `db push`; deploy on Nela's go | `built` 2026-10-22, waiting for `db push`, then deploy |
+| 4 | Plan the backend change (7.2) against the chosen design; migration and tool | Claude writes; Nela runs `db push`; deploy on Nela's go | `built` 2026-10-22: applied, deployed, checked live |
 | 5 | **Wire-up message:** Lovable connects the header on `/v/:slot` to the backend (7.8) | Claude drafts; Nela sends after the deploy | `planned` |
 | 6 | Test the live page headless, then Nela in the desktop app | Claude, Nela | `planned` |
 
@@ -440,7 +442,7 @@ changes.
 
 ### 7.8 Draft message for Lovable: wire up the icons and the slot in view (round 3)
 
-Nela: send this **after** Claude has deployed v0.8.0 (it says so). Paste everything between the lines.
+Nela: v0.8.0 is deployed (2026-10-22), so this can be sent now. Paste everything between the lines.
 
 ---
 
