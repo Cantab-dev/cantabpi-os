@@ -142,7 +142,7 @@ seed with the deck's public address, demo requests, validator). Rerun after any 
 | Pages offline (session 2's harness, `templates/bpag/test/`) | 25/25: each page at 1280 and 400 px, empty state, empty → data, redraw with marker |
 | Pages live, headless on `os.cantabpi.com` | All eleven render with the Big Pharma data, no notice or script error, no rail, no horizontal scroll at 400 px; a write redraws and marks the change about 0.5 s after the save, without reloading the frame; view switches show the right page; the deck renders through pdf.js |
 | Header live, headless | Slot in view, Claude writes there, click saves and shows, conflict line at 400 px, badge fades |
-| After the tables migration (§7.1), live | Database, tools (demo 1–9 at 7–15, 10 refused, browser save 403) and the eleven pages at 1280 and 400 px rechecked; a write marks Home about 0.6 s after the save. Details: [engagement-tables-status.md](engagement-tables-status.md) §4 |
+| After the tables migration (§7.1), live (`templates/bpag/test/live.mjs`) | Database, tools (demo 1–9 at 7–15, 10 refused, browser save 403) and the eleven pages at 1280 and 400 px rechecked; a write marks Home about 0.6 s after the save. Details: [engagement-tables-status.md](engagement-tables-status.md) §4 |
 | POC loop (2026-10-21) | 9/9: PDF at a page, page follows in about 1 s, dashboard, a new sale moves it, closed view empties, another user's slide not found |
 
 The test user is left with the demo at the seed and Atlas selected. Findings go in [test_tracker.md](test_tracker.md).
