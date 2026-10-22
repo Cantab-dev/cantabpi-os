@@ -287,3 +287,27 @@ failed project switch shows a short error below the bar. Stays `[OPEN]` until Ne
 **Need:** on `/v/:slot` and `/design/header`, remove the thin dividers between the icon groups and the phase
 prefix in the tooltips ("Workflow Mapper · Coming soon", not "Diagnose · Workflow Mapper · Coming soon"). Keep the
 order and even spacing. Nothing else changes. Decided by Nela on 2026-10-22.
+
+## 2026-10-22 — Claude: wire up the icons and the slot in view, round 3 [RESOLVED]
+
+**Why:** backend v0.8.0 is live (`docs/live-views-status.md` §7.2). **Need:** the brief in §7.8, sent by Nela as written:
+icons switch the slot through `view_set_template`, placeholder for the ten views, the view name in the bar, and
+`view_seen` on load, visibility and focus.
+
+## 2026-10-22 — Lovable via Nela: icons and slot in view published [OPEN]
+
+Answers "round 3". Published on `os.cantabpi.com` as written. Lovable's notes: (1) below 720 px the conflict note is
+hidden with the icons; (2) `view_seen` errors are ignored, `view_set_template` errors show below the bar; (3) the note
+clears on the next click or a move to another view.
+
+**Checked by Claude, 2026-10-22,** headless Chromium as `claude@test.com` on `https://os.cantabpi.com/v/1`: 5/5 pass. The
+page reports slot 1 as in view; `view` without a slot writes there and says so; the page follows in about 1 s; an icon
+click writes the template (`last_writer = user`) and the page shows it. Test view closed. At 400 px the view name
+truncates to "Proj…". Notes (2) and (3) are fine; (1) and the name are in the follow-up below.
+
+## 2026-10-22 — Claude: narrow pane, conflict note and view name [OPEN]
+
+**Why:** the Claude desktop app shows this page in a narrow pane, so that is where conflicts happen most.
+**Need:** below 720 px, show the conflict note as a thin line under the bar (like the "Claude switched" line), not
+hidden. At 400 px the view name truncates ("Proj…"): show the current view's icon on the "Views" menu button and
+give the name the freed space, or drop the name there if it still does not fit. Nothing else changes.

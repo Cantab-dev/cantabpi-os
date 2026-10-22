@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.12 | Nela | 2026-10-22 |
+| Current | v0.13 | Nela | 2026-10-22 |
 
 Plan for a proof of concept of Siniša's memo *Server-driven UI for agent-operated apps* (received
 2026-10-21): the agent points a live browser page at a PDF or a fixed dashboard, and the open page
@@ -304,8 +304,8 @@ already exist.
 | 2 | **Design round 1:** Lovable builds the header on a separate route with made-up data, no backend calls (message 7.4) | Nela sends; Lovable builds; Nela reviews | `built` 2026-10-22, in the Lovable preview at `/design/header` (COMMS 2026-10-22); Nela's review next |
 | 3 | Rounds 2+: Nela's feedback to Lovable directly; Claude drafts a message only when a change touches behaviour or data | Nela, Lovable | `planned` |
 | 4 | Plan the backend change (7.2) against the chosen design; migration and tool | Claude writes; Nela runs `db push`; deploy on Nela's go | `built` 2026-10-22: applied, deployed, checked live |
-| 5 | **Wire-up message:** Lovable connects the header on `/v/:slot` to the backend (7.8) | Claude drafts; Nela sends after the deploy | `planned` |
-| 6 | Test the live page headless, then Nela in the desktop app | Claude, Nela | `planned` |
+| 5 | **Wire-up message:** Lovable connects the header on `/v/:slot` to the backend (7.8) | Claude drafts; Nela sends after the deploy | `built` 2026-10-22, published by Lovable (COMMS) |
+| 6 | Test the live page headless, then Nela in the desktop app | Claude, Nela | Headless 5/5 pass (2026-10-22, COMMS); Nela's desktop-app check open |
 
 ### 7.4 Draft message for Lovable: design round 1 (not sent)
 
@@ -481,6 +481,7 @@ backend is live. Nothing else on the page changes.
   following agent edits made with existing tools. It is left out because Siniša asked for a dummy table.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.13 (2026-10-22) — Steps 5 and 6: icons wired up by Lovable, headless check 5/5; narrow-pane follow-up in COMMS.
 - v0.12 (2026-10-22) — §7.2 built (migration and v0.8.0, dry-run 16/16, 42 unit tests); Q4, Q5 as suggested; 7.8 wire-up draft for Lovable.
 - v0.11 (2026-10-22) — Round 2 published (header on the live page); dividers and phase prefixes dropped (A6).
 - v0.10 (2026-10-22) — Q9 answered: simplest first iteration, to reconsider.
