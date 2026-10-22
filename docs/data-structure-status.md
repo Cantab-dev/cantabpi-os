@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.7 | Nela | 2026-10-22 |
+| Current | v1.8 | Nela | 2026-10-22 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
@@ -149,12 +149,14 @@ Added 2026-10-15 for the in-chat views. Detail, seed values and the checks: [cha
 - `supabase/migrations/20261014140000_dummy_data_sinisa.sql`
 - `supabase/migrations/20261015120000_categories_and_action.sql`
 - `supabase/seed.sql`
+- Engagement data (Siniša's package): `20261022150000_engagement.sql` and the generated `20261022160000_engagement_tables.sql`; described in [live-views-status.md](live-views-status.md) §4 and [engagement-tables-status.md](engagement-tables-status.md)
 
 ## Next
 
 Step 2 tools (`list`, `get`, `write_*`, `note`) as an MCP edge function: see [tools-status.md](tools-status.md).
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.8 (2026-10-22) — Pointer to the engagement tables (schema `engagement`, 27 generated tables). → DECISIONS.md 2026-10-22
 - v1.7 (2026-10-22) — Projects: `projects` table, one selected project per user, required `project_id` on todos, sheets, docs, slides, RLS by project. → DECISIONS.md 2026-10-22
 - v1.6 (2026-10-21) — Live views POC: `ui_views`, `demo_sales`, bucket `slide-pdfs`, Realtime. → DECISIONS.md 2026-10-21
 - v1.5 (2026-10-15) — `categories` table; `category_id`, `importance`, `action` on five tables; todo `category` moved; previous-action trigger. → DECISIONS.md 2026-10-15

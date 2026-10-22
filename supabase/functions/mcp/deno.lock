@@ -4,6 +4,7 @@
     "jsr:@std/assert@1": "1.0.19",
     "jsr:@std/internal@^1.0.12": "1.0.14",
     "jsr:@supabase/functions-js@*": "2.106.2",
+    "npm:@electric-sql/pglite@0.3.14": "0.3.14",
     "npm:@modelcontextprotocol/server@2": "2.3.1",
     "npm:@supabase/middleware@1": "1.0.0",
     "npm:@supabase/server@^1.6.0": "1.9.2_@supabase+supabase-js@2.117.3",
@@ -29,6 +30,9 @@
     }
   },
   "npm": {
+    "@electric-sql/pglite@0.3.14": {
+      "integrity": "sha512-3DB258dhqdsArOI1fIt7cb9RpUOgcDg5hXWVgVHAeqVQ/qxtFy605QKs4gx6mFq3jWsSPqDN8TgSEsqC3OfV9Q=="
+    },
     "@modelcontextprotocol/core@2.3.1": {
       "integrity": "sha512-laVmIhPGpWi7rG9q+0UigblRN0Hws/Yjlb6qLFtVqryXVLkc4h+yN8z731POD2LnAGQlFe7/tXhUm7Bi0YB91g==",
       "dependencies": [

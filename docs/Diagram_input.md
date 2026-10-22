@@ -202,10 +202,15 @@ cascade); `sold_on` date not null; `region` text check in (`emea`, `amer`, `apac
 (`Atlas`, `Beacon`, `Compass`, `Delta`); `amount` numeric(12,2) > 0; `created_at`. Index (`profile_id`,
 `sold_on`). No labels.
 
-**`engagement_datasets`, `engagement_tables`, `engagement_log`** [built v0.9.0] — Siniša's views package, one dataset per
-project: `engagement_tables` holds one row per package table (`tbl`, `records` jsonb array, `version`); the dataset
-holds `global_version` and `table_versions`; the log keeps the last 200 changes. RLS: read own. Saves only through
-`engagement_commit` / `engagement_replace`, service role only.
+**`engagement_datasets`, `engagement_log`, schema `engagement`** [built v0.9.0; tables built 2026-10-22, awaiting push] —
+Siniša's views package, one dataset per project. The schema `engagement` holds one table per package table (27, e.g.
+`engagement.people`), generated from `_schema.json` by `scripts/gen-engagement-tables.mjs`: `project_id`, `profile_id`,
+`pos` (array order), the package `id` (PK with `project_id`), one typed column per field (`date`, `integer`, `numeric`,
+`boolean`, `text`, `text[]` for ref lists; enums as checks), `meta_version`, `meta_updated_at` (timestamptz),
+`meta_updated_by`, `meta_reason`. Helpers `engagement.tables()`, `engagement.get` (as the caller), `engagement.put`
+(service role). Not exposed to the Data API. The dataset holds `global_version` and `table_versions`; the log keeps the
+last 200 changes. RLS: read own. Saves only through `engagement_commit` / `engagement_replace`, service role only.
+Replaces `engagement_tables` (one jsonb row per package table), dropped by migration `20261022160000`.
 
 **`view_templates`** [built v0.9.0] — `key` PK (the eleven engagement view keys), `html` (one self-contained page),
 `contract_version`. Read: any signed-in user. Written with the service key by `scripts/templates.mjs` (run by Nela),

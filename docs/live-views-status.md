@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.0 | Nela | 2026-10-22 |
+| Current | v1.1 | Nela | 2026-10-22 |
 
 **What is live (function v0.9.0, 2026-10-22):** a browser page at `https://os.cantabpi.com/v/1…10` that Claude
 steers from claude.ai. Each of the ten views (slots) shows one thing; Claude changes it with the `view` tool and the
@@ -19,7 +19,7 @@ Section numbers cited in COMMS, DECISIONS and the applied migrations before 2026
 ```
 claude.ai ──MCP──▶ mcp function (19 tools, acts as the signed-in user)
    │                 ├─ view ───────────────▶ ui_views (slot → template, project)          ◀── Realtime ──┐
-   │                 └─ engagement_* ─ package validator ─▶ engagement_commit (service role) ─▶ engagement_tables
+   │                 └─ engagement_* ─ package validator ─▶ engagement_commit (service role) ─▶ engagement.<27 tables>
    │                                                                                                     │
 os.cantabpi.com/v/N (Lovable): header + centre pane                                                       │
    ├─ engagement views: view_templates.html in <iframe srcdoc>, runtime polls engagement_version ─────────┘ (every 2 s)
@@ -96,9 +96,11 @@ icon is active. No project chip, no account menu, no sidebar (Nela, 2026-10-22).
 (fictional), engagement "Agentic AI for field sales: pilot to scale". Ten agent views plus Engagement home, 27 tables, a
 validator that refuses any write that would break a view, a ten-step demo script.
 
-**Data.** One dataset per project (`engagement_datasets`: global version, per-table versions), one row per package table
-(`engagement_tables.records`: the array the package keeps in `data/<tbl>.json`), and `engagement_log` (last 200
-changes). RLS: read own. The schema `_schema.json` is the single source of truth.
+**Data.** One dataset per project (`engagement_datasets`: global version, per-table versions), one Postgres table per
+package table in the schema `engagement` (`engagement.people`, `engagement.tasks`, …; generated from `_schema.json` by
+`scripts/gen-engagement-tables.mjs`, design in [engagement-tables-status.md](engagement-tables-status.md)), and
+`engagement_log` (last 200 changes). RLS: read own. The schema `_schema.json` is the single source of truth. *Until Nela
+pushes migration `20261022160000`, live still holds one JSON row per table (`engagement_tables`).*
 
 **Reads** (as the user): `engagement_read(project, tables?)`, `engagement_version(project)` (the package's
 `_version.json`), `engagement_log_read(project, since?, limit?)`; `status: 'empty'` when the project has no engagement.
@@ -162,6 +164,8 @@ Scope agreed by Nela on 2026-10-22. Plan each item on Opus before building; orde
 
 ### 7.1 The 27 package tables as real tables
 
+**Built 2026-10-22, waiting for `db push`:** [engagement-tables-status.md](engagement-tables-status.md).
+
 Replace one JSON row per table with one Postgres table per package table, so the data can be queried with SQL.
 
 - **Generator** (`scripts/gen-engagement-tables.mjs`): from `_schema.json`, one migration with a table per package table:
@@ -213,6 +217,7 @@ agent fixed, one claude.ai connector each, about 2–3 h; C) autonomous agents t
 - A dashboard over the real `todos` table would show the page following agent edits made with existing tools.
 
 **Changelog** (rationale in DECISIONS.md; file history in git; Lovable rounds in COMMS.md)
+- v1.1 (2026-10-22) — §7.1 built (real tables in the schema `engagement`); §1 and §4 updated. → DECISIONS.md 2026-10-22
 - v1.0 (2026-10-22) — Rewritten as a living reference: what is built by layer, tests, open items, the next session's
   scope (§7). The POC plan, the header plan and the port plan are carried out; their answers and briefs are compressed
   below and kept in DECISIONS.md and COMMS.md.
