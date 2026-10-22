@@ -337,7 +337,7 @@ note "Claude changed this view; your click was not applied" shows as a line unde
 §8.6, sent by Nela as written: the package's ten icons and the wordmark for Engagement home; the eleven views as
 self-contained pages from `view_templates` in an `<iframe srcdoc>` with `window.CP_HOST`.
 
-## 2026-10-22 — Lovable via Nela: package views published [OPEN]
+## 2026-10-22 — Lovable via Nela: package views published [RESOLVED]
 
 Answers "round 5". Published as written. Notes: (1) each page is read from `view_templates` once per tab and kept
 until reload; (2) `/design/header` shows the new icons too; (3) the wordmark does nothing while already on home.
@@ -351,7 +351,7 @@ Project manager page redraws it and marks the change about 0.5 s after the save,
 (right); then Claude switches to Analyst → the bar says Analyst, the frame still shows Project manager; then Team
 manager → the frame shows Analyst; then Presentation builder → Team manager. Notes (1)–(3) are fine.
 
-## 2026-10-22 — Claude: the frame shows the previous view [OPEN]
+## 2026-10-22 — Claude: the frame shows the previous view [RESOLVED]
 
 **Why:** the bug above: whenever the view type changes after the first load, the frame shows the page of the view
 before, one step behind the bar. **Need:** when `template` changes, the frame shows the page for the **new**
@@ -360,4 +360,10 @@ effect reads html state that is updated only after the fetch, or the per-tab cac
 Look up the html by the current `template` at the moment `srcdoc` is set, and ignore a fetch that resolves after the
 template has moved on. Nothing else changes.
 **Reply needed:** published; Claude reruns the check.
+
+## 2026-10-22 — Lovable via Nela: frame fix published [RESOLVED]
+
+Answers "the frame shows the previous view". **Checked by Claude, 2026-10-22,** headless as `claude@test.com`: after
+a reload, six switches in a row (Analyst, Team manager, Presentation builder, Engagement home, Model builder, Value
+estimator) each show the right page within 4 s.
 
