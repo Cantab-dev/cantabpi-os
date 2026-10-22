@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.18 | Nela | 2026-10-22 |
+| Current | v0.19 | Nela | 2026-10-22 |
 
 Plan for a proof of concept of Siniša's memo *Server-driven UI for agent-operated apps* (received
 2026-10-21): the agent points a live browser page at a PDF or a fixed dashboard, and the open page
@@ -525,7 +525,7 @@ Each recommendation stands until Nela (or Siniša, where marked) answers.
 | P6 | Where do the templates live? | **In the Lovable app, as static files** under `public/bpag/` (templates, assets, `_schema.json`, the deck), shown in an iframe below our header. Same address, so the iframe shares the sign-in. **Needs the Lovable project connected to GitHub** (parked on 2026-10-21) so Claude can add the 30 files and the runtime change; pasting them through Lovable's chat is not workable | Templates stay fixed and in one place, and the page code is no longer out of our reach |
 | P7 | What changes in `runtime.js`? | Only the data source: `getJSON('data/<t>.json')` reads the iframe's project from Supabase; `_version.json` reads the dataset's versions; polling every 2 s stays. With `?embed=1` it skips its own brand and agent rail (our header has them) and keeps the engagement line (client, engagement, phase, week, as-of) | The smallest change that keeps every template as it is |
 | P8 | The deck PDF | **A static file next to the templates** (`public/bpag/deck/scale-up-proposal.pdf`), so the seed's relative `pdf_url` works unchanged. No Google Drive, no Storage for now; a later deck can be any https URL | No change to data or template. Dummy content, so public is acceptable; revisit before real decks |
-| P9 | Header icons and template keys | **Siniša's ten**, grouped as the package does (Client-facing · Team), keys as in the schema (`engagement_starter` … `model_builder`). The wordmark and an empty slot show Engagement home (`home`). A migration swaps the keys and clears views on the old ones | One list everywhere: schema, header, `view` tool |
+| P9 | Header icons and template keys | **Siniša's ten**, grouped as the package does (Client-facing · Team), keys as in the schema (`engagement_starter` … `model_builder`). The wordmark shows Engagement home (`home`); an empty slot keeps its empty state (adjusted 2026-10-22, simpler). A migration swaps the keys and clears views on the old ones | One list everywhere: schema, header, `view` tool |
 | P10 | Data per user? | **Yes, per user and project:** each user's demo is their own copy, reset on its own | Demos do not trip over each other |
 | P11 | Fonts | The package uses IBM Plex; our header uses Raleway and Lora. **Parked** with colour (Q8) | Not needed to prove the port |
 | P12 | Left out | The package's HTTP server (Lovable serves the files) and its `tools/*.js` scripts (used only to check our seed matches). As in the package: no undo beyond reset, no formula engine | |
@@ -596,6 +596,50 @@ Storage: public bucket `engagement-assets`; the deck at `bpag/scale-up-proposal.
 - `status: 'empty'` shows "This project has no engagement data yet. Ask Claude to load the demo (engagement_reset)."
 - The schema (`_schema.json`), `runtime.js` and `theme.css` are inlined into each page by `scripts/templates.mjs`.
 
+### 8.6 Draft message for Lovable: the package's views in the page (round 5, not sent)
+
+Nela: paste everything between the lines into Lovable. It can be built now; it works once Claude's migration is
+applied (Claude says when). Empty slots keep today's empty state (simpler than showing home there; P9 adjusted).
+
+---
+
+**Show Cantab OS's new views on `/v/:slot`.** The backend gives each view as one self-contained HTML page; the page
+shows it in a frame under our header. Nothing else on the page changes.
+
+1. **Icons.** Replace the ten icons with these, in two groups with the group name in the tooltip only, no dividers:
+   - **Client-facing:** Value estimator `TrendingUp` (`value_estimator`), Presentation builder `Presentation`
+     (`presentation_builder`), Proposal builder `FileSignature` (`proposal_builder`)
+   - **Team:** Engagement starter `Rocket` (`engagement_starter`), Analyst `FileSearch` (`analyst`), Project manager
+     `CalendarCheck` (`project_manager`), Team manager `Users` (`team_manager`), Story builder `Network`
+     (`story_builder`), Agent builder `Bot` (`agent_builder`), Model builder `Calculator` (`model_builder`)
+
+   The value in brackets is the view's `template`. A click works as now (`view_set_template`).
+2. **Wordmark.** A click on "Cantab OS" switches this slot to **Engagement home**: `view_set_template` with
+   `p_template: 'home'`. No icon is active for `home`. View name in the bar: "Engagement home".
+3. **Centre pane for these eleven views** (`home` and the ten):
+   - Read the page: `supabase.from('view_templates').select('html').eq('key', template).single()`.
+   - Show it in an `<iframe>` with `srcdoc` set to that html, filling the centre pane, **no `sandbox` attribute**
+     (the page must run its scripts and share our origin).
+   - Replace `srcdoc` only when the view's `template` or `project_id` changes; other updates to the view must not
+     reload the frame.
+   - Before setting `srcdoc`, set on our own window:
+     ```js
+     window.CP_HOST = {
+       supabaseUrl: '<our Supabase URL>', publishableKey: '<our publishable key>',
+       projectId: view.project_id,
+       getToken: async () => (await supabase.auth.getSession()).data.session?.access_token,
+       openView: (key) => /* same as clicking that icon */,
+     }
+     ```
+     Update `projectId` when the view's `project_id` changes.
+   - If `view_templates` has no row for the key, show "This view is not available yet."
+4. **Unchanged:** `pdf` and `dashboard` as now; the empty state; the badge; the conflict note; `view_seen`; no direct
+   table writes.
+
+**Please send back:** published, and anything that did not work as written.
+
+---
+
 ## Comments for Nela (proposals, not in the build)
 
 - A "Show in view" button on slide rows in the in-chat files view would call `view` directly. It is
@@ -604,6 +648,7 @@ Storage: public bucket `engagement-assets`; the deck at `bpag/scale-up-proposal.
   following agent edits made with existing tools. It is left out because Siniša asked for a dummy table.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.19 (2026-10-22) — §8.6 Lovable message drafted; P9 empty slot kept as is.
 - v0.18 (2026-10-22) — P1–P12 as recommended; §8.5 the interface for the parallel sessions; package copied to `vendor/bpag/`.
 - v0.17 (2026-10-22) — P6b chosen (templates in a table, deck in public Storage), replacing P6 and P8.
 - v0.16 (2026-10-22) — P13 (Aleph pattern for `engagement_commit`), P14 (other tools tomorrow), P6b (templates in a table) added.
