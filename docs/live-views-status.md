@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.6 | Nela | 2026-10-22 |
+| Current | v0.11 | Nela | 2026-10-22 |
 
 Plan for a proof of concept of Siniša's memo *Server-driven UI for agent-operated apps* (received
 2026-10-21): the agent points a live browser page at a PDF or a fixed dashboard, and the open page
@@ -231,11 +231,14 @@ the domain move (A8).
 
 | # | Question | Who answers | Claude's suggestion |
 |---|---|---|---|
-| Q1 | Which view icons: the nine v2 views for every project, or a set per project? | Siniša | The nine, the same for every project |
-| Q2 | "View does not change": you stay on the same slot and address, and only the content switches? | Siniša | Yes. A click writes the template to the backend and the page redraws from its row, the same path Claude's writes take |
-| Q3 | Are slots per user or per project? | Siniša | Per user; each view shows the selected project's data |
+| Q1 | Which view icons? | Nela | **Answered 2026-10-22:** the agents in Nela's picture, in four phases, the same for every project (A6). Two follow-ups: Q7 |
+| Q2 | Which slot does a change go to? | Nela | **Answered 2026-10-22:** the slot the user has in view, unless the user names another. Not covered by the POC rule; designed in 7.6 |
+| Q3 | Are slots per user or per project? | Siniša | **Answered 2026-10-22 (Siniša):** per user; each slot has a project foreign key. Claude's reading: ten slots per user; a slot shows the project set on it, which is the selected project when Claude or the user last wrote it (7.2 item 7) |
+| Q9 | With a project on each slot: does the header chip show the slot's project or the selected one? | Nela | **Answered 2026-10-22, first iteration (simplest):** the chip shows the selected project and picking one only changes the selection (`select_project`), as in message 7.7. Slots are not moved. **To reconsider later:** a slot can then show a different project from the chip |
 | Q4 | Does switching view keep the old view's settings (PDF page, filters)? | Nela | Yes, remembered per view inside the slot |
 | Q5 | Keep the POC views `pdf` and `dashboard` for Claude only, with no icon, until the v2 views replace them? | Nela | Yes |
+| Q7 | The ninth and tenth icons? | Nela | **Answered 2026-10-22:** the eight agents plus two dummy views (A6) |
+| Q8 | Colour: the picture's blues or round 1's Cantab red? | Nela | **Parked 2026-10-22:** ignore for now; round 1's colours stay |
 | Q6 | Accept Lovable's round-1 proposals: (b) a "Reload" link on "This page needs updating"; (c) at 400 px hide "View N" and the "Follow Claude" text | Nela, after the review | Accept both |
 
 **Working assumptions** — what the design and the plan use now; any of them can change.
@@ -247,7 +250,7 @@ the domain move (A8).
 | A3 | "Claude switched to view M · Back to view N" is a thin line under the bar; "Updated by Claude" is a short-lived badge by the view name | POC behaviour, moved into the bar |
 | A4 | Page states: signed out, loading, empty slot, view not built yet, page needs updating, reconnecting, no project selected | Brief 7.4 |
 | A5 | Below about 720 px: chart mark, one "Views" menu, emoji-only project button | Round 1 |
-| A6 | Lucide icons: Engagement starter `Rocket`, Analyst `Table2`, Value calculator `Calculator`, Presentation builder `Presentation`, Project Manager `GanttChart`, Team manager `Users`, Story builder `BookText`, Agent builder `Bot`, Proposal builder `FileSignature`. A view not built yet is dimmed ("Coming soon") but can be picked | Brief; Lovable round 1 |
+| A6 | Icons in phase order, no dividers and no phase in the tooltips (Nela, 2026-10-22): the tooltip is the name only. **Diagnose** (`Search`): Workflow Mapper `Workflow`, Research Analyst `FileSearch`. **Design** (`Lightbulb`): Value Case Calculator `Calculator`, GxP and AI Act Checker `ShieldCheck`. **Deliver** (`Settings`): Presentation Builder `Presentation`, Project Manager `CalendarCheck`. **Govern and learn** (`Shield`): Engagement Memory `Brain`, Red-Team Reviewer `SearchCheck`. Then two dummy views: **Dummy view 9** `Box` and **Dummy view 10** `Boxes` (keys `dummy_9`, `dummy_10`). Names from Nela's picture (2026-10-22); Lucide names are Claude's reading of it. A view not built yet is dimmed ("Coming soon") but can be picked | Nela's picture, replacing the v2 doc's nine |
 | A7 | Brand from cantabpi.com: logo, red, Raleway and Lora; red only for the current view, Claude's signals and the toggle; light and dark | Lovable round 1 |
 | A8 | Address `os.cantabpi.com`, live 2026-10-22; `cantabpios.lovable.app` redirects there. Routes `/1…10` come with the wire-up (step 5) | Nela; 7.5 |
 
@@ -255,9 +258,9 @@ the domain move (A8).
 
 Written as a new migration; Nela runs `db push`.
 
-1. **Template keys.** `ui_views.template` accepts the nine keys `engagement_starter`, `analyst`,
-   `value_calculator`, `presentation_builder`, `project_manager`, `team_manager`, `story_builder`,
-   `agent_builder`, `proposal_builder`, plus `pdf` and `dashboard` (Q5). Views not built yet take no parameters.
+1. **Template keys.** `ui_views.template` accepts the agent keys `workflow_mapper`, `research_analyst`,
+   `value_case_calculator`, `gxp_ai_act_checker`, `presentation_builder`, `project_manager`, `engagement_memory`,
+   `red_team_reviewer`, `dummy_9`, `dummy_10`, plus `pdf` and `dashboard` (Q5). Views not built yet take no parameters.
 2. **Settings per template (Q4).** Replace `agent_params` / `ui_params` with one `state` map:
    `{ "<template>": { "agent": {…}, "ui": {…} } }`. The page reads `state[template]`; a missing entry means the
    template's defaults.
@@ -266,9 +269,20 @@ Written as a new migration; Nela runs `db push`.
 4. **Project on the page (A2).** Add `profiles` to the Realtime publication so a project picked in chat reaches
    the chip; the page reads the selected project with the existing functions.
 5. **The `view` tool** accepts the new keys, writes into `state`, and its description lists which views exist.
-6. The function versions, unit tests, [Diagram_input.md](Diagram_input.md) and the tool docs change in the same build.
+6. **The slot in view (7.6):** `profiles.current_slot` and `current_slot_at`, a page function `view_seen(slot)`,
+   and the agent's new slot rule.
+7. **Project on each slot (Q3):** `ui_views.project_id` (FK → `projects`, not null), set to the selected project on
+   every write. The page reads that project's items, so a slide from another project no longer shows as not found:
+   the read goes through a function that checks the slot's project, not the selection (RLS on `slides` follows the
+   selection).
+8. The function versions, unit tests, [Diagram_input.md](Diagram_input.md) and the tool docs change in the same build.
 
 ### 7.3 Steps
+
+**Fast path (Nela, 2026-10-22), done:** published by Lovable on 2026-10-22 (COMMS); dividers removed in a follow-up.
+ the new header goes onto the live page `/v/:slot` now, before the backend
+change (message 7.7). Icons show but do not switch views yet; everything else in the bar uses functions that
+already exist.
 
 | Step | What | Who | Status |
 |---|---|---|---|
@@ -349,6 +363,69 @@ This brings the address switch forward from step 5 (A8); only the routes wait:
 | 3 | Routes `/1…10`, with `/v/N` redirecting there | Lovable, in the wire-up message | `planned` |
 | 4 | Check: sign in on `os.cantabpi.com`; Disconnect and Connect in claude.ai (consent on the new address); `view` returns the new link; loop test | Nela, Claude | `planned` |
 
+### 7.6 The slot in view (Q2)
+
+**Rule (Nela, 2026-10-22):** a change goes to the slot the user has in view. Claude uses another slot only when
+the user names one ("show it in view 3").
+
+**Not covered today.** The POC rule (§2.2) picks the given slot, else the most recently active slot with the
+same template, else the lowest free slot. So "show the Acme pitch" while the user looks at a dashboard in view 1
+opens view 2, and the page jumps there (Follow Claude). The header design assumed the same.
+
+**Design (accepted by Nela 2026-10-22, as written; to reconsider after the first views are in use):**
+1. **The page says which slot is in view.** It calls `view_seen(slot)` on load, when the tab becomes visible,
+   and when the window gets focus. That writes `profiles.current_slot` and `current_slot_at`. On `profiles`,
+   not on the slot row, because an empty slot has no row.
+2. **Claude writes there.** `view` without `slot` uses `current_slot`; if the user has never opened a view,
+   slot 1. With `slot`, that slot. The "same template" and "lowest free" rules and `slot_limit` go.
+3. **Two screens** (the desktop app's pane and Chrome): the one used last wins. The server sees both, so this
+   works across browsers, where the POC's `BroadcastChannel` does not.
+4. **Follow Claude** is then needed only when the user names another slot. It stays, unchanged.
+5. **What Claude is told.** The tool returns "View N, the one the user has open". If `current_slot_at` is older
+   than 30 minutes, it adds "the user may not have it open: give them the url once".
+6. **Tool description:** "Omit slot unless the user names a view number."
+7. **Overwriting.** Replacing what is in view is intended. With Q4, the replaced view's settings stay in the
+   slot, so the user can switch back with its icon.
+
+### 7.7 Draft message for Lovable: header on the live page (round 2)
+
+Nela: paste everything between the lines into Lovable. Tell Claude when it is sent.
+
+---
+
+**Put the new header on the live page `/v/:slot` now. Two changes to the design first.**
+
+**1. Icons.** Replace the nine with these ten, in four phase groups plus one, with a thin divider between groups
+and the phase name in each tooltip ("Diagnose · Workflow Mapper"):
+- **Diagnose:** Workflow Mapper `Workflow`, Research Analyst `FileSearch`
+- **Design:** Value Case Calculator `Calculator`, GxP and AI Act Checker `ShieldCheck`
+- **Deliver:** Presentation Builder `Presentation`, Project Manager `CalendarCheck`
+- **Govern and learn:** Engagement Memory `Brain`, Red-Team Reviewer `SearchCheck`
+- **Other:** Dummy view 9 `Box`, Dummy view 10 `Boxes`
+
+Keep your colours. Keep (a), (b) and (c) from your round-1 answer.
+
+**2. On `/v/:slot`, replace the old header with the new one.** Keep `/design/header` as it is. The centre pane
+(PDF, dashboard, empty state) and all Realtime, follow and conflict logic stay exactly as they are; only the bar
+changes.
+- **View name:** from the current view: `pdf` shows "Slides" plus the slide's name; `dashboard` shows
+  "Sales overview"; empty shows "Empty". With the small "View N".
+- **Icons:** shown, none active, all dimmed with the tooltip "<Name> · Coming soon". **A click does nothing yet**
+  and writes nothing (the backend for it comes later).
+- **Project chip:** real data. `rpc('project_summary')` returns `[{label, name, icon, selected, …}]`; show the
+  selected one. Picking another calls `rpc('select_project', { p_label: label })`, then reloads the list and
+  the view (`view_open`). Reload the list also when the tab becomes visible or gets focus (a project picked in
+  the chat has no live event yet). No project selected: "Pick a project".
+- **Follow Claude toggle, "Updated by Claude" badge, the "Claude switched to view M · Back to view N" line:**
+  wire them to the existing behaviour (`last_writer`, the follow logic, `localStorage`).
+- **Reconnecting dot:** when the Realtime channel is not `SUBSCRIBED`.
+- **Account menu:** "Sign out" signs out and goes to `/login`.
+- **Unchanged:** no direct table writes; only `view_update` and now `select_project` write.
+
+**Please send back:** published, and anything that did not work as written.
+
+---
+
 ## Comments for Nela (proposals, not in the build)
 
 - A "Show in view" button on slide rows in the in-chat files view would call `view` directly. It is
@@ -357,6 +434,11 @@ This brings the address switch forward from step 5 (A8); only the routes wait:
   following agent edits made with existing tools. It is left out because Siniša asked for a dummy table.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.11 (2026-10-22) — Round 2 published (header on the live page); dividers and phase prefixes dropped (A6).
+- v0.10 (2026-10-22) — Q9 answered: simplest first iteration, to reconsider.
+- v0.9 (2026-10-22) — Q3 answered by Siniša (per user, project FK on the slot): 7.2 item 7; Q9 added.
+- v0.8 (2026-10-22) — Q7 answered (eight agents and two dummies), Q8 parked, 7.6 accepted with a note to reconsider; fast path: header onto the live page now (7.7 draft for Lovable).
+- v0.7 (2026-10-22) — Q1, Q2 answered by Nela: the agent views from her picture (A6, keys in 7.2); new §7.6 the slot in view; Q7, Q8 added.
 - v0.6 (2026-10-22) — §7.1 split into open questions (Q1–Q6) and working assumptions (A1–A8); H numbers retired.
 - v0.5 (2026-10-22) — Round 1 back from Lovable: H10 (domain added), H11, H12 updated, H14 added, §7.5 the new address (live; old one redirects; switch steps). §7 added: view header plan (phase 2, step 1), provisional answers H1–H13, draft Lovable message for design round 1. POC sections become background.
 - v0.4 (2026-10-22) — Note on projects (v0.7.0): slides follow the selected project. Phase 2 of v2 builds on this POC.

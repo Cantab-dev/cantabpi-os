@@ -253,7 +253,7 @@ route `/design/header` with made-up data and no Supabase calls; the bar (wordmar
 view icons, project chip, Follow Claude, account menu); the switch line and "Updated by Claude" badge; eight page
 states on a control panel; 1440 px down to 400 px.
 
-## 2026-10-22 — Lovable via Nela: header design ready [OPEN]
+## 2026-10-22 — Lovable via Nela: header design ready [RESOLVED]
 
 Answers "view header, design round 1". Ready at `/design/header` in the Lovable preview (not published). Logo, red
 and fonts (Raleway, Lora) taken from cantabpi.com. A white bar; Cantab red only for the current view, Claude's
@@ -264,3 +264,26 @@ Analyst and `BookText` for Story builder (already done); (b) a "Reload" link on 
 has reviewed the design.
 
 Also on 2026-10-22, Nela added the domain `os.cantabpi.com` in Lovable; `cantabpios.lovable.app` stays active.
+
+## 2026-10-22 — Claude: header on the live page, round 2 [RESOLVED]
+
+**Why:** get the new header onto `/v/:slot` before the backend change (`docs/live-views-status.md` §7.3 fast path).
+
+**Need:** the brief in `docs/live-views-status.md` §7.7, sent by Nela as written: ten icons (eight agents in four
+phases, two dummies), inactive for now; the bar on `/v/:slot` with the real project chip (`project_summary`,
+`select_project`), Follow Claude, the badge, the switch line, the reconnecting dot and sign-out. Centre pane unchanged.
+
+## 2026-10-22 — Lovable via Nela: header on the live page published [OPEN]
+
+Answers "header on the live page, round 2". Published on `os.cantabpi.com`, `/v/1`–`/v/10`, as written: ten
+icons in five groups with dividers, dimmed, inactive; view name ("Slides · <name>", "Sales overview", "Empty")
+with "View N"; project chip with switch and refresh on return to the tab; Follow Claude, badge and back line as
+before; red dot by the logo while Realtime is down; sign-out. Not checked with real data by Lovable. Notes: the chip
+uses `icon` and `name`, falling back to `label`; "This page needs updating" shows for an unknown view type; a
+failed project switch shows a short error below the bar. Stays `[OPEN]` until Nela has checked it signed in.
+
+## 2026-10-22 — Claude: remove the icon dividers and phase prefixes [OPEN]
+
+**Need:** on `/v/:slot` and `/design/header`, remove the thin dividers between the icon groups and the phase
+prefix in the tooltips ("Workflow Mapper · Coming soon", not "Diagnose · Workflow Mapper · Coming soon"). Keep the
+order and even spacing. Nothing else changes. Decided by Nela on 2026-10-22.
