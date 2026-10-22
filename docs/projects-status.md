@@ -107,7 +107,7 @@ views draw projects with the plain list. The tool list changed: claude.ai needs 
    no selection shows nothing and refuses inserts; anon sees nothing.
 3. **Tools** with unit tests — `built`. 39 tests pass.
 4. **`smoke.sh`** projects section — `built`.
-5. **Deploy and live check** — `built` (smoke live); claude.ai check open. See §6.
+5. **Deploy and live check** — `built`: smoke live and claude.ai checked (2026-10-22). See §6.
 6. **Docs** — data-structure-status, tools-status, DECISIONS, HANDOFF, Document Log.
 
 ## 5. Compared with Aleph (answers received 2026-10-22, patterns only)
@@ -135,7 +135,11 @@ address (we do this already).
 - 2026-10-22: plan v0.1–v0.2; Nela's go. First migration written, tested and applied; Siniša's answers changed
   the model; second migration written, tested together with the first; tools reworked to one project. Second
   migration applied by Nela; function v0.7.0 deployed; `smoke.sh` run live as `claude@test.com`: all checks as
-  expected, 14 tools listed, no crashes; Test rows removed. Not yet checked in claude.ai (needs a reconnect).
+  expected, 14 tools listed, no crashes; Test rows removed. claude.ai, as Nela after a reconnect: "switch to
+  Birch" selected `project:4` and replied with the right counts (1 todo, 1 sheet, 1 doc, 1 slide deck). Also
+  passed: list projects (three, selected one named), todos in Birch only, a new todo landing in Birch, `todo:39`
+  (Atlas) not found in Birch with an offer to switch, and found after switching back. Test todo removed.
+  **Phase 1 done.**
   Note: Siniša's Atlas and Birch are empty (his rows have no `Dummy - ` prefix), so his data is in `project:8`
   (Unsorted).
 
