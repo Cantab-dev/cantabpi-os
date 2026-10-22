@@ -1,0 +1,431 @@
+[
+  {
+    "id": "px-001",
+    "phase_id": "ph-01",
+    "person_id": "pe-01",
+    "role": "C",
+    "comment": "Steers pilot scope and signs off the results readout",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-002",
+    "phase_id": "ph-01",
+    "person_id": "pe-02",
+    "role": "A",
+    "comment": "Runs the pilot day to day; owns go-live and the readout",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-003",
+    "phase_id": "ph-01",
+    "person_id": "pe-03",
+    "role": "R",
+    "comment": "Designs the pilot, success metrics and rep onboarding",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-004",
+    "phase_id": "ph-01",
+    "person_id": "pe-04",
+    "role": "C",
+    "comment": "Sets up the baseline data later used for sizing",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-005",
+    "phase_id": "ph-01",
+    "person_id": "pe-05",
+    "role": "R",
+    "comment": "Monitors pilot telemetry and writes the impact analysis",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-006",
+    "phase_id": "ph-01",
+    "person_id": "pe-06",
+    "role": "R",
+    "comment": "Builds and configures the three pilot agents",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-007",
+    "phase_id": "ph-01",
+    "person_id": "pe-07",
+    "role": "C",
+    "comment": "Approves pilot scope and attends the readout",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-008",
+    "phase_id": "ph-01",
+    "person_id": "pe-08",
+    "role": "I",
+    "comment": "Releases 40 reps in two regions for the pilot",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-009",
+    "phase_id": "ph-01",
+    "person_id": "pe-09",
+    "role": "C",
+    "comment": "Prioritises agent features with the pilot reps",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-010",
+    "phase_id": "ph-01",
+    "person_id": "pe-10",
+    "role": "C",
+    "comment": "Provides CRM access and the integration sandbox",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-011",
+    "phase_id": "ph-01",
+    "person_id": "pe-11",
+    "role": "C",
+    "comment": "Approves guardrails and rules for generated content",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-012",
+    "phase_id": "ph-02",
+    "person_id": "pe-01",
+    "role": "A",
+    "comment": "Owns the business case and the board recommendation",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-013",
+    "phase_id": "ph-02",
+    "person_id": "pe-02",
+    "role": "R",
+    "comment": "Builds the SteerCo story and runs the workstreams",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-014",
+    "phase_id": "ph-02",
+    "person_id": "pe-03",
+    "role": "R",
+    "comment": "Designs the target operating model and governance",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-015",
+    "phase_id": "ph-02",
+    "person_id": "pe-04",
+    "role": "R",
+    "comment": "Builds the value model and sizes the levers",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-016",
+    "phase_id": "ph-02",
+    "person_id": "pe-05",
+    "role": "R",
+    "comment": "Runs CRM extraction and the sensitivity analysis",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-017",
+    "phase_id": "ph-02",
+    "person_id": "pe-06",
+    "role": "R",
+    "comment": "Designs the IT architecture for nine markets",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-018",
+    "phase_id": "ph-02",
+    "person_id": "pe-07",
+    "role": "C",
+    "comment": "Shapes the case and pre-wires the board",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-019",
+    "phase_id": "ph-02",
+    "person_id": "pe-08",
+    "role": "C",
+    "comment": "Validates adoption assumptions market by market",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-020",
+    "phase_id": "ph-02",
+    "person_id": "pe-09",
+    "role": "C",
+    "comment": "Defines the product roadmap for scale",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-021",
+    "phase_id": "ph-02",
+    "person_id": "pe-10",
+    "role": "R",
+    "comment": "Delivers the CRM extract for all markets",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-022",
+    "phase_id": "ph-02",
+    "person_id": "pe-11",
+    "role": "I",
+    "comment": "Kept informed on guardrail scope at scale",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-023",
+    "phase_id": "ph-03",
+    "person_id": "pe-01",
+    "role": "A",
+    "comment": "Owns the rollout proposal and commercial terms",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-024",
+    "phase_id": "ph-03",
+    "person_id": "pe-02",
+    "role": "R",
+    "comment": "Leads wave planning and drafts the proposal",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-025",
+    "phase_id": "ph-03",
+    "person_id": "pe-03",
+    "role": "R",
+    "comment": "Writes the change and enablement plan",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-026",
+    "phase_id": "ph-03",
+    "person_id": "pe-04",
+    "role": "R",
+    "comment": "Sequences the country waves",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-027",
+    "phase_id": "ph-03",
+    "person_id": "pe-05",
+    "role": "I",
+    "comment": "Hands over the adoption tracking metrics",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-028",
+    "phase_id": "ph-03",
+    "person_id": "pe-06",
+    "role": "C",
+    "comment": "Estimates integration effort per wave",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-029",
+    "phase_id": "ph-03",
+    "person_id": "pe-07",
+    "role": "C",
+    "comment": "Agrees the wave plan and sign-off criteria",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-030",
+    "phase_id": "ph-03",
+    "person_id": "pe-08",
+    "role": "C",
+    "comment": "Commits market sales teams to wave dates",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-031",
+    "phase_id": "ph-03",
+    "person_id": "pe-09",
+    "role": "C",
+    "comment": "Prepares to own the run model after handover",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-032",
+    "phase_id": "ph-03",
+    "person_id": "pe-10",
+    "role": "C",
+    "comment": "Plans data remediation in the two lagging markets",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "px-033",
+    "phase_id": "ph-03",
+    "person_id": "pe-11",
+    "role": "I",
+    "comment": "Informed of market-specific compliance steps",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

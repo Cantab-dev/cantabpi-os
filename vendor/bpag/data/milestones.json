@@ -1,0 +1,86 @@
+[
+  {
+    "id": "ms-01",
+    "phase_id": "ph-01",
+    "name": "Kick-off",
+    "date": "2026-08-03",
+    "type": "kickoff",
+    "status": "done",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ms-02",
+    "phase_id": "ph-01",
+    "name": "Pilot go-live, 40 reps in 2 regions",
+    "date": "2026-08-24",
+    "type": "go_live",
+    "status": "done",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ms-03",
+    "phase_id": "ph-01",
+    "name": "Pilot results readout",
+    "date": "2026-09-25",
+    "type": "readout",
+    "status": "done",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ms-04",
+    "phase_id": "ph-02",
+    "name": "Scale-up business case to SteerCo",
+    "date": "2026-10-30",
+    "type": "steerco",
+    "status": "at_risk",
+    "_meta": {
+      "version": 3,
+      "updated_at": "2026-10-21T09:13:00Z",
+      "updated_by": "project_manager",
+      "reason": "Business case depends on the late CRM extract"
+    }
+  },
+  {
+    "id": "ms-05",
+    "phase_id": "ph-02",
+    "name": "Board decision on scale-up",
+    "date": "2026-11-06",
+    "type": "board",
+    "status": "planned",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ms-06",
+    "phase_id": "ph-03",
+    "name": "Rollout plan sign-off",
+    "date": "2026-12-04",
+    "type": "signoff",
+    "status": "planned",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

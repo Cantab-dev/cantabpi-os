@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.17 | Nela | 2026-10-22 |
+| Current | v0.18 | Nela | 2026-10-22 |
 
 Plan for a proof of concept of Siniša's memo *Server-driven UI for agent-operated apps* (received
 2026-10-21): the agent points a live browser page at a PDF or a fixed dashboard, and the open page
@@ -537,7 +537,7 @@ Each recommendation stands until Nela (or Siniša, where marked) answers.
 
 | Step | What | Who | Status |
 |---|---|---|---|
-| 0 | Answer P1–P12; connect the Lovable project to GitHub (P6) | Nela | `open` |
+| 0 | Answer P1–P14; interface 8.5 | Nela, Claude | `built` 2026-10-22: as recommended, P6b; interface written |
 | 1 | Migration: `engagement_*` tables, RLS, `engagement_commit`, read functions for the runtime, new template keys (P9). Dry-run on live in a rolled-back transaction | Claude; Nela runs `db push` | `planned` |
 | 2 | Function v0.9.0: the five tools, the validator module, the seed bundled; unit tests; the package's demo run through `engagement_write` | Claude; deploy on Nela's go | `planned` |
 | 3 | Templates into the Lovable repo under `public/bpag/`; `runtime.js` data source and embed mode | Claude, in the GitHub repo | `planned` |
@@ -549,6 +549,53 @@ Each recommendation stands until Nela (or Siniša, where marked) answers.
 refused with "text is 122 characters, allowed ≤ 110"; every view redraws within 2 s of a commit and marks the changed
 records; `engagement_reset` restores the seed exactly; Siniša sees none of Nela's engagement data.
 
+### 8.5 Interface between the parts (fixed before the parallel sessions start)
+
+Decided 2026-10-22: P1–P12 as recommended (Nela), P13, P14, P6b as above. The package is copied unchanged into
+`vendor/bpag/` (with the deck as `vendor/bpag/deck/scale-up-proposal.pdf`); nobody edits it. Changes live outside it.
+
+**Ownership.** Session 1 (backend): `supabase/`, `scripts/build-engagement.mjs`. Session 2 (pages), in the worktree
+`C:\dev\cantabpi-os-pages` on branch `pages`: `templates/bpag/`, `scripts/templates.mjs`. Session 3: Nela with
+Lovable. Shared docs (this file, DECISIONS, HANDOFF, Document Log, COMMS, Diagram_input, tools-status): session 1 only.
+
+**Template keys** (`ui_views.template`, header, `view` tool): `home`, `engagement_starter`, `analyst`,
+`value_estimator`, `presentation_builder`, `project_manager`, `team_manager`, `story_builder`, `agent_builder`,
+`proposal_builder`, `model_builder` (the package's view keys), plus `pdf` and `dashboard` (Claude only). None takes
+parameters; a view reads its slot's `project_id`. The old ten keys of §7 are removed and slots showing them are cleared.
+
+**Tables** (session 1). All RLS: select own rows; no direct writes.
+
+| Table | Columns |
+|---|---|
+| `engagement_datasets` | `project_id` PK → projects (cascade), `profile_id` → profiles (cascade), `contract_version` text, `global_version` int, `table_versions` jsonb, `created_at`, `updated_at` |
+| `engagement_tables` | `project_id` → engagement_datasets (cascade), `profile_id`, `tbl` text, `records` jsonb (array, exactly as the package's `<tbl>.json`), `version` int; PK (`project_id`, `tbl`) |
+| `engagement_log` | `id` identity, `project_id`, `profile_id`, `version`, `at`, `agent`, `reason`, `changes` jsonb; the last 200 per project are kept |
+| `view_templates` | `key` PK (the template keys above, without `pdf`, `dashboard`), `html` text (one self-contained page), `contract_version`, `updated_at`. Select: any signed-in user. Written only with the service key (`scripts/templates.mjs`) |
+
+Storage: public bucket `engagement-assets`; the deck at `bpag/scale-up-proposal.pdf`. The seed's `deck.pdf_url` is set to
+`https://etofljbxzllkucmearwl.supabase.co/storage/v1/object/public/engagement-assets/bpag/scale-up-proposal.pdf`
+(in the bundled seed, not in `vendor/`).
+
+**Functions.**
+
+| Function | Caller | Returns |
+|---|---|---|
+| `engagement_read(p_project uuid, p_tables text[] default null)` | pages, MCP (as the user) | `{status: 'ok', version: {global, tables}, tables: {<tbl>: [records]}}` (all tables when `p_tables` is null), or `{status: 'empty'}` when the project has no engagement |
+| `engagement_version(p_project uuid)` | pages (poll every 2 s) | `{status: 'ok', version: {global, tables}}` or `{status: 'empty'}` — the package's `_version.json` |
+| `engagement_commit(p_profile, p_project, p_expected_version, p_version jsonb, p_tables jsonb, p_log jsonb)` | MCP only, **service role** (P13) | `{status: 'ok'}` or `{status: 'conflict', version}`; checks the project is `p_profile`'s |
+| `engagement_replace(p_profile, p_project, p_version jsonb, p_tables jsonb)` | MCP `engagement_reset`, service role | `{status: 'ok'}`; creates the dataset if missing |
+
+**How a page runs inside the Lovable page** (sessions 2 and 3).
+- The Lovable page reads `view_templates.html` for the slot's template and shows it in an `<iframe srcdoc>` (same
+  origin, no `sandbox`), full size of the centre pane. It replaces `srcdoc` only when the template or the project changes.
+- Before showing it, the Lovable page sets `window.CP_HOST` on itself:
+  `{ supabaseUrl, publishableKey, projectId, getToken: async () => <current access token>, openView: (key) => <view_set_template on this slot> }`.
+- The page's runtime reads `window.parent.CP_HOST`, calls `engagement_read` and `engagement_version` through
+  `fetch` to `<supabaseUrl>/rest/v1/rpc/…` with the token, and runs in embed mode: no brand, no agent rail (our header
+  has them), keeps the engagement line. A link to another view calls `openView(key)` instead of navigating.
+- `status: 'empty'` shows "This project has no engagement data yet. Ask Claude to load the demo (engagement_reset)."
+- The schema (`_schema.json`), `runtime.js` and `theme.css` are inlined into each page by `scripts/templates.mjs`.
+
 ## Comments for Nela (proposals, not in the build)
 
 - A "Show in view" button on slide rows in the in-chat files view would call `view` directly. It is
@@ -557,6 +604,7 @@ records; `engagement_reset` restores the seed exactly; Siniša sees none of Nela
   following agent edits made with existing tools. It is left out because Siniša asked for a dummy table.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.18 (2026-10-22) — P1–P12 as recommended; §8.5 the interface for the parallel sessions; package copied to `vendor/bpag/`.
 - v0.17 (2026-10-22) — P6b chosen (templates in a table, deck in public Storage), replacing P6 and P8.
 - v0.16 (2026-10-22) — P13 (Aleph pattern for `engagement_commit`), P14 (other tools tomorrow), P6b (templates in a table) added.
 - v0.15 (2026-10-22) — §8 added: phase 2 plan, Siniša's views package ported onto Supabase (P1–P12). The §7 icon list (A6) is replaced by Siniša's ten.

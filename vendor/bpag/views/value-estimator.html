@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Value estimator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+  .wf svg { display: block; width: 100%; min-width: 720px; height: auto; }
+  .wf text { font-family: var(--sans); fill: var(--fg); }
+  .wf .val { font-family: var(--mono); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .wf .cat { font-size: 12.5px; fill: var(--muted); }
+  .wf .note { font-size: 13px; font-weight: 500; }
+  .wf .axisnote { font-size: 11.5px; fill: var(--faint); }
+  .sens { flex: 999 1 560px; }
+  .sowhat { flex: 1 1 300px; }
+  .tor { display: flex; flex-direction: column; gap: 2px; }
+  .trow { display: flex; align-items: center; min-height: 38px; border-radius: 6px; }
+  .tname { width: 180px; flex-shrink: 0; font-size: 13px; padding-right: 10px; display: flex; align-items: center; }
+  .ttrack { position: relative; flex: 1; height: 26px; min-width: 0; }
+  .tswing { width: 48px; flex-shrink: 0; text-align: right; font-family: var(--mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bar { position: absolute; top: 5px; height: 16px; }
+  .bar.d { background: var(--c-down); border-radius: 3px 0 0 3px; }
+  .bar.u { background: var(--c-up); border-radius: 0 3px 3px 0; }
+  .baseline { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--fg); }
+  .tl { position: absolute; top: 5px; line-height: 16px; font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .axis { display: flex; }
+  .axis .ttrack { height: 20px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .axis .tick { position: absolute; top: 3px; transform: translateX(-50%); }
+  .sowhat ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .sowhat li { padding-left: 4px; }
+  .sowhat li::marker { font-family: var(--mono); color: var(--muted); }
+  .rec { background: var(--brand-tint); border: 1px solid var(--brand-line); border-radius: 8px; padding: 10px 12px; }
+  @media (max-width: 520px) { .tname { width: 118px; font-size: 12px; } .tswing { width: 34px; } .block { padding: 16px 14px; } }
+</style>
+</head>
+<body>
+<header id="cp-header"></header>
+<div class="cp-layout">
+  <nav id="cp-rail"></nav>
+  <main id="cp-main" class="cp-main">
+    <div id="cp-notices"></div>
+    <div class="cp-view-head"><h1>Value estimator</h1></div>
+    <div class="stack" id="view"></div>
+  </main>
+</div>
+<script src="../assets/runtime.js"></script>
+<script>
+CP.boot({
+  view: 'value_estimator',
+  base: '../',
+  render: function (ctx) {
+    var el = ctx.el, svg = ctx.svg, f = ctx.fmt;
+    var root = document.getElementById('view');
+    root.innerHTML = '';
+
+    /* ---------- derived values ---------- */
+    var B = ctx.bridge();
+    var vt = B.settings;
+    var drivers = ctx.data.sensitivity_drivers.slice().sort(function (a, b) { return (b.upside_value - b.downside_value) - (a.upside_value - a.downside_value); });
+    var top = drivers[0];
+    var PH = {
+      'bridge.start': f.money_m(B.start),
+      'bridge.momentum': f.money_m(B.firstSubtotal),
+      'bridge.target': f.money_m(B.lastSubtotal),
+      'bridge.net_impact': f.money_m(B.netImpact),
+      'sensitivity.base': f.money_m(vt.npv_base),
+      'sensitivity.top_driver': top ? top.name : '—',
+      'sensitivity.top_downside': top ? f.money_m(top.downside_value) : '—'
+    };
+    var nv = {};
+    ctx.data.narratives.filter(function (n) { return n.view === 'value_estimator'; })
+      .sort(function (a, b) { return a.order - b.order; })
+      .forEach(function (n) { (nv[n.slot] = nv[n.slot] || []).push(n); });
+    function text(tag, slot, attrs) {
+      var n = (nv[slot] || [])[0];
+      var node = el(tag, attrs || null, [n ? ctx.fill(n.text, PH) : '']);
+      return n ? ctx.mark(node, n) : node;
+    }
+
+    /* ---------- block 1: value bridge ---------- */
+    var bars = B.bars;
+    var n = bars.length;
+    var W = Math.max(1000, n * 88), top0 = 74, bottom = 340, left = 10, right = W - 10;
+    var maxTop = Math.max.apply(null, bars.map(function (b) { return b.hi; }));
+    var minLevel = Math.min.apply(null, bars.map(function (b) { return b.total ? b.hi : b.lo; }));
+    var floor = 0;
+    if (minLevel > 0.4 * maxTop) {
+      var span = maxTop - minLevel;
+      var step = span > 400 ? 100 : span > 150 ? 50 : 25;
+      floor = Math.max(0, Math.floor((minLevel - 0.6 * span) / step) * step);
+    }
+    var yMax = maxTop + 0.14 * (maxTop - floor);
+    var y = function (v) { return bottom - (Math.max(v, floor) - floor) / (yMax - floor) * (bottom - top0); };
+    var band = (right - left) / n, bw = band * 0.62;
+    var cx = function (i) { return left + band * i + band / 2; };
+    var s = svg('svg', { viewBox: '0 0 ' + W + ' 400', role: 'img' });
+    s.appendChild(svg('line', { x1: left, x2: right, y1: bottom, y2: bottom, stroke: 'var(--line-strong)', 'stroke-width': 1 }));
+    bars.forEach(function (b, i) {
+      var x = cx(i) - bw / 2;
+      if (i > 0) {
+        var pl = bars[i - 1].level;
+        s.appendChild(svg('line', { x1: cx(i - 1) + bw / 2, x2: x, y1: y(pl), y2: y(pl), stroke: 'var(--faint)', 'stroke-width': 1, 'stroke-dasharray': '3 3' }));
+      }
+      var fill = b.total ? 'var(--c-total)' : (b.step.value > 0 ? 'var(--c-up)' : 'var(--c-down)');
+      var g = svg('g', {});
+      g.appendChild(svg('rect', { x: x, y: y(b.hi), width: bw, height: Math.max(1.5, y(b.lo) - y(b.hi)), rx: 2, fill: fill }));
+      if (b.total && floor > 0) {
+        var yb = bottom - 14;
+        g.appendChild(svg('path', { d: 'M' + (x - 2) + ' ' + (yb + 4) + ' L' + (x + bw + 2) + ' ' + (yb - 4) + ' M' + (x - 2) + ' ' + (yb + 10) + ' L' + (x + bw + 2) + ' ' + (yb + 2), stroke: 'var(--surface)', 'stroke-width': 3 }));
+      }
+      var label = b.total ? f.num(b.level, b.level % 1 ? 1 : 0) : f.signed(b.step.value, 1);
+      g.appendChild(svg('text', { x: cx(i), y: y(b.hi) - 8, 'text-anchor': 'middle', 'class': 'val' }, label));
+      b.step.label.split('\n').forEach(function (line, j) {
+        g.appendChild(svg('text', { x: cx(i), y: bottom + 21 + j * 15, 'text-anchor': 'middle', 'class': 'cat' }, line));
+      });
+      var note = ctx.changedNote(b.step);
+      if (note) {
+        g.appendChild(svg('circle', { cx: cx(i) + bw / 2 - 1, cy: y(b.hi) - 22, r: 3.5, fill: 'var(--brand)' }));
+        g.appendChild(svg('title', {}, note));
+      }
+      if (ctx.isFresh(b.step)) g.setAttribute('class', 'pulse');
+      s.appendChild(g);
+    });
+    if (floor > 0) s.appendChild(svg('text', { x: left, y: 394, 'class': 'axisnote' }, 'Total bars are cut: the axis starts at ' + f.money_m(floor)));
+    if (B.fromIndex >= 0 && B.toIndex >= 0) {
+      var xA = cx(B.fromIndex), xB = cx(B.toIndex), yb2 = 30;
+      s.appendChild(svg('path', { d: 'M' + xA + ' ' + (y(bars[B.fromIndex].hi) - 28) + ' V' + yb2 + ' H' + xB + ' V' + (y(bars[B.toIndex].hi) - 28), fill: 'none', stroke: 'var(--fg)', 'stroke-width': 1.2 }));
+      var ann = (nv['bridge.annotation'] || [])[0];
+      var annText = ann ? ctx.fill(ann.text, PH) : '';
+      var mid = (xA + xB) / 2, pw = Math.max(120, annText.length * 7.6 + 28);
+      s.appendChild(svg('rect', { x: mid - pw / 2, y: yb2 - 14, width: pw, height: 28, rx: 14, fill: 'var(--surface)', stroke: 'var(--fg)', 'stroke-width': 1.2 }));
+      var t = svg('text', { x: mid, y: yb2 + 5, 'text-anchor': 'middle', 'class': 'note' }, annText);
+      if (ann && ctx.changedNote(ann)) t.appendChild(svg('title', {}, ctx.changedNote(ann)));
+      s.appendChild(t);
+    }
+    var titleN = (nv['bridge.title'] || [])[0];
+    s.setAttribute('aria-label', (titleN ? ctx.fill(titleN.text, PH) : 'Value bridge') + '. ' + bars.map(function (b) {
+      return b.step.label.replace(/\n/g, ' ') + ' ' + (b.total ? b.level : f.signed(b.step.value, 1));
+    }).join(', ') + '.');
+    root.appendChild(el('section', { 'class': 'block wf', 'aria-labelledby': 'wf-title' }, [
+      text('div', 'bridge.eyebrow', { 'class': 'eyebrow' }),
+      text('h2', 'bridge.title', { id: 'wf-title', 'class': 'title-lg' }),
+      el('div', { 'class': 'legend', 'aria-hidden': 'true' }, [
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--c-total)' }), 'Totals']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--c-up)' }), 'Increase']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--c-down)' }), 'Decrease'])
+      ]),
+      el('div', { 'class': 'scroll-x' }, [s]),
+      text('div', 'bridge.footnote', { 'class': 'foot' })
+    ]));
+
+    /* ---------- block 2: sensitivity ---------- */
+    var base = vt.npv_base;
+    var sc = ctx.niceScale(Math.min.apply(null, drivers.map(function (d) { return d.downside_value; }).concat([base])),
+                           Math.max.apply(null, drivers.map(function (d) { return d.upside_value; }).concat([base])), 5);
+    var pos = function (v) { return (v - sc.min) / (sc.max - sc.min) * 100; };
+    var bp = pos(base);
+    var tor = el('div', { 'class': 'tor', role: 'img' });
+    drivers.forEach(function (d) {
+      var dL = pos(d.downside_value), uR = pos(d.upside_value);
+      var name = el('span', { 'class': 'tname', text: d.name });
+      var row = el('div', { 'class': 'trow' }, [
+        name,
+        el('span', { 'class': 'ttrack' }, [
+          el('span', { 'class': 'bar d', style: 'left:' + dL + '%;width:' + (bp - dL) + '%' }),
+          el('span', { 'class': 'bar u', style: 'left:' + bp + '%;width:' + (uR - bp) + '%' }),
+          el('span', { 'class': 'baseline', style: 'left:calc(' + bp + '% - 1px)' }),
+          el('span', { 'class': 'tl', style: 'right:' + (100 - dL + 1.2) + '%', text: d.downside_input }),
+          el('span', { 'class': 'tl', style: 'left:' + (uR + 1.2) + '%', text: d.upside_input })
+        ]),
+        el('span', { 'class': 'tswing', text: f.num(d.upside_value - d.downside_value, 0) })
+      ]);
+      ctx.mark(name, d);
+      tor.appendChild(row);
+    });
+    var stitle = (nv['sensitivity.title'] || [])[0];
+    tor.setAttribute('aria-label', (stitle ? ctx.fill(stitle.text, PH) : 'Sensitivity') + '. Base ' + base + '. ' + drivers.map(function (d) { return d.name + ' ' + d.downside_value + ' to ' + d.upside_value; }).join('; ') + '.');
+    var ticks = el('span', { 'class': 'ttrack' });
+    sc.ticks.forEach(function (v) { ticks.appendChild(el('span', { 'class': 'tick', style: 'left:' + pos(v) + '%', text: f.num(v, 0) })); });
+    var sens = el('section', { 'class': 'block sens', 'aria-labelledby': 's-title' }, [
+      text('div', 'sensitivity.eyebrow', { 'class': 'eyebrow' }),
+      text('h2', 'sensitivity.title', { id: 's-title' }),
+      el('div', { 'class': 'legend', 'aria-hidden': 'true' }, [
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--c-down)' }), 'Downside value of input']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--c-up)' }), 'Upside value of input']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--fg); width: 2px; height: 12px' }), 'Base case ' + PH['sensitivity.base']])
+      ]),
+      tor,
+      el('div', { 'class': 'axis', 'aria-hidden': 'true' }, [el('span', { 'class': 'tname' }), ticks, el('span', { 'class': 'tswing', style: 'font-family: var(--sans); font-size: 11px', text: 'swing' })])
+    ]);
+    ctx.mark(sens.querySelector('.legend span:last-child'), vt, true);
+
+    /* ---------- block 3: so what ---------- */
+    var ol = el('ol');
+    (nv['so_what.point'] || []).forEach(function (p) {
+      ol.appendChild(ctx.mark(el('li', { 'class': p.highlight ? 'rec' : null, text: ctx.fill(p.text, PH) }), p));
+    });
+    var sw = el('section', { 'class': 'block sowhat', 'aria-labelledby': 'sw-title' }, [
+      el('div', { 'class': 'eyebrow', text: 'So what' }),
+      text('h2', 'so_what.title', { id: 'sw-title' }),
+      ol
+    ]);
+    root.appendChild(el('div', { 'class': 'row' }, [sens, sw]));
+  }
+});
+</script>
+</body>
+</html>

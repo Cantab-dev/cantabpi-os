@@ -1,0 +1,159 @@
+[
+  {
+    "id": "vs-01",
+    "order": 1,
+    "label": "EBIT 2026",
+    "kind": "start",
+    "value": 410,
+    "model_cell_id": "mc-01",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "vs-02",
+    "order": 2,
+    "label": "Market\nmomentum",
+    "kind": "delta",
+    "value": -35,
+    "model_cell_id": "mc-02",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "vs-03",
+    "order": 3,
+    "label": "Momentum\ncase 2028",
+    "kind": "subtotal",
+    "model_cell_id": "mc-31",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "vs-04",
+    "order": 4,
+    "label": "More calls",
+    "kind": "delta",
+    "value": 28,
+    "hypothesis_id": "in-03",
+    "model_cell_id": "mc-24",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "vs-05",
+    "order": 5,
+    "label": "Next-best\naction",
+    "kind": "delta",
+    "value": 22,
+    "hypothesis_id": "in-04",
+    "model_cell_id": "mc-25",
+    "_meta": {
+      "version": 6,
+      "updated_at": "2026-10-21T09:45:00Z",
+      "updated_by": "value_estimator",
+      "reason": "Next-best-action lever aligned to the model"
+    }
+  },
+  {
+    "id": "vs-06",
+    "order": 6,
+    "label": "Content",
+    "kind": "delta",
+    "value": 9,
+    "hypothesis_id": "in-05",
+    "model_cell_id": "mc-26",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "vs-07",
+    "order": 7,
+    "label": "Review\neffort",
+    "kind": "delta",
+    "value": 6,
+    "hypothesis_id": "in-06",
+    "model_cell_id": "mc-27",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "vs-08",
+    "order": 8,
+    "label": "Avoided\nhires",
+    "kind": "delta",
+    "value": 8,
+    "model_cell_id": "mc-28",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "vs-09",
+    "order": 9,
+    "label": "AI run\ncost",
+    "kind": "delta",
+    "value": -12,
+    "model_cell_id": "mc-29",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "vs-10",
+    "order": 10,
+    "label": "Adoption\nhaircut",
+    "kind": "delta",
+    "value": -10,
+    "hypothesis_id": "in-09",
+    "model_cell_id": "mc-30",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "vs-11",
+    "order": 11,
+    "label": "Target 2028",
+    "kind": "subtotal",
+    "model_cell_id": "mc-33",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

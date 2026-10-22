@@ -1,0 +1,542 @@
+[
+  {
+    "id": "ra-01",
+    "deliverable_id": "dl-01",
+    "person_id": "pe-03",
+    "role": "R",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-02",
+    "deliverable_id": "dl-01",
+    "person_id": "pe-02",
+    "role": "A",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-03",
+    "deliverable_id": "dl-01",
+    "person_id": "pe-09",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-04",
+    "deliverable_id": "dl-01",
+    "person_id": "pe-11",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-05",
+    "deliverable_id": "dl-01",
+    "person_id": "pe-07",
+    "role": "I",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-06",
+    "deliverable_id": "dl-02",
+    "person_id": "pe-06",
+    "role": "R",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-07",
+    "deliverable_id": "dl-02",
+    "person_id": "pe-02",
+    "role": "A",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-08",
+    "deliverable_id": "dl-02",
+    "person_id": "pe-10",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-09",
+    "deliverable_id": "dl-02",
+    "person_id": "pe-11",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-10",
+    "deliverable_id": "dl-02",
+    "person_id": "pe-09",
+    "role": "I",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-11",
+    "deliverable_id": "dl-03",
+    "person_id": "pe-05",
+    "role": "R",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-12",
+    "deliverable_id": "dl-03",
+    "person_id": "pe-02",
+    "role": "A",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-13",
+    "deliverable_id": "dl-03",
+    "person_id": "pe-03",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-14",
+    "deliverable_id": "dl-03",
+    "person_id": "pe-07",
+    "role": "I",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-15",
+    "deliverable_id": "dl-03",
+    "person_id": "pe-08",
+    "role": "I",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-16",
+    "deliverable_id": "dl-04",
+    "person_id": "pe-04",
+    "role": "R",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-17",
+    "deliverable_id": "dl-04",
+    "person_id": "pe-02",
+    "role": "A",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-18",
+    "deliverable_id": "dl-04",
+    "person_id": "pe-05",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-19",
+    "deliverable_id": "dl-04",
+    "person_id": "pe-09",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-20",
+    "deliverable_id": "dl-04",
+    "person_id": "pe-07",
+    "role": "I",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-21",
+    "deliverable_id": "dl-05",
+    "person_id": "pe-02",
+    "role": "R",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-22",
+    "deliverable_id": "dl-05",
+    "person_id": "pe-04",
+    "role": "R",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-23",
+    "deliverable_id": "dl-05",
+    "person_id": "pe-01",
+    "role": "A",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-24",
+    "deliverable_id": "dl-05",
+    "person_id": "pe-07",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-25",
+    "deliverable_id": "dl-05",
+    "person_id": "pe-08",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-26",
+    "deliverable_id": "dl-06",
+    "person_id": "pe-03",
+    "role": "R",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-27",
+    "deliverable_id": "dl-06",
+    "person_id": "pe-02",
+    "role": "A",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-28",
+    "deliverable_id": "dl-06",
+    "person_id": "pe-09",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-29",
+    "deliverable_id": "dl-06",
+    "person_id": "pe-10",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-30",
+    "deliverable_id": "dl-06",
+    "person_id": "pe-11",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-31",
+    "deliverable_id": "dl-07",
+    "person_id": "pe-02",
+    "role": "R",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-32",
+    "deliverable_id": "dl-07",
+    "person_id": "pe-01",
+    "role": "A",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-33",
+    "deliverable_id": "dl-07",
+    "person_id": "pe-07",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-34",
+    "deliverable_id": "dl-07",
+    "person_id": "pe-08",
+    "role": "I",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-35",
+    "deliverable_id": "dl-08",
+    "person_id": "pe-04",
+    "role": "R",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-36",
+    "deliverable_id": "dl-08",
+    "person_id": "pe-02",
+    "role": "A",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-37",
+    "deliverable_id": "dl-08",
+    "person_id": "pe-08",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-38",
+    "deliverable_id": "dl-08",
+    "person_id": "pe-10",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-39",
+    "deliverable_id": "dl-09",
+    "person_id": "pe-03",
+    "role": "R",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-40",
+    "deliverable_id": "dl-09",
+    "person_id": "pe-02",
+    "role": "A",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-41",
+    "deliverable_id": "dl-09",
+    "person_id": "pe-09",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-42",
+    "deliverable_id": "dl-09",
+    "person_id": "pe-11",
+    "role": "I",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-43",
+    "deliverable_id": "dl-10",
+    "person_id": "pe-02",
+    "role": "R",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-44",
+    "deliverable_id": "dl-10",
+    "person_id": "pe-01",
+    "role": "A",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ra-45",
+    "deliverable_id": "dl-10",
+    "person_id": "pe-07",
+    "role": "C",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

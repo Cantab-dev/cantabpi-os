@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Team manager</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+  .heat { border-collapse: separate; border-spacing: 3px; width: 100%; min-width: 900px; }
+  .heat th { font-size: 11px; font-weight: 500; color: var(--muted); padding: 2px 4px; text-align: center; }
+  .heat th.who { text-align: left; font-size: 13px; color: var(--fg); font-weight: 500; white-space: nowrap; padding-right: 10px; min-width: 150px; }
+  .heat th.who small { display: block; font-size: 11px; color: var(--muted); font-weight: 400; }
+  .heat th.now { color: var(--brand-ink); font-weight: 600; }
+  .heat td { height: 34px; min-width: 38px; border-radius: 4px; text-align: center; font-family: var(--mono); font-size: 11px; font-variant-numeric: tabular-nums; position: relative; }
+  .u0 { background: color-mix(in srgb, var(--c-total) 8%, var(--surface)); color: var(--muted); }
+  .u1 { background: color-mix(in srgb, var(--c-total) 22%, var(--surface)); color: var(--fg); }
+  .u2 { background: color-mix(in srgb, var(--c-total) 42%, var(--surface)); color: var(--fg); }
+  .u3 { background: var(--warn-tint); color: var(--warn); font-weight: 600; box-shadow: inset 0 0 0 1.5px var(--warn); }
+  .u4 { background: var(--bad); color: #FFFFFF; font-weight: 600; }
+  .heat td.plan { background-image: repeating-linear-gradient(135deg, transparent 0 5px, color-mix(in srgb, var(--surface) 55%, transparent) 5px 8px); }
+  .heat td.now { outline: 2px solid var(--brand); outline-offset: 1px; }
+  .sc { flex: 999 1 620px; }
+  .ac { flex: 1 1 320px; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+  .warnc { color: var(--warn); font-weight: 600; } .badc { color: var(--bad); font-weight: 600; }
+  .alist { display: flex; flex-direction: column; gap: 10px; }
+  .act { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+  .act-head { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
+  .act h3 { margin: 0; font-size: 14px; font-weight: 600; flex: 1 1 200px; }
+  .act p { margin: 0; font-size: 13px; }
+  .meta { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+  .meta b { color: var(--fg); font-weight: 500; }
+</style>
+</head>
+<body>
+<header id="cp-header"></header>
+<div class="cp-layout">
+  <nav id="cp-rail"></nav>
+  <main id="cp-main" class="cp-main">
+    <div id="cp-notices"></div>
+    <div class="cp-view-head"><h1>Team manager</h1></div>
+    <div class="stack" id="view"></div>
+  </main>
+</div>
+<script src="../assets/runtime.js"></script>
+<script>
+CP.boot({
+  view: 'team_manager',
+  base: '../',
+  render: function (ctx) {
+    var el = ctx.el, f = ctx.fmt, cal = ctx.cal, en = ctx.en;
+    var root = document.getElementById('view');
+    root.innerHTML = '';
+    var team = ctx.data.people.filter(function (p) { return p.org === 'consulting'; });
+    var te = {};
+    ctx.data.time_entries.forEach(function (e) { te[e.person_id + '|' + e.week] = e; });
+    var days = function (e) { return e ? (e.actual_days != null ? e.actual_days : e.planned_days) : null; };
+    var band = function (u) { return u == null ? '' : u < 0.7 ? 'u0' : u <= 1.0 ? 'u1' : u <= 1.1 ? 'u2' : u <= 1.25 ? 'u3' : 'u4'; };
+
+    /* ---------- Capacity heatmap ---------- */
+    var hd = el('tr', null, [el('th', { scope: 'col', 'class': 'who', text: '' })]);
+    for (var w = 1; w <= cal.totalWeeks; w++) hd.appendChild(el('th', { scope: 'col', 'class': w === cal.asOfWeek ? 'now' : null, text: 'W' + w, title: 'Week of ' + f.date(cal.weekStart(w)) }));
+    var tb = el('tbody');
+    var over = [];
+    team.forEach(function (p) {
+      var th = el('th', { scope: 'row', 'class': 'who' }, [p.name, el('small', { text: p.title + ' · ' + f.num(p.capacity_days_week, p.capacity_days_week % 1 ? 1 : 0) + ' d/wk' })]);
+      var tr = el('tr', null, [th]);
+      for (var w = 1; w <= cal.totalWeeks; w++) {
+        var e = te[p.id + '|' + w], d = days(e), u = (d != null && p.capacity_days_week) ? d / p.capacity_days_week : null;
+        var future = w >= cal.asOfWeek;
+        if (u != null && u > 1.1 && w >= cal.asOfWeek && w <= cal.asOfWeek + 3) over.push(p.name.split(' ')[0] + ' W' + w);
+        var td = el('td', { 'class': [band(u), future ? 'plan' : '', w === cal.asOfWeek ? 'now' : ''].join(' ').trim(),
+          title: p.name + ', week ' + w + ': ' + (d != null ? f.num(d, 1) + ' of ' + p.capacity_days_week + ' days' : 'no entry') + (future ? ' (planned)' : ' (actual)'),
+          text: u != null ? String(Math.round(u * 100)) : '—' });
+        if (e) { ctx.mark(td, e, false); if (ctx.isFresh(e)) td.classList.add('flash'); }
+        tr.appendChild(td);
+      }
+      tb.appendChild(tr);
+    });
+    var peaks = {};
+    over.forEach(function (o) { var n = o.split(' ')[0]; peaks[n] = (peaks[n] || 0) + 1; });
+    var who = Object.keys(peaks);
+    root.appendChild(el('section', { 'class': 'block', 'aria-labelledby': 'h-title' }, [
+      el('div', { 'class': 'eyebrow', text: 'Capacity · utilisation % of available days · weeks 1–' + cal.totalWeeks }),
+      el('h2', { id: 'h-title', text: who.length ? (who.length > 1 ? who.slice(0, -1).join(', ') + ' and ' + who[who.length - 1] : who[0]) + (who.length === 1 ? ' is' : ' are') + ' planned above 110% in the next four weeks' : 'No one is planned above 110% in the next four weeks' }),
+      el('div', { 'class': 'legend', 'aria-hidden': 'true' }, [
+        el('span', null, [el('i', { 'class': 'sw u0' }), 'Under 70%']),
+        el('span', null, [el('i', { 'class': 'sw u1' }), '70–100%']),
+        el('span', null, [el('i', { 'class': 'sw u2' }), '100–110%']),
+        el('span', null, [el('i', { 'class': 'sw u3' }), '110–125%']),
+        el('span', null, [el('i', { 'class': 'sw u4' }), 'Over 125%']),
+        el('span', null, [el('i', { 'class': 'sw u1', style: 'background-image: repeating-linear-gradient(135deg, transparent 0 3px, var(--surface) 3px 5px)' }), 'Planned (from week ' + cal.asOfWeek + ')'])
+      ]),
+      el('div', { 'class': 'scroll-x' }, [el('table', { 'class': 'heat' }, [el('caption', { 'class': 'sr-only', text: 'Utilisation by person and week' }), el('thead', null, [hd]), tb])])
+    ]));
+
+    /* ---------- Delivery scorecard ---------- */
+    var avg = function (pid, from, to) { var s = 0, n = 0; for (var w = from; w <= to; w++) { var e = te[pid + '|' + w]; var d = days(e); if (d != null) { s += d; n++; } } return n ? s / n : null; };
+    var sb = el('tbody');
+    team.forEach(function (p) {
+      var past = avg(p.id, Math.max(1, cal.asOfWeek - 4), cal.asOfWeek - 1), next = avg(p.id, cal.asOfWeek, Math.min(cal.totalWeeks, cal.asOfWeek + 2));
+      var up = past != null ? past / p.capacity_days_week : null, un = next != null ? next / p.capacity_days_week : null;
+      var dls = ctx.data.deliverables.filter(function (d) { return d.owner_id === p.id; });
+      var done = dls.filter(function (d) { return d.status === 'done'; }).length;
+      var risky = ctx.data.tasks.filter(function (t) { return t.owner_id === p.id && (t.status === 'late' || t.status === 'at_risk'); });
+      var cyc = dls.map(function (d) { return ctx.data.reviews.filter(function (r) { return r.deliverable_id === d.id; }).length; }).filter(function (c) { return c > 0; });
+      var avgCyc = cyc.length ? cyc.reduce(function (a, b) { return a + b; }, 0) / cyc.length : null;
+      var maxCyc = cyc.length ? Math.max.apply(null, cyc) : 0;
+      var pct = function (u) { return u == null ? '—' : Math.round(u * 100) + '%'; };
+      var cls = function (u) { return u == null ? null : u > 1.25 ? 'num badc' : u > 1.1 ? 'num warnc' : 'num'; };
+      sb.appendChild(el('tr', null, [
+        el('td', null, [el('span', { text: p.name }), el('div', { 'class': 'foot', text: p.title })]),
+        el('td', { 'class': cls(up), text: pct(up) }),
+        el('td', { 'class': cls(un), text: pct(un) }),
+        el('td', { 'class': 'num', text: done + ' of ' + dls.length }),
+        el('td', { 'class': risky.length ? 'num badc' : 'num', text: String(risky.length), title: risky.map(function (t) { return t.name + ' (' + t.status.replace('_', ' ') + ')'; }).join('; ') }),
+        el('td', { 'class': maxCyc >= 3 ? 'num warnc' : 'num', text: avgCyc != null ? f.num(avgCyc, 1) + (maxCyc >= 3 ? ' (max ' + maxCyc + ')' : '') : '—' })
+      ]));
+    });
+    var sc = el('section', { 'class': 'block sc', 'aria-labelledby': 'sc-title' }, [
+      el('div', { 'class': 'eyebrow', text: 'Delivery scorecard' }),
+      el('h2', { id: 'sc-title', text: 'Load, ownership and rework by person' }),
+      el('div', { 'class': 'scroll-x' }, [el('table', { 'class': 'grid', style: 'min-width: 620px' }, [
+        el('thead', null, [el('tr', null, [['Person', null], ['Last 4 weeks', 'r'], ['Next 3 weeks', 'r'], ['Deliverables done', 'r'], ['Tasks late or at risk', 'r'], ['Review cycles', 'r']].map(function (h) { return el('th', { scope: 'col', style: h[1] ? 'text-align:right' : null, text: h[0] }); }))]),
+        sb
+      ])]),
+      el('div', { 'class': 'foot', text: 'Utilisation = days worked (actual) or planned ÷ available days. Review cycles: average per owned deliverable that has been reviewed.' })
+    ]);
+
+    /* ---------- Team actions ---------- */
+    var pr = { high: 0, medium: 1, low: 2 }, st = { proposed: 0, accepted: 1, done: 2, dismissed: 3 };
+    var acts = ctx.data.actions.filter(function (a) { return a.source === 'team_manager'; }).sort(function (a, b) { return (st[a.status] - st[b.status]) || (pr[a.priority] - pr[b.priority]) || (a.due < b.due ? -1 : 1); });
+    var list = el('div', { 'class': 'alist' });
+    if (!acts.length) list.appendChild(el('p', { 'class': 'foot', text: 'No team actions.' }));
+    acts.forEach(function (a) {
+      var h = el('h3', { text: a.title });
+      ctx.mark(h, a);
+      var card = el('article', { 'class': 'act' }, [
+        el('div', { 'class': 'act-head' }, [h, el('span', { 'class': 'pill st-' + a.priority, text: f.label(a.priority) }), el('span', { 'class': 'pill st-' + a.status, text: f.label(a.status) })]),
+        el('p', { text: a.rationale }),
+        el('div', { 'class': 'meta' }, [el('span', null, ['Owner ', el('b', { text: ctx.name(a.owner_id) })]), el('span', null, ['Due ', el('b', { text: f.date(a.due) })]), a.person_id ? el('span', { text: 'About: ' + ctx.name(a.person_id) }) : null])
+      ]);
+      if (ctx.isFresh(a)) card.classList.add('flash');
+      list.appendChild(card);
+    });
+    var ac = el('section', { 'class': 'block ac', 'aria-labelledby': 'ac-title' }, [el('div', { 'class': 'eyebrow', text: 'Team actions' }), el('h2', { id: 'ac-title', text: 'Recommended by the team manager' }), list]);
+    root.appendChild(el('div', { 'class': 'row' }, [sc, ac]));
+  }
+});
+</script>
+</body>
+</html>

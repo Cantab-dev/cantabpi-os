@@ -1,0 +1,38 @@
+{
+  "agent": "analyst",
+  "reason": "Second benchmark on post-pilot adoption; hypothesis confirmed",
+  "ops": [
+    {
+      "op": "create",
+      "table": "sources",
+      "tmp": "s",
+      "record": {
+        "title": "Benchmark: adoption curves in 4 commercial AI rollouts",
+        "publisher": "Cantab Pi research",
+        "year": 2026,
+        "type": "benchmark",
+        "credibility": "medium"
+      }
+    },
+    {
+      "op": "create",
+      "table": "findings",
+      "record": {
+        "source_id": "$s",
+        "hypothesis_id": "in-09",
+        "stance": "supports",
+        "text": "Rollouts with weekly floor-walker support held daily use above 70% after 6 months",
+        "metric": ">70% at 6 mo",
+        "quote": "Where floor-walkers stayed for the first quarter, daily use was still above 70% six months after go-live."
+      }
+    },
+    {
+      "op": "update",
+      "table": "issue_nodes",
+      "id": "in-09",
+      "set": {
+        "status": "confirmed"
+      }
+    }
+  ]
+}

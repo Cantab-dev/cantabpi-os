@@ -1,0 +1,100 @@
+[
+  {
+    "id": "sd-01",
+    "name": "Rep adoption rate",
+    "downside_input": "55%",
+    "downside_value": 118,
+    "upside_input": "90%",
+    "upside_value": 190,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sd-02",
+    "name": "Next-best-action uplift",
+    "downside_input": "3%",
+    "downside_value": 132,
+    "upside_input": "8%",
+    "upside_value": 197,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sd-03",
+    "name": "Admin time freed",
+    "downside_input": "2.5 h/wk",
+    "downside_value": 141,
+    "upside_input": "5 h/wk",
+    "upside_value": 186,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sd-04",
+    "name": "Rollout speed",
+    "downside_input": "18 mo",
+    "downside_value": 145,
+    "upside_input": "9 mo",
+    "upside_value": 181,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sd-05",
+    "name": "AI run cost per rep",
+    "downside_input": "€7.5k",
+    "downside_value": 151,
+    "upside_input": "€3.5k",
+    "upside_value": 177,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sd-06",
+    "name": "Discount rate",
+    "downside_input": "11%",
+    "downside_value": 154,
+    "upside_input": "8%",
+    "upside_value": 178,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sd-07",
+    "name": "Content uplift",
+    "downside_input": "0%",
+    "downside_value": 159,
+    "upside_input": "4%",
+    "upside_value": 174,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

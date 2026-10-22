@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Model builder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+  :root { --input: #1F4E9A; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --input: #8DB4F0; } }
+  :root[data-theme="dark"] { --input: #8DB4F0; }
+  .wb { flex: 999 1 640px; }
+  .lk { flex: 1 1 340px; }
+  .sheet { border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; }
+  .tab { display: flex; align-items: center; gap: 10px; padding: 6px 12px; background: var(--surface-2); border-bottom: 1px solid var(--line-strong); font-size: 12.5px; }
+  .tab b { background: var(--surface); border: 1px solid var(--line-strong); border-bottom-color: var(--surface); border-radius: 6px 6px 0 0; padding: 3px 12px; margin-bottom: -7px; font-weight: 600; }
+  .tab span { color: var(--muted); }
+  table.xl { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 12.5px; table-layout: fixed; }
+  .xl th { background: var(--surface-2); color: var(--faint); font-weight: 500; font-size: 11px; border: 1px solid var(--line); padding: 2px 6px; text-align: center; }
+  .xl td { border: 1px solid var(--line); padding: 4px 8px; height: 26px; }
+  .xl td.rn { background: var(--surface-2); color: var(--faint); font-family: var(--mono); font-size: 11px; text-align: center; width: 34px; }
+  .xl td.v { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; width: 120px; }
+  .xl td.u { color: var(--muted); width: 70px; }
+  .xl td.fx { font-family: var(--mono); font-size: 11.5px; color: var(--muted); overflow-wrap: anywhere; }
+  .xl tr.input td.v { color: var(--input); }
+  .xl tr.output td { font-weight: 600; background: var(--brand-tint); }
+  .xl tr.output td.rn { font-weight: 400; }
+  .xl td.fx a { color: var(--fg); text-decoration: none; border-bottom: 1px dotted var(--faint); }
+  .xl tr:target td { outline: 2px solid var(--brand); outline-offset: -2px; }
+  .ok { color: var(--ok); font-weight: 600; } .bad { color: var(--warn); font-weight: 600; }
+  .num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<header id="cp-header"></header>
+<div class="cp-layout">
+  <nav id="cp-rail"></nav>
+  <main id="cp-main" class="cp-main">
+    <div id="cp-notices"></div>
+    <div class="cp-view-head"><h1>Model builder</h1></div>
+    <div class="row" id="view"></div>
+  </main>
+</div>
+<script src="../assets/runtime.js"></script>
+<script>
+CP.boot({
+  view: 'model_builder',
+  base: '../',
+  render: function (ctx) {
+    var el = ctx.el, f = ctx.fmt;
+    var root = document.getElementById('view');
+    root.innerHTML = '';
+    var cells = ctx.data.model_cells;
+    var row = function (c) { return parseInt(c.ref.slice(1), 10); };
+    var fmtv = function (c) { return f.num(c.value, c.decimals); };
+    var SHEETS = ['Inputs', 'Calculations', 'Outputs'];
+    var NOTE = { Inputs: 'Inputs in blue, with source', Calculations: 'Each lever as a formula', Outputs: 'Results that feed the value view' };
+
+    /* ---------- Workbook ---------- */
+    var wb = el('section', { 'class': 'block wb', 'aria-labelledby': 'wb-title' }, [
+      el('div', { 'class': 'eyebrow', text: 'Workbook · ' + cells.length + ' rows · 3 sheets' }),
+      el('h2', { id: 'wb-title', text: 'Business case for the EU scale-up' }),
+      el('div', { 'class': 'legend', 'aria-hidden': 'true' }, [
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--input)' }), 'Input']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--fg)' }), 'Calculation']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--brand-tint); border: 1px solid var(--brand-line)' }), 'Output'])
+      ])
+    ]);
+    var linkFormula = function (formula, sheet) {
+      var out = el('span');
+      var re = /(?:(Inputs|Calculations|Outputs)!)?C(\d{1,2})(?::C(\d{1,2}))?/g, last = 0, m;
+      while ((m = re.exec(formula))) {
+        if (m.index > last) out.appendChild(document.createTextNode(formula.slice(last, m.index)));
+        var sh = m[1] || sheet;
+        out.appendChild(el('a', { href: '#cell-' + sh + '-C' + m[2], text: m[0] }));
+        last = re.lastIndex;
+      }
+      if (last < formula.length) out.appendChild(document.createTextNode(formula.slice(last)));
+      return out;
+    };
+    SHEETS.forEach(function (sh) {
+      var rows = cells.filter(function (c) { return c.sheet === sh; }).sort(function (a, b) { return row(a) - row(b); });
+      if (!rows.length) return;
+      var tb = el('tbody');
+      var byRow = {};
+      rows.forEach(function (c) { byRow[row(c)] = c; });
+      var maxR = row(rows[rows.length - 1]);
+      for (var r = 1; r <= maxR; r++) {
+        var c = byRow[r];
+        if (!c) {
+          var hdrText = r === 2 ? sh : '';
+          tb.appendChild(el('tr', null, [el('td', { 'class': 'rn', text: String(r) }), el('td', { style: r === 2 ? 'font-weight:600' : null, text: hdrText }), el('td', { 'class': 'v' }), el('td', { 'class': 'u' }), el('td', { 'class': 'fx' })]));
+          continue;
+        }
+        var lab = el('td', { text: c.label });
+        ctx.mark(lab, c);
+        var tr = el('tr', { 'class': c.kind, id: 'cell-' + sh + '-' + c.ref }, [
+          el('td', { 'class': 'rn', text: String(r) }), lab,
+          el('td', { 'class': 'v', text: fmtv(c), title: sh + '!' + c.ref }),
+          el('td', { 'class': 'u', text: c.unit || '' }),
+          el('td', { 'class': 'fx' }, [c.formula ? linkFormula('=' + c.formula, sh) : (c.note || '')])
+        ]);
+        if (ctx.isFresh(c)) tr.classList.add('flash');
+        tb.appendChild(tr);
+      }
+      wb.appendChild(el('div', { 'class': 'sheet' }, [
+        el('div', { 'class': 'tab' }, [el('b', { text: sh }), el('span', { text: NOTE[sh] })]),
+        el('div', { 'class': 'scroll-x' }, [el('table', { 'class': 'xl' }, [
+          el('caption', { 'class': 'sr-only', text: sh + ' sheet' }),
+          el('colgroup', null, [el('col', { style: 'width:36px' }), el('col', { style: 'width:30%' }), el('col', { style: 'width:110px' }), el('col', { style: 'width:64px' }), el('col')]),
+          el('thead', null, [el('tr', null, [el('th', { text: '' }), el('th', { text: 'B' }), el('th', { text: 'C' }), el('th', { text: 'D' }), el('th', { text: 'E' })])]),
+          tb
+        ])])
+      ]));
+    });
+
+    /* ---------- Links to the value bridge ---------- */
+    var B = ctx.bridge();
+    var links = [];
+    B.bars.forEach(function (b) {
+      if (!b.step.model_cell_id) return;
+      var c = ctx.get('model_cells', b.step.model_cell_id);
+      if (!c) return;
+      var bv = b.total ? b.level : b.step.value;
+      var diff = b.total ? Math.abs(bv - c.value) > 0.5 : Math.round(bv * 10) !== Math.round(c.value * 10);
+      links.push({ label: b.step.label.replace(/\n/g, ' '), bridge: bv, cell: c, diff: diff, signed: !b.total });
+    });
+    var vt = B.settings;
+    if (vt.npv_cell_id && ctx.get('model_cells', vt.npv_cell_id)) {
+      var nc = ctx.get('model_cells', vt.npv_cell_id);
+      links.push({ label: 'NPV for sensitivity', bridge: vt.npv_base, cell: nc, diff: Math.round(nc.value) !== vt.npv_base, signed: false });
+    }
+    var nd = links.filter(function (l) { return l.diff; }).length;
+    var lb = el('tbody');
+    links.forEach(function (l) {
+      lb.appendChild(el('tr', null, [
+        el('td', null, [l.label, el('div', null, [el('a', { 'class': 'foot', href: '#cell-' + l.cell.sheet + '-' + l.cell.ref, text: l.cell.sheet + '!' + l.cell.ref })])]),
+        el('td', { 'class': 'num', text: l.signed ? f.signed(l.bridge, 1) : f.num(l.bridge, l.bridge % 1 ? 1 : 0) }),
+        el('td', { 'class': 'num', text: f.num(l.cell.value, 1) }),
+        el('td', { 'class': l.diff ? 'bad' : 'ok', style: 'text-align:center', 'aria-label': l.diff ? 'Differs' : 'Matches', title: l.diff ? 'Differs' : 'Matches', text: l.diff ? '≠' : '✓' })
+      ]));
+    });
+    root.appendChild(wb);
+    root.appendChild(el('section', { 'class': 'block lk', 'aria-labelledby': 'lk-title' }, [
+      el('div', { 'class': 'eyebrow', text: 'Model → value view' }),
+      el('h2', { id: 'lk-title', text: nd ? nd + ' of ' + links.length + ' links differ from the model' : 'All ' + links.length + ' links match the model' }),
+      el('div', { 'class': 'scroll-x' }, [el('table', { 'class': 'grid' }, [
+        el('thead', null, [el('tr', null, [['Bridge item · cell', null], ['View', 'r'], ['Model', 'r'], ['', null]].map(function (h) { return el('th', { scope: 'col', style: h[1] ? 'text-align:right' : null, text: h[0] }); }))]),
+        lb
+      ])]),
+      el('div', { 'class': 'foot', text: 'Totals compare the bridge level with the model output; levers compare values rounded to one decimal. The value estimator agent resolves differences.' })
+    ]));
+  }
+});
+</script>
+</body>
+</html>

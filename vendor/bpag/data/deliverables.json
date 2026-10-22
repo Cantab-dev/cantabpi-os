@@ -1,0 +1,152 @@
+[
+  {
+    "id": "dl-01",
+    "phase_id": "ph-01",
+    "milestone_id": "ms-02",
+    "name": "Pilot design and success metrics",
+    "owner_id": "pe-03",
+    "due": "2026-08-14",
+    "status": "done",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "dl-02",
+    "phase_id": "ph-01",
+    "milestone_id": "ms-02",
+    "name": "Pilot agent configuration",
+    "owner_id": "pe-06",
+    "due": "2026-08-21",
+    "status": "done",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "dl-03",
+    "phase_id": "ph-01",
+    "milestone_id": "ms-03",
+    "name": "Pilot results report",
+    "owner_id": "pe-05",
+    "due": "2026-09-25",
+    "status": "done",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "dl-04",
+    "phase_id": "ph-02",
+    "milestone_id": "ms-04",
+    "name": "Value model",
+    "owner_id": "pe-04",
+    "due": "2026-10-23",
+    "status": "in_progress",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "dl-05",
+    "phase_id": "ph-02",
+    "milestone_id": "ms-04",
+    "name": "Scale-up business case",
+    "owner_id": "pe-02",
+    "due": "2026-10-30",
+    "status": "at_risk",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "dl-06",
+    "phase_id": "ph-02",
+    "milestone_id": "ms-05",
+    "name": "Target operating model and governance",
+    "owner_id": "pe-03",
+    "due": "2026-11-04",
+    "status": "in_progress",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "dl-07",
+    "phase_id": "ph-02",
+    "milestone_id": "ms-05",
+    "name": "Board proposal deck",
+    "owner_id": "pe-02",
+    "due": "2026-11-06",
+    "status": "not_started",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "dl-08",
+    "phase_id": "ph-03",
+    "milestone_id": "ms-06",
+    "name": "Rollout roadmap by country wave",
+    "owner_id": "pe-04",
+    "due": "2026-11-27",
+    "status": "not_started",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "dl-09",
+    "phase_id": "ph-03",
+    "milestone_id": "ms-06",
+    "name": "Change and enablement plan",
+    "owner_id": "pe-03",
+    "due": "2026-12-02",
+    "status": "not_started",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "dl-10",
+    "phase_id": "ph-03",
+    "milestone_id": "ms-06",
+    "name": "Letter of proposal for rollout support",
+    "owner_id": "pe-01",
+    "due": "2026-12-04",
+    "status": "not_started",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

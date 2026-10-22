@@ -1,0 +1,341 @@
+[
+  {
+    "id": "tk-01",
+    "phase_id": "ph-01",
+    "deliverable_id": "dl-01",
+    "name": "Pilot design workshops",
+    "owner_id": "pe-03",
+    "start": "2026-08-03",
+    "end": "2026-08-12",
+    "status": "done",
+    "progress_pct": 100,
+    "depends_on": [],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-02",
+    "phase_id": "ph-01",
+    "deliverable_id": "dl-02",
+    "name": "Agent build and configuration",
+    "owner_id": "pe-06",
+    "start": "2026-08-05",
+    "end": "2026-08-21",
+    "status": "done",
+    "progress_pct": 100,
+    "depends_on": [],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-03",
+    "phase_id": "ph-01",
+    "deliverable_id": "dl-02",
+    "name": "Rep onboarding, 40 reps",
+    "owner_id": "pe-03",
+    "start": "2026-08-17",
+    "end": "2026-08-21",
+    "status": "done",
+    "progress_pct": 100,
+    "depends_on": [
+      "tk-01"
+    ],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-04",
+    "phase_id": "ph-01",
+    "deliverable_id": "dl-03",
+    "name": "Pilot run and monitoring",
+    "owner_id": "pe-05",
+    "start": "2026-08-24",
+    "end": "2026-09-18",
+    "status": "done",
+    "progress_pct": 100,
+    "depends_on": [
+      "tk-02",
+      "tk-03"
+    ],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-05",
+    "phase_id": "ph-01",
+    "deliverable_id": "dl-03",
+    "name": "Pilot impact analysis",
+    "owner_id": "pe-05",
+    "start": "2026-09-14",
+    "end": "2026-09-25",
+    "status": "done",
+    "progress_pct": 100,
+    "depends_on": [],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-06",
+    "phase_id": "ph-02",
+    "deliverable_id": "dl-04",
+    "name": "Baseline and lever sizing",
+    "owner_id": "pe-04",
+    "start": "2026-09-28",
+    "end": "2026-10-09",
+    "status": "done",
+    "progress_pct": 100,
+    "depends_on": [],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-07",
+    "phase_id": "ph-02",
+    "deliverable_id": "dl-05",
+    "name": "Market research and benchmarks",
+    "owner_id": "pe-03",
+    "start": "2026-09-28",
+    "end": "2026-10-14",
+    "status": "done",
+    "progress_pct": 100,
+    "depends_on": [],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-08",
+    "phase_id": "ph-02",
+    "deliverable_id": "dl-04",
+    "name": "CRM data extraction, all markets",
+    "owner_id": "pe-05",
+    "start": "2026-10-05",
+    "end": "2026-10-16",
+    "status": "late",
+    "progress_pct": 70,
+    "depends_on": [],
+    "_meta": {
+      "version": 2,
+      "updated_at": "2026-10-21T09:12:00Z",
+      "updated_by": "project_manager",
+      "reason": "CRM extract not received from IT; task now 5 days overdue"
+    }
+  },
+  {
+    "id": "tk-09",
+    "phase_id": "ph-02",
+    "deliverable_id": "dl-04",
+    "name": "Value model build",
+    "owner_id": "pe-04",
+    "start": "2026-10-12",
+    "end": "2026-10-23",
+    "status": "in_progress",
+    "progress_pct": 60,
+    "depends_on": [
+      "tk-06"
+    ],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-10",
+    "phase_id": "ph-02",
+    "deliverable_id": "dl-05",
+    "name": "Sensitivity and risk analysis",
+    "owner_id": "pe-05",
+    "start": "2026-10-19",
+    "end": "2026-10-27",
+    "status": "at_risk",
+    "progress_pct": 15,
+    "depends_on": [
+      "tk-08"
+    ],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-11",
+    "phase_id": "ph-02",
+    "deliverable_id": "dl-05",
+    "name": "Storyline and issue tree",
+    "owner_id": "pe-02",
+    "start": "2026-10-12",
+    "end": "2026-10-23",
+    "status": "in_progress",
+    "progress_pct": 70,
+    "depends_on": [],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-12",
+    "phase_id": "ph-02",
+    "deliverable_id": "dl-06",
+    "name": "IT architecture for scale",
+    "owner_id": "pe-06",
+    "start": "2026-10-12",
+    "end": "2026-10-30",
+    "status": "in_progress",
+    "progress_pct": 45,
+    "depends_on": [],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-13",
+    "phase_id": "ph-02",
+    "deliverable_id": "dl-06",
+    "name": "Operating model and governance design",
+    "owner_id": "pe-03",
+    "start": "2026-10-19",
+    "end": "2026-11-04",
+    "status": "in_progress",
+    "progress_pct": 20,
+    "depends_on": [],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-14",
+    "phase_id": "ph-02",
+    "deliverable_id": "dl-05",
+    "name": "SteerCo business case pack",
+    "owner_id": "pe-02",
+    "start": "2026-10-26",
+    "end": "2026-10-30",
+    "status": "not_started",
+    "progress_pct": 0,
+    "depends_on": [
+      "tk-09",
+      "tk-10",
+      "tk-11"
+    ],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-15",
+    "phase_id": "ph-02",
+    "deliverable_id": "dl-07",
+    "name": "Board deck and pre-wires",
+    "owner_id": "pe-02",
+    "start": "2026-11-02",
+    "end": "2026-11-06",
+    "status": "not_started",
+    "progress_pct": 0,
+    "depends_on": [
+      "tk-14"
+    ],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-16",
+    "phase_id": "ph-03",
+    "deliverable_id": "dl-08",
+    "name": "Country wave sequencing",
+    "owner_id": "pe-04",
+    "start": "2026-11-09",
+    "end": "2026-11-27",
+    "status": "not_started",
+    "progress_pct": 0,
+    "depends_on": [],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-17",
+    "phase_id": "ph-03",
+    "deliverable_id": "dl-09",
+    "name": "Change and enablement planning",
+    "owner_id": "pe-03",
+    "start": "2026-11-09",
+    "end": "2026-12-02",
+    "status": "not_started",
+    "progress_pct": 0,
+    "depends_on": [],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "tk-18",
+    "phase_id": "ph-03",
+    "deliverable_id": "dl-10",
+    "name": "Rollout proposal drafting",
+    "owner_id": "pe-01",
+    "start": "2026-11-23",
+    "end": "2026-12-04",
+    "status": "not_started",
+    "progress_pct": 0,
+    "depends_on": [],
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

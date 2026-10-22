@@ -1,0 +1,211 @@
+[
+  {
+    "id": "fi-01",
+    "source_id": "so-01",
+    "hypothesis_id": "in-03",
+    "stance": "supports",
+    "text": "Pilot reps made 14% more calls per week than the control group",
+    "metric": "+14% calls",
+    "quote": "Treatment reps logged 14% more HCP calls per week than matched controls over weeks 3 to 8.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "fi-02",
+    "source_id": "so-03",
+    "hypothesis_id": "in-03",
+    "stance": "supports",
+    "text": "Reps report saving 3-4 hours a week on call notes and preparation",
+    "metric": "3.5 h/week",
+    "quote": "Notes and call prep used to take most of my Friday afternoon. Now it is done before I leave the car.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "fi-03",
+    "source_id": "so-01",
+    "hypothesis_id": "in-04",
+    "stance": "supports",
+    "text": "Conversion on visits suggested by next-best-action was 5% above control",
+    "metric": "+5% conv.",
+    "quote": "Visits suggested by next-best-action converted 5% better than comparable visits without a suggestion.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "fi-04",
+    "source_id": "so-04",
+    "hypothesis_id": "in-04",
+    "stance": "supports",
+    "text": "Benchmark programmes report 3-8% conversion uplift",
+    "metric": "3-8%",
+    "quote": "Reported conversion uplift ranged from 3% to 8% across the six programmes reviewed.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "fi-05",
+    "source_id": "so-01",
+    "hypothesis_id": "in-05",
+    "stance": "neutral",
+    "text": "Content open rates rose, but the follow-up effect was not significant after 6 weeks",
+    "metric": "n.s.",
+    "quote": "Open rates on personalised content rose, but follow-up requests were flat after six weeks.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "fi-06",
+    "source_id": "so-06",
+    "hypothesis_id": "in-06",
+    "stance": "supports",
+    "text": "Review time per item fell from 9 to 4 hours",
+    "metric": "-5 h/item",
+    "quote": "Median review time per generated item fell from nine hours to four.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "fi-07",
+    "source_id": "so-02",
+    "hypothesis_id": "in-08",
+    "stance": "refutes",
+    "text": "Two markets have more than 30% of HCP records incomplete",
+    "metric": ">30% gaps",
+    "quote": "In two markets, more than 30% of HCP master records lack specialty or territory fields.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "fi-08",
+    "source_id": "so-03",
+    "hypothesis_id": "in-09",
+    "stance": "supports",
+    "text": "78% of pilot reps used the agent daily by week 4",
+    "metric": "78% daily",
+    "quote": "By week four, 78% of pilot reps opened the agent on every working day.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "fi-09",
+    "source_id": "so-05",
+    "hypothesis_id": "in-09",
+    "stance": "refutes",
+    "text": "Adoption typically drops 15-20 points after a pilot without incentives",
+    "metric": "-15-20 pts",
+    "quote": "Once the pilot attention fades, daily use usually drops 15 to 20 points unless someone keeps chasing it.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "fi-10",
+    "source_id": "so-06",
+    "hypothesis_id": "in-11",
+    "stance": "supports",
+    "text": "Zero compliance incidents across 2,900 generated call notes",
+    "metric": "0 incidents",
+    "quote": "No off-label or compliance incident was raised across 2,900 generated call notes.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "fi-11",
+    "source_id": "so-07",
+    "hypothesis_id": "in-12",
+    "stance": "refutes",
+    "text": "Works council requires an opt-out from individual usage reporting",
+    "quote": "We will not accept individual usage reporting without an opt-out for each employee.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "fi-12",
+    "source_id": "so-04",
+    "hypothesis_id": "in-14",
+    "stance": "supports",
+    "text": "Comparable rollouts took 12-20 months across 6-10 markets",
+    "metric": "12-20 mo",
+    "quote": "Programmes covering six to ten markets took between 12 and 20 months to reach full rollout.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "fi-13",
+    "source_id": "so-08",
+    "hypothesis_id": "in-15",
+    "stance": "neutral",
+    "text": "Industry estimates of payback range widely, from 1 to 4 years",
+    "metric": "1-4 yrs",
+    "quote": "Published payback estimates for commercial AI range from one to four years.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "fi-14",
+    "source_id": "so-01",
+    "hypothesis_id": "in-15",
+    "stance": "supports",
+    "text": "Pilot unit economics imply payback within 18 months at 80% adoption",
+    "metric": "<18 mo",
+    "quote": "At 80% adoption, pilot unit economics pay back the rollout cost within 18 months.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

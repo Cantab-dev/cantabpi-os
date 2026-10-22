@@ -1,0 +1,114 @@
+[
+  {
+    "id": "so-01",
+    "title": "Pilot telemetry: 40 reps in 2 regions, Aug-Sep 2026",
+    "publisher": "Big Pharma AG / project team",
+    "year": 2026,
+    "type": "pilot_data",
+    "credibility": "high",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "so-02",
+    "title": "CRM activity extract, 9 EU markets, 2024-2026",
+    "publisher": "Big Pharma AG IT",
+    "year": 2026,
+    "type": "client_data",
+    "credibility": "high",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "so-03",
+    "title": "Rep survey after the pilot (n = 38)",
+    "publisher": "Project team",
+    "year": 2026,
+    "type": "pilot_data",
+    "credibility": "medium",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "so-04",
+    "title": "Benchmark: AI-assisted field-force programmes at 6 companies",
+    "publisher": "Cantab Pi research",
+    "year": 2026,
+    "type": "benchmark",
+    "credibility": "medium",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "so-05",
+    "title": "Interview: former head of sales operations, top-10 pharma",
+    "publisher": "Expert network",
+    "year": 2026,
+    "type": "expert_interview",
+    "credibility": "medium",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "so-06",
+    "title": "Medical-legal review log, pilot period",
+    "publisher": "Big Pharma AG compliance",
+    "year": 2026,
+    "type": "client_data",
+    "credibility": "high",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "so-07",
+    "title": "Interview: works council representative, Germany",
+    "publisher": "Project team",
+    "year": 2026,
+    "type": "expert_interview",
+    "credibility": "medium",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "so-08",
+    "title": "Industry report: generative AI in pharma commercial",
+    "publisher": "Industry analyst",
+    "year": 2025,
+    "type": "industry_report",
+    "credibility": "low",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

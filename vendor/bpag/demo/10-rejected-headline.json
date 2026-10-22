@@ -1,0 +1,14 @@
+{
+  "agent": "value_estimator",
+  "reason": "Try a longer headline",
+  "ops": [
+    {
+      "op": "update",
+      "table": "narratives",
+      "id": "nv-02",
+      "set": {
+        "text": "Scaling the agents across all nine EU markets in three waves lifts 2028 EBIT to {bridge.target}, which is {bridge.net_impact} above the case"
+      }
+    }
+  ]
+}

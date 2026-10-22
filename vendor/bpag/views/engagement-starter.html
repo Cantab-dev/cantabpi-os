@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Engagement starter</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+  table.raci { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 980px; font-size: 13px; }
+  .raci th, .raci td { border-bottom: 1px solid var(--line); padding: 6px 4px; }
+  .raci thead th { font-size: 11.5px; font-weight: 500; color: var(--muted); vertical-align: bottom; text-align: center; line-height: 1.25; }
+  .raci thead th.who { width: 64px; }
+  .raci thead tr.org th { border-bottom: none; padding-bottom: 2px; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); }
+  .raci thead th.client { background: var(--surface-2); }
+  .raci td.cell { text-align: center; }
+  .raci td.client { background: var(--surface-2); }
+  .raci th.dl { text-align: left; font-weight: 500; color: var(--fg); font-size: 13px; padding-left: 6px; min-width: 250px; }
+  .raci th.dl small { display: block; color: var(--muted); font-weight: 400; font-size: 11.5px; }
+  .raci tr.ph th { text-align: left; background: var(--bg); color: var(--fg); font-size: 12px; font-weight: 600; padding: 6px; }
+  .raci tfoot td { font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: center; border-bottom: none; }
+  .raci tfoot th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 500; padding-left: 6px; border-bottom: none; }
+  .role { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 6px; font-family: var(--mono); font-weight: 600; font-size: 13px; }
+  .r-A { background: var(--brand); color: #FFFFFF; }
+  .r-R { border: 1.5px solid var(--brand); color: var(--brand-ink); }
+  .r-C { background: var(--c-plan); color: var(--fg); }
+  .r-I { color: var(--muted); border: 1px dashed var(--line-strong); }
+  .mrow:last-child { border-bottom: none; }
+  .plan svg { display: block; width: 100%; min-width: 760px; height: auto; }
+  .plan text { font-family: var(--sans); fill: var(--fg); }
+  .plan .wk { font-size: 10.5px; fill: var(--faint); font-family: var(--mono); }
+  .plan .arr { font-size: 14px; font-weight: 600; }
+  .plan .arrd { font-size: 11.5px; }
+  .plan .msn { font-size: 12px; font-weight: 500; }
+  .plan .msd { font-size: 11px; fill: var(--muted); }
+  .plan .today { font-size: 11.5px; font-weight: 600; fill: var(--brand-ink); }
+</style>
+</head>
+<body>
+<header id="cp-header"></header>
+<div class="cp-layout">
+  <nav id="cp-rail"></nav>
+  <main id="cp-main" class="cp-main">
+    <div id="cp-notices"></div>
+    <div class="cp-view-head"><h1>Engagement starter</h1></div>
+    <div class="stack" id="view"></div>
+  </main>
+</div>
+<script src="../assets/runtime.js"></script>
+<script>
+CP.boot({
+  view: 'engagement_starter',
+  base: '../',
+  render: function (ctx) {
+    var el = ctx.el, f = ctx.fmt, cal = ctx.cal, en = ctx.en;
+    var root = document.getElementById('view');
+    root.innerHTML = '';
+    var people = ctx.data.people.slice().sort(function (a, b) { return (a.org === b.org ? 0 : a.org === 'consulting' ? -1 : 1); });
+    var cons = people.filter(function (p) { return p.org === 'consulting'; });
+    var cli = people.filter(function (p) { return p.org === 'client'; });
+    var phases = ctx.data.phases.slice().sort(function (a, b) { return a.order - b.order; });
+    var raci = {};
+    ctx.data.raci.forEach(function (r) { raci[r.deliverable_id + '|' + r.person_id] = r; });
+
+    /* ---------- RACI matrix ---------- */
+    var split = function (name) { var n = name.replace(/^Dr\s+/, ''); var i = n.indexOf(' '); return i < 0 ? [n, ''] : [n.slice(0, i), n.slice(i + 1)]; };
+    var orgRow = el('tr', { 'class': 'org' }, [el('th', { scope: 'col' }), el('th', { scope: 'colgroup', colspan: String(cons.length), text: 'Consulting team' })]);
+    if (cli.length) orgRow.appendChild(el('th', { scope: 'colgroup', colspan: String(cli.length), 'class': 'client', text: 'Client' }));
+    var head = el('tr', null, [el('th', { scope: 'col', style: 'text-align:left; padding-left: 6px', text: 'Deliverable' })]);
+    people.forEach(function (p) {
+      var nm = split(p.name);
+      var th = el('th', { scope: 'col', 'class': 'who' + (p.org === 'client' ? ' client' : ''), title: p.name + ', ' + p.title }, [nm[0], el('br'), nm[1]]);
+      ctx.mark(th, p, false);
+      head.appendChild(th);
+    });
+    var tbody = el('tbody');
+    var loadRA = {};
+    phases.forEach(function (ph) {
+      var dls = ctx.data.deliverables.filter(function (d) { return d.phase_id === ph.id; }).sort(function (a, b) { return a.due < b.due ? -1 : 1; });
+      if (!dls.length) return;
+      tbody.appendChild(el('tr', { 'class': 'ph' }, [el('th', { scope: 'rowgroup', colspan: String(people.length + 1), text: ph.name + ' · ' + f.date(ph.start) + ' – ' + f.date(ph.end) })]));
+      dls.forEach(function (d) {
+        var th = el('th', { scope: 'row', 'class': 'dl' }, [d.name, el('small', { text: 'Due ' + f.date(d.due) + ' · owner ' + ctx.name(d.owner_id) })]);
+        ctx.mark(th, d);
+        var tr = el('tr', null, [th]);
+        people.forEach(function (p) {
+          var r = raci[d.id + '|' + p.id];
+          var td = el('td', { 'class': 'cell' + (p.org === 'client' ? ' client' : '') });
+          if (r) {
+            var chip = el('span', { 'class': 'role r-' + r.role, text: r.role, title: p.name + ': ' + { R: 'Responsible', A: 'Accountable', C: 'Consulted', I: 'Informed' }[r.role] + ' for ' + d.name });
+            td.appendChild(chip);
+            ctx.mark(td, r);
+            if (ctx.isFresh(r)) td.classList.add('flash');
+            if (r.role === 'R' || r.role === 'A') loadRA[p.id] = (loadRA[p.id] || 0) + 1;
+          } else td.appendChild(el('span', { 'class': 'sr-only', text: 'none' }));
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    });
+    var foot = el('tr', null, [el('th', { scope: 'row', text: 'Deliverables as R or A' })]);
+    people.forEach(function (p) { foot.appendChild(el('td', { 'class': p.org === 'client' ? 'client' : null, text: String(loadRA[p.id] || 0) })); });
+    var table = el('table', { 'class': 'raci' }, [el('caption', { 'class': 'sr-only', text: 'RACI matrix: deliverables by person' }), el('thead', null, [orgRow, head]), tbody, el('tfoot', null, [foot])]);
+    var rx = el('section', { 'class': 'block rx', 'aria-labelledby': 'r-title' }, [
+      el('div', { 'class': 'eyebrow', text: 'RACI · ' + ctx.data.deliverables.length + ' deliverables · ' + people.length + ' people' }),
+      el('h2', { id: 'r-title', text: 'Who is responsible, accountable, consulted and informed' }),
+      el('div', { 'class': 'legend', 'aria-hidden': 'true' }, [
+        el('span', null, [el('span', { 'class': 'role r-R', style: 'width:20px;height:20px;font-size:11px', text: 'R' }), 'Responsible']),
+        el('span', null, [el('span', { 'class': 'role r-A', style: 'width:20px;height:20px;font-size:11px', text: 'A' }), 'Accountable (one per deliverable)']),
+        el('span', null, [el('span', { 'class': 'role r-C', style: 'width:20px;height:20px;font-size:11px', text: 'C' }), 'Consulted']),
+        el('span', null, [el('span', { 'class': 'role r-I', style: 'width:20px;height:20px;font-size:11px', text: 'I' }), 'Informed'])
+      ]),
+      el('div', { 'class': 'scroll-x' }, [table])
+    ]);
+
+    /* ---------- Phase plan: block arrows, milestones, today ---------- */
+    var W = 1100, X0 = 20, X1 = W - 20, AY = 58, AH = 46, tip = 18;
+    var total = cal.days(en.start, en.end) + 1;
+    var x = function (d, plusDay) { return X0 + (cal.days(en.start, d) + (plusDay ? 1 : 0)) / total * (X1 - X0); };
+    var ms = ctx.data.milestones.slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    var H = AY + AH + 30 + 2 * 34 + 30;
+    var s = ctx.svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img' });
+    var sv = ctx.svg;
+    for (var w = 1; w <= cal.totalWeeks; w++) {
+      var wx = x(cal.weekStart(w));
+      s.appendChild(sv('line', { x1: wx, x2: wx, y1: 28, y2: H - 8, stroke: 'var(--line)', 'stroke-width': 1 }));
+      s.appendChild(sv('text', { x: wx + 3, y: 22, 'class': 'wk' }, 'W' + w));
+    }
+    phases.forEach(function (p, i) {
+      var a = x(p.start), b = x(p.end, true), first = i === 0;
+      var past = p.end < en.as_of, now = p.start <= en.as_of && en.as_of <= p.end;
+      var fill = past ? 'var(--c-total)' : now ? 'var(--brand)' : 'var(--c-plan)';
+      var ink = past || now ? '#FFFFFF' : 'var(--fg)';
+      var d = 'M' + a + ' ' + AY + ' L' + (b - tip) + ' ' + AY + ' L' + b + ' ' + (AY + AH / 2) + ' L' + (b - tip) + ' ' + (AY + AH) + ' L' + a + ' ' + (AY + AH) + (first ? '' : ' L' + (a + tip) + ' ' + (AY + AH / 2)) + ' Z';
+      var g = sv('g', {});
+      g.appendChild(sv('path', { d: d, fill: fill, stroke: 'var(--surface)', 'stroke-width': 2 }));
+      g.appendChild(sv('text', { x: a + (first ? 12 : tip + 8), y: AY + 20, 'class': 'arr', style: 'fill:' + ink }, p.name));
+      g.appendChild(sv('text', { x: a + (first ? 12 : tip + 8), y: AY + 36, 'class': 'arrd', style: 'fill:' + ink }, f.date(p.start) + ' – ' + f.date(p.end)));
+      g.appendChild(sv('title', {}, p.name + ', ' + f.date(p.start) + ' to ' + f.date(p.end) + (ctx.changedNote(p) ? '. ' + ctx.changedNote(p) : '')));
+      if (ctx.isFresh(p)) g.setAttribute('class', 'pulse');
+      s.appendChild(g);
+    });
+    var mcol = { done: 'var(--ok)', planned: 'var(--surface)', at_risk: 'var(--warn)', missed: 'var(--bad)' };
+    ms.forEach(function (m, i) {
+      var cx = x(m.date, true), row = i % 2, ly = AY + AH + 30 + row * 34;
+      var anchor = cx > X1 - 160 ? 'end' : cx < X0 + 60 ? 'start' : 'middle';
+      var g = sv('g', {});
+      g.appendChild(sv('line', { x1: cx, x2: cx, y1: AY + AH, y2: ly - 12, stroke: 'var(--line-strong)' }));
+      g.appendChild(sv('rect', { x: cx - 6, y: AY + AH + 4, width: 12, height: 12, transform: 'rotate(45 ' + cx + ' ' + (AY + AH + 10) + ')', fill: mcol[m.status] || 'var(--surface)', stroke: 'var(--fg)', 'stroke-width': 1.2 }));
+      g.appendChild(sv('text', { x: cx, y: ly + 2, 'text-anchor': anchor, 'class': 'msn' }, m.name));
+      g.appendChild(sv('text', { x: cx, y: ly + 16, 'text-anchor': anchor, 'class': 'msd' }, f.date(m.date) + ' · ' + m.status.replace('_', ' ')));
+      var note = ctx.changedNote(m);
+      g.appendChild(sv('title', {}, m.name + ', ' + f.date(m.date) + ', ' + m.status.replace('_', ' ') + (note ? '. ' + note : '')));
+      if (note) g.appendChild(sv('circle', { cx: cx + 11, cy: AY + AH + 4, r: 3.5, fill: 'var(--brand)' }));
+      if (ctx.isFresh(m)) g.setAttribute('class', 'pulse');
+      s.appendChild(g);
+    });
+    var tx = x(en.as_of, true);
+    s.appendChild(sv('line', { x1: tx, x2: tx, y1: AY - 14, y2: H - 8, stroke: 'var(--brand-ink)', 'stroke-width': 2 }));
+    s.appendChild(sv('text', { x: tx + 5, y: AY - 6, 'class': 'today' }, 'Today ' + f.date(en.as_of)));
+    s.setAttribute('aria-label', 'Phase plan: ' + phases.map(function (p) { return p.name + ' ' + f.date(p.start) + ' to ' + f.date(p.end); }).join('; ') + '. Milestones: ' + ms.map(function (m) { return m.name + ' ' + f.date(m.date) + ' ' + m.status.replace('_', ' '); }).join('; ') + '.');
+    var next = ms.filter(function (m) { return m.status !== 'done' && m.date >= en.as_of; })[0];
+    var mx = el('section', { 'class': 'block plan', 'aria-labelledby': 'm-title' }, [
+      el('div', { 'class': 'eyebrow', text: 'Phase plan and milestones' }),
+      el('h2', { id: 'm-title', text: next ? 'Next: ' + next.name + ', ' + f.date(next.date) + ' (in ' + cal.days(en.as_of, next.date) + ' days)' : 'All milestones are behind us' }),
+      el('div', { 'class': 'legend', 'aria-hidden': 'true' }, [
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--c-total)' }), 'Completed phase']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--brand)' }), 'Current phase']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--c-plan)' }), 'Planned phase']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--ok)' }), 'Milestone done']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--warn)' }), 'Milestone at risk'])
+      ]),
+      el('div', { 'class': 'scroll-x' }, [s])
+    ]);
+    root.appendChild(rx);
+    root.appendChild(mx);
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Proposal builder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+  .paper { flex: 999 1 620px; max-width: 860px; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: clamp(20px, 5vw, 56px) clamp(18px, 6vw, 64px); display: flex; flex-direction: column; gap: 18px; font-family: "IBM Plex Serif", Georgia, serif; font-size: 15px; line-height: 1.65; }
+  .lh { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; font-family: var(--sans); border-bottom: 2px solid var(--brand); padding-bottom: 14px; }
+  .lh .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; }
+  .lh .brand span.pi { color: var(--brand); }
+  .lh .kind { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .addr { font-family: var(--sans); font-size: 13.5px; line-height: 1.5; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .addr .to b { display: block; font-weight: 600; }
+  .paper h2 { margin: 0; font-family: var(--sans); font-size: 22px; line-height: 1.25; font-weight: 600; text-wrap: balance; }
+  .sec { display: flex; flex-direction: column; gap: 6px; }
+  .sec h3 { margin: 0; font-family: var(--sans); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand-ink); font-weight: 600; }
+  .sec p { margin: 0; max-width: 68ch; }
+  table.fees { border-collapse: collapse; width: 100%; font-family: var(--sans); font-size: 13px; margin-top: 6px; }
+  .fees th { text-align: left; font-weight: 500; color: var(--muted); font-size: 11.5px; border-bottom: 1px solid var(--line-strong); padding: 6px 6px; }
+  .fees td { border-bottom: 1px solid var(--line); padding: 6px; }
+  .fees .n { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .fees tfoot td { font-weight: 600; border-bottom: none; border-top: 1px solid var(--line-strong); }
+  .sign { font-family: var(--sans); font-size: 13.5px; margin-top: 8px; }
+  .sign b { display: block; font-weight: 600; }
+  .side { flex: 1 1 260px; align-self: flex-start; }
+  .stat { display: flex; flex-direction: column; gap: 2px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .stat span { font-size: 12px; color: var(--muted); }
+  .stat b { font-family: var(--mono); font-size: 18px; font-weight: 500; }
+  .mix { display: flex; height: 12px; border-radius: 3px; overflow: hidden; margin-top: 6px; background: var(--line); }
+  .mix i { display: block; height: 100%; border-right: 2px solid var(--surface); }
+  .mixl { list-style: none; margin: 6px 0 0; padding: 0; font-size: 12px; display: flex; flex-direction: column; gap: 3px; }
+  .mixl li { display: flex; align-items: center; gap: 6px; }
+  .mixl .num { margin-left: auto; font-family: var(--mono); }
+</style>
+</head>
+<body>
+<header id="cp-header"></header>
+<div class="cp-layout">
+  <nav id="cp-rail"></nav>
+  <main id="cp-main" class="cp-main">
+    <div id="cp-notices"></div>
+    <div class="cp-view-head"><h1>Proposal builder</h1></div>
+    <div class="row" id="view"></div>
+  </main>
+</div>
+<script src="../assets/runtime.js"></script>
+<script>
+CP.boot({
+  view: 'proposal_builder',
+  base: '../',
+  render: function (ctx) {
+    var el = ctx.el, f = ctx.fmt, en = ctx.en;
+    var root = document.getElementById('view');
+    root.innerHTML = '';
+    var pr = ctx.data.proposal[0];
+    var staff = ctx.data.proposal_staffing.map(function (s) { var p = ctx.get('people', s.person_id); return { s: s, p: p, fee: p ? s.days * p.rate_day : 0 }; })
+      .filter(function (x) { return x.p; }).sort(function (a, b) { return b.p.rate_day - a.p.rate_day; });
+    var total = staff.reduce(function (a, x) { return a + x.fee; }, 0);
+    var days = staff.reduce(function (a, x) { return a + x.s.days; }, 0);
+    var PH = { 'fees.total': f.money_k(total), 'fees.days': f.num(days, days % 1 ? 1 : 0), 'client.name': en.client };
+    var addressee = ctx.get('people', pr.addressee_id);
+    var partner = ctx.get('people', en.partner_id);
+
+    var paper = el('article', { 'class': 'paper', 'aria-labelledby': 'p-title' }, [
+      el('div', { 'class': 'lh' }, [
+        el('div', { 'class': 'brand' }, [el('span', { 'class': 'cp-mark', 'aria-hidden': 'true', text: 'π' }), el('span', null, ['Cantab ', el('span', { 'class': 'pi', text: 'Pi' })])]),
+        el('div', { style: 'display:flex; gap:8px; align-items:center' }, [el('span', { 'class': 'kind', text: 'Letter of proposal' }), el('span', { 'class': 'pill st-' + pr.status, text: f.label(pr.status) })])
+      ]),
+      el('div', { 'class': 'addr' }, [
+        el('div', { 'class': 'to' }, [el('b', { text: addressee ? addressee.name : '—' }), addressee ? addressee.title : '', el('br'), en.client]),
+        el('div', { text: f.dateLong(pr.date) })
+      ])
+    ]);
+    var h = el('h2', { id: 'p-title', text: pr.title });
+    ctx.mark(h, pr);
+    paper.appendChild(h);
+    ctx.data.proposal_sections.slice().sort(function (a, b) { return a.order - b.order; }).forEach(function (s) {
+      var h3 = el('h3', { text: s.title });
+      var sec = el('section', { 'class': 'sec' }, [h3].concat(ctx.fill(s.text, PH).split('\n').filter(function (x) { return x.trim(); }).map(function (para) { return el('p', { text: para }); })));
+      ctx.mark(h3, s);
+      if (ctx.isFresh(s)) sec.classList.add('flash');
+      if (s.key === 'fees') {
+        var tb = el('tbody');
+        staff.forEach(function (x) {
+          var tr = el('tr', null, [el('td', { text: x.p.name }), el('td', { text: x.p.title }), el('td', { 'class': 'n', text: f.num(x.s.days, x.s.days % 1 ? 1 : 0) }), el('td', { 'class': 'n', text: f.money(x.p.rate_day) }), el('td', { 'class': 'n', text: f.money(x.fee) })]);
+          ctx.mark(tr.firstChild, x.s);
+          if (ctx.isFresh(x.s)) tr.classList.add('flash');
+          tb.appendChild(tr);
+        });
+        sec.appendChild(el('table', { 'class': 'fees' }, [
+          el('caption', { 'class': 'sr-only', text: 'Fee build-up' }),
+          el('thead', null, [el('tr', null, [['Team member', 0], ['Role', 0], ['Days', 1], ['Day rate', 1], ['Fees', 1]].map(function (c) { return el('th', { scope: 'col', style: c[1] ? 'text-align:right' : null, text: c[0] }); }))]),
+          tb,
+          el('tfoot', null, [el('tr', null, [el('td', { text: 'Total' }), el('td'), el('td', { 'class': 'n', text: PH['fees.days'] }), el('td'), el('td', { 'class': 'n', text: f.money(total) })])])
+        ]));
+      }
+      paper.appendChild(sec);
+    });
+    paper.appendChild(el('div', { 'class': 'sign' }, ['Yours sincerely', el('br'), el('br'), el('b', { text: partner ? partner.name : '—' }), (partner ? partner.title : '') + ', Cantab Pi']));
+
+    /* ---------- Commercials ---------- */
+    var palette = ['var(--brand)', 'var(--c-total)', 'var(--c-down)', 'var(--brand-line)', 'var(--line-strong)', 'var(--faint)'];
+    var mix = el('div', { 'class': 'mix', role: 'img', 'aria-label': 'Fees by team member: ' + staff.map(function (x) { return x.p.name + ' ' + Math.round(x.fee / total * 100) + '%'; }).join(', ') });
+    var ml = el('ul', { 'class': 'mixl' });
+    staff.forEach(function (x, i) {
+      var c = palette[i % palette.length];
+      mix.appendChild(el('i', { style: 'width:' + (total ? x.fee / total * 100 : 0) + '%; background:' + c }));
+      ml.appendChild(el('li', null, [el('i', { 'class': 'sw', style: 'background:' + c }), x.p.name, el('span', { 'class': 'num', text: Math.round(total ? x.fee / total * 100 : 0) + '%' })]));
+    });
+    var side = el('aside', { 'class': 'block side', 'aria-labelledby': 'c-title' }, [
+      el('div', { 'class': 'eyebrow', text: 'Commercials' }),
+      el('h2', { id: 'c-title', text: 'Fees built from staffing' }),
+      el('div', { 'class': 'stat' }, [el('span', { text: 'Professional fees' }), el('b', { text: f.money(total) })]),
+      el('div', { 'class': 'stat' }, [el('span', { text: 'Consultant days' }), el('b', { text: PH['fees.days'] })]),
+      el('div', { 'class': 'stat' }, [el('span', { text: 'Blended day rate' }), el('b', { text: days ? f.money(total / days) : '—' })]),
+      el('div', null, [el('span', { 'class': 'foot', text: 'Share of fees' }), mix, ml])
+    ]);
+    root.appendChild(paper);
+    root.appendChild(side);
+  }
+});
+</script>
+</body>
+</html>

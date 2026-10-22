@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agent builder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+  .pick { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; }
+  .pick select { font: inherit; font-size: 13px; padding: 6px 10px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--surface); color: var(--fg); min-height: 36px; max-width: 100%; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+  .col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  @media (max-width: 900px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+  .goal { font-size: 18px; line-height: 1.45; font-weight: 500; margin: 0; text-wrap: balance; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; color: var(--muted); }
+  .meta b { color: var(--fg); font-weight: 500; }
+  .prompt { margin: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.6; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px 12px 0; counter-reset: ln; }
+  .prompt div { display: grid; grid-template-columns: 40px minmax(0, 1fr); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .prompt div::before { counter-increment: ln; content: counter(ln); color: var(--faint); text-align: right; padding-right: 12px; }
+  .acc { display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 600; border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
+  .acc-read { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line-strong); }
+  .acc-write { color: var(--brand-ink); border: 1px solid var(--brand); }
+  .acc-read_write { background: var(--brand); color: #FFFFFF; }
+  .acc-action { background: var(--warn-tint); color: var(--warn); border: 1px solid var(--warn); }
+  table.grid td.d { color: var(--muted); font-size: 12.5px; }
+  .skills { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .skills li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13px; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); }
+  .skills li.on { border-color: var(--brand-line); background: var(--brand-tint); }
+  .skills li.off { color: var(--faint); }
+  .skills .box { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--line-strong); display: grid; place-items: center; font-size: 11px; margin-top: 2px; }
+  .skills li.on .box { background: var(--brand); border-color: var(--brand); color: #FFFFFF; }
+  .skills small { display: block; font-size: 11.5px; color: var(--muted); }
+  .skills li.off small { color: var(--faint); }
+  .rules { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .rules li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; font-size: 13px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px; }
+  .rules li::before { content: "!"; font-weight: 700; color: var(--bad); font-family: var(--mono); text-align: center; }
+  .rules small { display: block; color: var(--muted); font-size: 11.5px; }
+  .trig { font-size: 15px; font-weight: 500; }
+  .mono { font-family: var(--mono); }
+</style>
+</head>
+<body>
+<header id="cp-header"></header>
+<div class="cp-layout">
+  <nav id="cp-rail"></nav>
+  <main id="cp-main" class="cp-main">
+    <div id="cp-notices"></div>
+    <div class="cp-view-head"><h1>Agent builder</h1></div>
+    <div class="stack" id="view"></div>
+  </main>
+</div>
+<script src="../assets/runtime.js"></script>
+<script>
+var AB = { agent: null };
+CP.boot({
+  view: 'agent_builder',
+  base: '../',
+  render: function (ctx) {
+    var el = ctx.el, f = ctx.fmt;
+    var root = document.getElementById('view');
+    root.innerHTML = '';
+    var agents = ctx.data.agents.slice().sort(function (a, b) { return (a.audience === b.audience ? 0 : a.audience === 'team' ? -1 : 1) || (a.name < b.name ? -1 : 1); });
+    if (!agents.length) { root.appendChild(el('div', { 'class': 'block' }, [el('h2', { text: 'No agents yet' }), el('p', { 'class': 'foot', text: 'When the agent builder sets up an agent, its goal, prompt, tools, state and skills appear here.' })])); return; }
+    if (!AB.agent || !ctx.get('agents', AB.agent)) AB.agent = agents[0].id;
+    var ag = ctx.get('agents', AB.agent);
+    var lines = ctx.data.agent_lines.filter(function (l) { return l.agent_id === ag.id; });
+    var block = function (b) { return lines.filter(function (l) { return l.block === b; }).sort(function (a, c) { return a.order - c.order; }); };
+    var AUD = { team: 'Consulting team agents', client: 'Client agents' };
+
+    /* selector */
+    var sel = el('select', { id: 'agent-select', 'aria-label': 'Agent' });
+    ['team', 'client'].forEach(function (aud) {
+      var list = agents.filter(function (a) { return a.audience === aud; });
+      if (!list.length) return;
+      var og = el('optgroup', { label: AUD[aud] });
+      list.forEach(function (a) { var o = el('option', { value: a.id, text: a.name }); if (a.id === ag.id) o.selected = true; og.appendChild(o); });
+      sel.appendChild(og);
+    });
+    sel.addEventListener('change', function () { AB.agent = sel.value; CP.redraw(); });
+    root.appendChild(el('div', { 'class': 'pick' }, [el('label', { 'for': 'agent-select', text: 'Agent' }), sel, el('span', { 'class': 'pill st-' + ag.status, text: f.label(ag.status) })]));
+
+    /* goal */
+    var goal = el('p', { 'class': 'goal', text: ag.goal });
+    ctx.mark(goal, ag);
+    root.appendChild(el('section', { 'class': 'block', 'aria-labelledby': 'g-h' }, [
+      el('div', { 'class': 'eyebrow', id: 'g-h', text: 'Goal · ' + (ag.audience === 'client' ? 'built for ' + ctx.en.client : 'for the consulting team') }),
+      goal,
+      el('div', { 'class': 'meta' }, [el('span', null, ['Agent ', el('b', { text: ag.name })]), el('span', null, ['Owner ', el('b', { text: ctx.name(ag.owner_id) })])])
+    ]));
+
+    /* left column: prompt, tools */
+    var pre = el('div', { 'class': 'prompt', role: 'document', 'aria-label': 'System prompt' });
+    ag.system_prompt.split('\n').forEach(function (ln) { pre.appendChild(el('div', { text: ln })); });
+    var tb = el('tbody');
+    var tools = block('tools');
+    tools.forEach(function (t) {
+      var name = el('td', { 'class': 'mono', text: t.name });
+      ctx.mark(name, t);
+      var tr = el('tr', null, [name, el('td', null, [el('span', { 'class': 'acc acc-' + t.access, text: { read: 'Read', write: 'Write', read_write: 'Read / write', action: 'Action' }[t.access] })]), el('td', { text: t.resource }), el('td', { 'class': 'd', text: t.detail || '' })]);
+      if (ctx.isFresh(t)) tr.classList.add('flash');
+      tb.appendChild(tr);
+    });
+    var writes = tools.filter(function (t) { return t.access === 'write' || t.access === 'read_write'; }).length;
+    var left = el('div', { 'class': 'col' }, [
+      el('section', { 'class': 'block', 'aria-labelledby': 'p-h' }, [el('div', { 'class': 'eyebrow', text: 'System prompt · ' + ag.system_prompt.split('\n').length + ' lines' }), el('h2', { id: 'p-h', text: 'Instructions the agent runs with' }), pre]),
+      el('section', { 'class': 'block', 'aria-labelledby': 't-h' }, [
+        el('div', { 'class': 'eyebrow', text: 'Tools and data access' }),
+        el('h2', { id: 't-h', text: tools.length + ' tools · ' + writes + ' can change data' }),
+        el('div', { 'class': 'scroll-x' }, [el('table', { 'class': 'grid', style: 'min-width: 520px' }, [
+          el('thead', null, [el('tr', null, ['Tool', 'Access', 'Resource', 'Scope'].map(function (h) { return el('th', { scope: 'col', text: h }); }))]),
+          tb
+        ])])
+      ])
+    ]);
+
+    /* right column: trigger, state, skills, guardrails */
+    var sb = el('tbody');
+    block('state').forEach(function (v) {
+      var n = el('td', { 'class': 'mono', text: v.name });
+      ctx.mark(n, v);
+      var tr = el('tr', null, [n, el('td', { 'class': 'd', text: v.type }), el('td', { 'class': 'mono', text: v.value != null ? v.value : '—' })]);
+      if (v.detail) tr.setAttribute('title', v.detail);
+      if (ctx.isFresh(v)) tr.classList.add('flash');
+      sb.appendChild(tr);
+    });
+    var sk = el('ul', { 'class': 'skills' });
+    var mine = ag.skill_ids || [];
+    ctx.data.skills.slice().sort(function (a, b) { return (mine.indexOf(b.id) >= 0) - (mine.indexOf(a.id) >= 0) || (a.name < b.name ? -1 : 1); }).forEach(function (k) {
+      var on = mine.indexOf(k.id) >= 0;
+      var li = el('li', { 'class': on ? 'on' : 'off' }, [el('span', { 'class': 'box', 'aria-hidden': 'true', text: on ? '✓' : '' }), el('span', null, [k.name, el('small', { text: k.description })])]);
+      li.setAttribute('aria-label', k.name + (on ? ', assigned' : ', available'));
+      ctx.mark(li.lastChild, k, false);
+      sk.appendChild(li);
+    });
+    var rl = el('ul', { 'class': 'rules' });
+    block('guardrails').forEach(function (g) {
+      var body = el('span', null, [g.name, g.detail ? el('small', { text: g.detail }) : null]);
+      ctx.mark(body, g);
+      var li = el('li', null, [body]);
+      if (ctx.isFresh(g)) li.classList.add('flash');
+      rl.appendChild(li);
+    });
+    var right = el('div', { 'class': 'col' }, [
+      el('section', { 'class': 'block', 'aria-labelledby': 'tr-h' }, [el('div', { 'class': 'eyebrow', id: 'tr-h', text: 'Trigger and schedule' }), el('div', { 'class': 'trig', text: ag.trigger })]),
+      el('section', { 'class': 'block', 'aria-labelledby': 's-h' }, [el('div', { 'class': 'eyebrow', text: 'State variables' }), el('h2', { id: 's-h', text: 'What the agent remembers between runs' }),
+        el('table', { 'class': 'grid' }, [el('thead', null, [el('tr', null, ['Variable', 'Type', 'Current value'].map(function (h) { return el('th', { scope: 'col', text: h }); }))]), sb])]),
+      el('section', { 'class': 'block', 'aria-labelledby': 'k-h' }, [el('div', { 'class': 'eyebrow', text: 'Skills' }), el('h2', { id: 'k-h', text: mine.length + ' of ' + ctx.data.skills.length + ' available skills assigned' }), sk])
+    ]);
+    left.appendChild(el('section', { 'class': 'block', 'aria-labelledby': 'r-h' }, [el('div', { 'class': 'eyebrow', text: 'Guardrails' }), el('h2', { id: 'r-h', text: 'What the agent must never do' }), rl]));
+    root.appendChild(el('div', { 'class': 'grid2' }, [left, right]));
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,597 @@
+[
+  {
+    "id": "mc-01",
+    "sheet": "Inputs",
+    "ref": "C4",
+    "label": "EU commercial EBIT 2026",
+    "kind": "input",
+    "value": 410,
+    "decimals": 0,
+    "unit": "€m",
+    "note": "FY2026 plan",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-02",
+    "sheet": "Inputs",
+    "ref": "C5",
+    "label": "Market momentum to 2028",
+    "kind": "input",
+    "value": -35,
+    "decimals": 0,
+    "unit": "€m",
+    "note": "Loss of exclusivity and price erosion",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-03",
+    "sheet": "Inputs",
+    "ref": "C6",
+    "label": "Field reps in scope",
+    "kind": "input",
+    "value": 2400,
+    "decimals": 0,
+    "unit": "reps",
+    "note": "Nine EU markets",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-04",
+    "sheet": "Inputs",
+    "ref": "C7",
+    "label": "Admin hours freed per rep per week",
+    "kind": "input",
+    "value": 3.5,
+    "decimals": 1,
+    "unit": "h",
+    "note": "Pilot telemetry and rep survey",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-05",
+    "sheet": "Inputs",
+    "ref": "C8",
+    "label": "Share of freed time used for calls",
+    "kind": "input",
+    "value": 60,
+    "decimals": 0,
+    "unit": "%",
+    "note": "Pilot observation",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-06",
+    "sheet": "Inputs",
+    "ref": "C9",
+    "label": "Calls per field hour",
+    "kind": "input",
+    "value": 1.6,
+    "decimals": 1,
+    "unit": "calls",
+    "note": "CRM activity extract",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-07",
+    "sheet": "Inputs",
+    "ref": "C10",
+    "label": "Working weeks per year",
+    "kind": "input",
+    "value": 44,
+    "decimals": 0,
+    "unit": "weeks",
+    "note": "HR calendar",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-08",
+    "sheet": "Inputs",
+    "ref": "C11",
+    "label": "Contribution per incremental call",
+    "kind": "input",
+    "value": 79,
+    "decimals": 0,
+    "unit": "€",
+    "note": "Finance, 2025 actuals",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-09",
+    "sheet": "Inputs",
+    "ref": "C12",
+    "label": "Revenue in scope for next-best-action",
+    "kind": "input",
+    "value": 1100,
+    "decimals": 0,
+    "unit": "€m",
+    "note": "Promoted brands, EU",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-10",
+    "sheet": "Inputs",
+    "ref": "C13",
+    "label": "Conversion uplift from next-best-action",
+    "kind": "input",
+    "value": 5,
+    "decimals": 1,
+    "unit": "%",
+    "note": "Pilot vs control",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-11",
+    "sheet": "Inputs",
+    "ref": "C14",
+    "label": "Contribution margin",
+    "kind": "input",
+    "value": 40,
+    "decimals": 0,
+    "unit": "%",
+    "note": "Finance",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-12",
+    "sheet": "Inputs",
+    "ref": "C15",
+    "label": "Revenue in scope for content",
+    "kind": "input",
+    "value": 750,
+    "decimals": 0,
+    "unit": "€m",
+    "note": "Brands with digital content",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-13",
+    "sheet": "Inputs",
+    "ref": "C16",
+    "label": "Engagement uplift from content",
+    "kind": "input",
+    "value": 3,
+    "decimals": 1,
+    "unit": "%",
+    "note": "Benchmark midpoint; pilot n.s.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-14",
+    "sheet": "Inputs",
+    "ref": "C17",
+    "label": "Medical-legal reviews per year",
+    "kind": "input",
+    "value": 6000,
+    "decimals": 0,
+    "unit": "reviews",
+    "note": "Compliance log",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-15",
+    "sheet": "Inputs",
+    "ref": "C18",
+    "label": "Hours saved per review",
+    "kind": "input",
+    "value": 5,
+    "decimals": 0,
+    "unit": "h",
+    "note": "Pilot review log",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-16",
+    "sheet": "Inputs",
+    "ref": "C19",
+    "label": "Cost per review hour",
+    "kind": "input",
+    "value": 200,
+    "decimals": 0,
+    "unit": "€",
+    "note": "Compliance budget",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-17",
+    "sheet": "Inputs",
+    "ref": "C20",
+    "label": "Field-force hires avoided",
+    "kind": "input",
+    "value": 64,
+    "decimals": 0,
+    "unit": "FTE",
+    "note": "Attrition backfill not needed",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-18",
+    "sheet": "Inputs",
+    "ref": "C21",
+    "label": "Fully loaded cost per rep",
+    "kind": "input",
+    "value": 125,
+    "decimals": 0,
+    "unit": "€k",
+    "note": "HR",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-19",
+    "sheet": "Inputs",
+    "ref": "C22",
+    "label": "AI run cost per rep per year",
+    "kind": "input",
+    "value": 5000,
+    "decimals": 0,
+    "unit": "€",
+    "note": "Vendor quote and cloud",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-20",
+    "sheet": "Inputs",
+    "ref": "C23",
+    "label": "Adoption rate at scale",
+    "kind": "input",
+    "value": 83,
+    "decimals": 0,
+    "unit": "%",
+    "note": "Pilot 78% daily use, ramped",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-21",
+    "sheet": "Inputs",
+    "ref": "C24",
+    "label": "Discount rate",
+    "kind": "input",
+    "value": 9,
+    "decimals": 1,
+    "unit": "%",
+    "note": "Group WACC",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-22",
+    "sheet": "Inputs",
+    "ref": "C25",
+    "label": "One-off rollout investment",
+    "kind": "input",
+    "value": 12,
+    "decimals": 0,
+    "unit": "€m",
+    "note": "Integration and training",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-23",
+    "sheet": "Calculations",
+    "ref": "C4",
+    "label": "Incremental calls per year",
+    "kind": "calc",
+    "value": 354816,
+    "decimals": 0,
+    "unit": "calls",
+    "formula": "Inputs!C6*Inputs!C7*Inputs!C8/100*Inputs!C9*Inputs!C10",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-24",
+    "sheet": "Calculations",
+    "ref": "C5",
+    "label": "Lever: more calls",
+    "kind": "calc",
+    "value": 28.0305,
+    "decimals": 1,
+    "unit": "€m",
+    "formula": "C4*Inputs!C11/1000000",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-25",
+    "sheet": "Calculations",
+    "ref": "C6",
+    "label": "Lever: next-best-action conversion",
+    "kind": "calc",
+    "value": 22,
+    "decimals": 1,
+    "unit": "€m",
+    "formula": "Inputs!C12*Inputs!C13/100*Inputs!C14/100",
+    "_meta": {
+      "version": 5,
+      "updated_at": "2026-10-21T09:41:00Z",
+      "updated_by": "model_builder",
+      "reason": "Conversion uplift updated to the pilot result (5%)"
+    }
+  },
+  {
+    "id": "mc-26",
+    "sheet": "Calculations",
+    "ref": "C7",
+    "label": "Lever: content personalisation",
+    "kind": "calc",
+    "value": 9,
+    "decimals": 1,
+    "unit": "€m",
+    "formula": "Inputs!C15*Inputs!C16/100*Inputs!C14/100",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-27",
+    "sheet": "Calculations",
+    "ref": "C8",
+    "label": "Lever: medical-legal review effort",
+    "kind": "calc",
+    "value": 6,
+    "decimals": 1,
+    "unit": "€m",
+    "formula": "Inputs!C17*Inputs!C18*Inputs!C19/1000000",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-28",
+    "sheet": "Calculations",
+    "ref": "C9",
+    "label": "Lever: avoided hires",
+    "kind": "calc",
+    "value": 8,
+    "decimals": 1,
+    "unit": "€m",
+    "formula": "Inputs!C20*Inputs!C21/1000",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-29",
+    "sheet": "Calculations",
+    "ref": "C10",
+    "label": "AI run cost",
+    "kind": "calc",
+    "value": -12,
+    "decimals": 1,
+    "unit": "€m",
+    "formula": "-Inputs!C6*Inputs!C22/1000000",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-30",
+    "sheet": "Calculations",
+    "ref": "C11",
+    "label": "Adoption haircut",
+    "kind": "calc",
+    "value": -10.0352,
+    "decimals": 1,
+    "unit": "€m",
+    "formula": "-(C5+C6+C7)*(1-Inputs!C23/100)",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-31",
+    "sheet": "Calculations",
+    "ref": "C12",
+    "label": "Momentum case 2028",
+    "kind": "calc",
+    "value": 375,
+    "decimals": 0,
+    "unit": "€m",
+    "formula": "Inputs!C4+Inputs!C5",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-32",
+    "sheet": "Calculations",
+    "ref": "C13",
+    "label": "Net impact of scale-up",
+    "kind": "calc",
+    "value": 50.9953,
+    "decimals": 1,
+    "unit": "€m",
+    "formula": "SUM(C5:C11)",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-33",
+    "sheet": "Outputs",
+    "ref": "C4",
+    "label": "EBIT 2028 with scale-up",
+    "kind": "output",
+    "value": 425.9953,
+    "decimals": 0,
+    "unit": "€m",
+    "formula": "Calculations!C12+Calculations!C13",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-34",
+    "sheet": "Outputs",
+    "ref": "C5",
+    "label": "5-year NPV of scale-up",
+    "kind": "output",
+    "value": 167.64,
+    "decimals": 0,
+    "unit": "€m",
+    "formula": "NPV(Inputs!C24/100, Calculations!C13*{0.6,1,1,1,1})-Inputs!C25",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "mc-35",
+    "sheet": "Outputs",
+    "ref": "C6",
+    "label": "Run-rate value per rep",
+    "kind": "output",
+    "value": 21.248,
+    "decimals": 1,
+    "unit": "€k",
+    "formula": "Calculations!C13/Inputs!C6*1000",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

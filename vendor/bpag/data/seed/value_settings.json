@@ -1,0 +1,15 @@
+[
+  {
+    "id": "vt-01",
+    "npv_base": 168,
+    "npv_cell_id": "mc-34",
+    "annotation_from_id": "vs-03",
+    "annotation_to_id": "vs-11",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

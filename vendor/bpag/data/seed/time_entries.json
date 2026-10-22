@@ -1,0 +1,1364 @@
+[
+  {
+    "id": "te-001",
+    "person_id": "pe-01",
+    "week": 1,
+    "planned_days": 1,
+    "actual_days": 1,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-002",
+    "person_id": "pe-01",
+    "week": 2,
+    "planned_days": 1,
+    "actual_days": 1,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-003",
+    "person_id": "pe-01",
+    "week": 3,
+    "planned_days": 1,
+    "actual_days": 1.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-004",
+    "person_id": "pe-01",
+    "week": 4,
+    "planned_days": 1,
+    "actual_days": 1,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-005",
+    "person_id": "pe-01",
+    "week": 5,
+    "planned_days": 1,
+    "actual_days": 1,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-006",
+    "person_id": "pe-01",
+    "week": 6,
+    "planned_days": 1,
+    "actual_days": 1,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-007",
+    "person_id": "pe-01",
+    "week": 7,
+    "planned_days": 1,
+    "actual_days": 1,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-008",
+    "person_id": "pe-01",
+    "week": 8,
+    "planned_days": 2,
+    "actual_days": 2.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-009",
+    "person_id": "pe-01",
+    "week": 9,
+    "planned_days": 1,
+    "actual_days": 1,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-010",
+    "person_id": "pe-01",
+    "week": 10,
+    "planned_days": 1,
+    "actual_days": 1,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-011",
+    "person_id": "pe-01",
+    "week": 11,
+    "planned_days": 1,
+    "actual_days": 1,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-012",
+    "person_id": "pe-01",
+    "week": 12,
+    "planned_days": 1,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-013",
+    "person_id": "pe-01",
+    "week": 13,
+    "planned_days": 1.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-014",
+    "person_id": "pe-01",
+    "week": 14,
+    "planned_days": 1.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-015",
+    "person_id": "pe-01",
+    "week": 15,
+    "planned_days": 1,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-016",
+    "person_id": "pe-01",
+    "week": 16,
+    "planned_days": 1,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-017",
+    "person_id": "pe-01",
+    "week": 17,
+    "planned_days": 1,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-018",
+    "person_id": "pe-01",
+    "week": 18,
+    "planned_days": 2,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-019",
+    "person_id": "pe-02",
+    "week": 1,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-020",
+    "person_id": "pe-02",
+    "week": 2,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-021",
+    "person_id": "pe-02",
+    "week": 3,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-022",
+    "person_id": "pe-02",
+    "week": 4,
+    "planned_days": 5,
+    "actual_days": 5.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-023",
+    "person_id": "pe-02",
+    "week": 5,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-024",
+    "person_id": "pe-02",
+    "week": 6,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-025",
+    "person_id": "pe-02",
+    "week": 7,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-026",
+    "person_id": "pe-02",
+    "week": 8,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-027",
+    "person_id": "pe-02",
+    "week": 9,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-028",
+    "person_id": "pe-02",
+    "week": 10,
+    "planned_days": 5.5,
+    "actual_days": 5.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-029",
+    "person_id": "pe-02",
+    "week": 11,
+    "planned_days": 6,
+    "actual_days": 6.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-030",
+    "person_id": "pe-02",
+    "week": 12,
+    "planned_days": 6,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-031",
+    "person_id": "pe-02",
+    "week": 13,
+    "planned_days": 6.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-032",
+    "person_id": "pe-02",
+    "week": 14,
+    "planned_days": 6,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-033",
+    "person_id": "pe-02",
+    "week": 15,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-034",
+    "person_id": "pe-02",
+    "week": 16,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-035",
+    "person_id": "pe-02",
+    "week": 17,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-036",
+    "person_id": "pe-02",
+    "week": 18,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-037",
+    "person_id": "pe-03",
+    "week": 1,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-038",
+    "person_id": "pe-03",
+    "week": 2,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-039",
+    "person_id": "pe-03",
+    "week": 3,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-040",
+    "person_id": "pe-03",
+    "week": 4,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-041",
+    "person_id": "pe-03",
+    "week": 5,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-042",
+    "person_id": "pe-03",
+    "week": 6,
+    "planned_days": 5,
+    "actual_days": 4.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-043",
+    "person_id": "pe-03",
+    "week": 7,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-044",
+    "person_id": "pe-03",
+    "week": 8,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-045",
+    "person_id": "pe-03",
+    "week": 9,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-046",
+    "person_id": "pe-03",
+    "week": 10,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-047",
+    "person_id": "pe-03",
+    "week": 11,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-048",
+    "person_id": "pe-03",
+    "week": 12,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-049",
+    "person_id": "pe-03",
+    "week": 13,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-050",
+    "person_id": "pe-03",
+    "week": 14,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-051",
+    "person_id": "pe-03",
+    "week": 15,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-052",
+    "person_id": "pe-03",
+    "week": 16,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-053",
+    "person_id": "pe-03",
+    "week": 17,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-054",
+    "person_id": "pe-03",
+    "week": 18,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-055",
+    "person_id": "pe-04",
+    "week": 1,
+    "planned_days": 4.5,
+    "actual_days": 4.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-056",
+    "person_id": "pe-04",
+    "week": 2,
+    "planned_days": 4.5,
+    "actual_days": 4,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-057",
+    "person_id": "pe-04",
+    "week": 3,
+    "planned_days": 4.5,
+    "actual_days": 4.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-058",
+    "person_id": "pe-04",
+    "week": 4,
+    "planned_days": 4.5,
+    "actual_days": 4.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-059",
+    "person_id": "pe-04",
+    "week": 5,
+    "planned_days": 4.5,
+    "actual_days": 4.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-060",
+    "person_id": "pe-04",
+    "week": 6,
+    "planned_days": 4.5,
+    "actual_days": 4.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-061",
+    "person_id": "pe-04",
+    "week": 7,
+    "planned_days": 4.5,
+    "actual_days": 4.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-062",
+    "person_id": "pe-04",
+    "week": 8,
+    "planned_days": 4.5,
+    "actual_days": 4.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-063",
+    "person_id": "pe-04",
+    "week": 9,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-064",
+    "person_id": "pe-04",
+    "week": 10,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-065",
+    "person_id": "pe-04",
+    "week": 11,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-066",
+    "person_id": "pe-04",
+    "week": 12,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-067",
+    "person_id": "pe-04",
+    "week": 13,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-068",
+    "person_id": "pe-04",
+    "week": 14,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-069",
+    "person_id": "pe-04",
+    "week": 15,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-070",
+    "person_id": "pe-04",
+    "week": 16,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-071",
+    "person_id": "pe-04",
+    "week": 17,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-072",
+    "person_id": "pe-04",
+    "week": 18,
+    "planned_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-073",
+    "person_id": "pe-05",
+    "week": 1,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-074",
+    "person_id": "pe-05",
+    "week": 2,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-075",
+    "person_id": "pe-05",
+    "week": 3,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-076",
+    "person_id": "pe-05",
+    "week": 4,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-077",
+    "person_id": "pe-05",
+    "week": 5,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-078",
+    "person_id": "pe-05",
+    "week": 6,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-079",
+    "person_id": "pe-05",
+    "week": 7,
+    "planned_days": 5,
+    "actual_days": 5.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-080",
+    "person_id": "pe-05",
+    "week": 8,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-081",
+    "person_id": "pe-05",
+    "week": 9,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-082",
+    "person_id": "pe-05",
+    "week": 10,
+    "planned_days": 5.5,
+    "actual_days": 5.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-083",
+    "person_id": "pe-05",
+    "week": 11,
+    "planned_days": 6.5,
+    "actual_days": 7,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-084",
+    "person_id": "pe-05",
+    "week": 12,
+    "planned_days": 6.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-085",
+    "person_id": "pe-05",
+    "week": 13,
+    "planned_days": 6.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-086",
+    "person_id": "pe-05",
+    "week": 14,
+    "planned_days": 5.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-087",
+    "person_id": "pe-05",
+    "week": 15,
+    "planned_days": 3,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-088",
+    "person_id": "pe-05",
+    "week": 16,
+    "planned_days": 3,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-089",
+    "person_id": "pe-05",
+    "week": 17,
+    "planned_days": 3,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-090",
+    "person_id": "pe-05",
+    "week": 18,
+    "planned_days": 3,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-091",
+    "person_id": "pe-06",
+    "week": 1,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-092",
+    "person_id": "pe-06",
+    "week": 2,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-093",
+    "person_id": "pe-06",
+    "week": 3,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-094",
+    "person_id": "pe-06",
+    "week": 4,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-095",
+    "person_id": "pe-06",
+    "week": 5,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-096",
+    "person_id": "pe-06",
+    "week": 6,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-097",
+    "person_id": "pe-06",
+    "week": 7,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-098",
+    "person_id": "pe-06",
+    "week": 8,
+    "planned_days": 5,
+    "actual_days": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-099",
+    "person_id": "pe-06",
+    "week": 9,
+    "planned_days": 3,
+    "actual_days": 2.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-100",
+    "person_id": "pe-06",
+    "week": 10,
+    "planned_days": 3,
+    "actual_days": 3,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-101",
+    "person_id": "pe-06",
+    "week": 11,
+    "planned_days": 3,
+    "actual_days": 3,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-102",
+    "person_id": "pe-06",
+    "week": 12,
+    "planned_days": 3,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-103",
+    "person_id": "pe-06",
+    "week": 13,
+    "planned_days": 3,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-104",
+    "person_id": "pe-06",
+    "week": 14,
+    "planned_days": 3.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-105",
+    "person_id": "pe-06",
+    "week": 15,
+    "planned_days": 2,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-106",
+    "person_id": "pe-06",
+    "week": 16,
+    "planned_days": 2,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-107",
+    "person_id": "pe-06",
+    "week": 17,
+    "planned_days": 2,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "te-108",
+    "person_id": "pe-06",
+    "week": 18,
+    "planned_days": 2,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Story builder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+  /* Issue tree: question | branches | hypotheses, joined by rule lines */
+  .tree { display: grid; grid-template-columns: minmax(0, 230px) minmax(0, 1fr); gap: 0 28px; align-items: center; }
+  .node { border: 1px solid var(--line-strong); border-radius: 8px; padding: 10px 12px; background: var(--surface); font-size: 13px; position: relative; }
+  .q { background: var(--brand); border-color: var(--brand); color: #FFFFFF; font-weight: 600; font-size: 14px; line-height: 1.35; padding: 14px; }
+  .q small { display: block; font-weight: 400; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; margin-bottom: 4px; }
+  .branches { display: flex; flex-direction: column; gap: 14px; border-left: 2px solid var(--line-strong); padding-left: 24px; position: relative; }
+  .bgroup { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 0 26px; align-items: center; position: relative; }
+  .bgroup::before { content: ""; position: absolute; left: -24px; top: 50%; width: 24px; border-top: 2px solid var(--line-strong); }
+  .br { font-weight: 600; background: var(--surface-2); }
+  .br small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 2px; }
+  .hyps { display: flex; flex-direction: column; gap: 6px; border-left: 2px solid var(--line); padding-left: 18px; position: relative; }
+  .hyps::before { content: ""; position: absolute; left: -26px; top: 50%; width: 26px; border-top: 2px solid var(--line); }
+  .hyp { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; position: relative; padding: 8px 10px; }
+  .hyp::before { content: ""; position: absolute; left: -20px; top: 50%; width: 18px; border-top: 1px solid var(--line-strong); }
+  .hyp .t { font-weight: 500; }
+  .hyp .a { grid-column: 1 / -1; font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+  .hyp .a b { color: var(--fg); font-weight: 500; }
+  .lev { color: var(--brand-ink); }
+  .hyp { cursor: default; }
+  .hyp:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .hyp:hover { border-color: var(--brand-line); }
+  .pop { display: none; position: fixed; z-index: 50; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 8px; padding: 10px 12px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14); font-size: 12.5px; line-height: 1.4; }
+  .pop .ph { font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+  .pf { border-radius: 6px; padding: 6px 8px; margin-bottom: 6px; display: flex; flex-direction: column; gap: 2px; }
+  .pf:last-child { margin-bottom: 0; }
+  .pf.supports { background: var(--ok-tint); } .pf.refutes { background: var(--bad-tint); } .pf.neutral { background: var(--surface-2); }
+  .pk { font-size: 11px; font-weight: 600; font-family: var(--mono); }
+  .pf.supports .pk { color: var(--ok); } .pf.refutes .pk { color: var(--bad); } .pf.neutral .pk { color: var(--muted); }
+  .ps { font-size: 11.5px; color: var(--muted); }
+  .cred { font-family: var(--mono); letter-spacing: 1px; }
+  @media (max-width: 760px) {
+    .tree, .bgroup { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .branches { padding-left: 14px; }
+    .bgroup::before { left: -14px; width: 14px; top: 18px; }
+    .hyps { margin-left: 10px; }
+    .hyps::before { display: none; }
+  }
+</style>
+</head>
+<body>
+<header id="cp-header"></header>
+<div class="cp-layout">
+  <nav id="cp-rail"></nav>
+  <main id="cp-main" class="cp-main">
+    <div id="cp-notices"></div>
+    <div class="cp-view-head"><h1>Story builder</h1></div>
+    <div class="stack" id="view"></div>
+  </main>
+</div>
+<script src="../assets/runtime.js"></script>
+<script>
+CP.boot({
+  view: 'story_builder',
+  base: '../',
+  render: function (ctx) {
+    var el = ctx.el, f = ctx.fmt;
+    var root = document.getElementById('view');
+    root.innerHTML = '';
+    var N = ctx.data.issue_nodes;
+    var byOrder = function (a, b) { return a.order - b.order; };
+    var q = N.filter(function (n) { return n.kind === 'question'; })[0];
+    var branches = q ? N.filter(function (n) { return n.parent_id === q.id && n.kind === 'branch'; }).sort(byOrder) : [];
+    var kids = function (id) { return N.filter(function (n) { return n.parent_id === id && n.kind === 'hypothesis'; }).sort(byOrder); };
+    var hyps = N.filter(function (n) { return n.kind === 'hypothesis'; });
+    var B = ctx.bridge();
+    var PH = {
+      'hypotheses.confirmed': String(hyps.filter(function (h) { return h.status === 'confirmed'; }).length),
+      'hypotheses.total': String(hyps.length)
+    };
+    var STANCE = { supports: 'Supports', refutes: 'Refutes', neutral: 'Inconclusive' };
+    var dots = function (c) { return { high: '●●●', medium: '●●○', low: '●○○' }[c] || ''; };
+    var ev = {};
+    ctx.data.findings.forEach(function (x) { var e = ev[x.hypothesis_id] = ev[x.hypothesis_id] || { supports: 0, refutes: 0, neutral: 0 }; e[x.stance]++; });
+    var levers = {};
+    B.bars.forEach(function (b) { if (b.step.hypothesis_id) (levers[b.step.hypothesis_id] = levers[b.step.hypothesis_id] || []).push(b.step); });
+
+    /* ---------- Issue tree ---------- */
+    var tree = el('div', { 'class': 'tree' });
+    if (q) tree.appendChild(ctx.mark(el('div', { 'class': 'node q' }, [el('small', { text: 'Key question' }), q.text]), q));
+    var bwrap = el('div', { 'class': 'branches' });
+    branches.forEach(function (b, i) {
+      var bnode = ctx.mark(el('div', { 'class': 'node br' }, [el('small', { text: 'Branch ' + (i + 1) }), b.text]), b);
+      if (ctx.isFresh(b)) bnode.classList.add('flash');
+      var hl = el('div', { 'class': 'hyps' });
+      kids(b.id).forEach(function (h) {
+        var e = ev[h.id] || { supports: 0, refutes: 0, neutral: 0 };
+        var meta = [el('span', null, ['Test: ', el('b', { text: h.analysis })]), el('span', { text: e.supports + ' for · ' + e.refutes + ' against' + (e.neutral ? ' · ' + e.neutral + ' inconclusive' : '') })];
+        (levers[h.id] || []).forEach(function (s) { meta.push(el('span', { 'class': 'lev', text: 'Value lever: ' + s.label.replace(/\n/g, ' ') + ' ' + f.signed(s.value, 1) })); });
+        var t = el('span', { 'class': 't', text: h.text });
+        var fs = ctx.data.findings.filter(function (x) { return x.hypothesis_id === h.id; });
+        var pop = el('div', { 'class': 'pop', role: 'tooltip' }, [el('div', { 'class': 'ph', text: 'Evidence · ' + fs.length + (fs.length === 1 ? ' finding' : ' findings') })].concat(
+          fs.length ? fs.map(function (x) {
+            var so = ctx.get('sources', x.source_id);
+            return el('div', { 'class': 'pf ' + x.stance }, [
+              el('div', { 'class': 'pk', text: STANCE[x.stance] + (x.metric ? ' · ' + x.metric : '') }),
+              el('div', { text: x.text }),
+              so ? el('div', { 'class': 'ps' }, [so.title + ' ', el('span', { 'class': 'cred', text: dots(so.credibility) })]) : null
+            ]);
+          }) : [el('div', { 'class': 'ps', text: 'No evidence yet. The analyst has not linked any findings.' })]));
+        var hn = el('div', { 'class': 'node hyp', tabindex: '0', 'aria-label': h.text + '. ' + f.label(h.status) + '. ' + fs.map(function (x) { return STANCE[x.stance] + ': ' + x.text; }).join('. ') }, [t, el('span', { 'class': 'pill st-' + h.status, text: f.label(h.status) }), el('div', { 'class': 'a' }, meta), pop]);
+        var place = function () {
+          var r = hn.getBoundingClientRect(), w = Math.min(360, window.innerWidth * 0.85);
+          pop.style.width = w + 'px';
+          pop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + 'px';
+          var below = r.bottom + 6, h2 = pop.offsetHeight;
+          pop.style.top = (below + h2 > window.innerHeight - 8 ? Math.max(8, r.top - 6 - h2) : below) + 'px';
+        };
+        hn.addEventListener('mouseenter', function () { pop.style.display = 'block'; place(); });
+        hn.addEventListener('focus', function () { pop.style.display = 'block'; place(); });
+        hn.addEventListener('mouseleave', function () { pop.style.display = ''; });
+        hn.addEventListener('blur', function () { pop.style.display = ''; });
+        ctx.mark(t, h);
+        if (ctx.isFresh(h)) hn.classList.add('flash');
+        hl.appendChild(hn);
+      });
+      bwrap.appendChild(el('div', { 'class': 'bgroup' }, [bnode, hl]));
+    });
+    tree.appendChild(bwrap);
+    root.appendChild(el('section', { 'class': 'block', 'aria-labelledby': 't-title' }, [
+      el('div', { 'class': 'eyebrow', text: 'Issue tree · ' + branches.length + ' branches · ' + hyps.length + ' hypotheses' }),
+      el('h2', { id: 't-title', text: PH['hypotheses.confirmed'] + ' of ' + PH['hypotheses.total'] + ' hypotheses confirmed, ' + hyps.filter(function (h) { return h.status === 'refuted'; }).length + ' refuted' }),
+      el('div', { 'class': 'legend', 'aria-hidden': 'true' }, [
+        el('span', null, [el('span', { 'class': 'pill st-confirmed', text: 'Confirmed' })]),
+        el('span', null, [el('span', { 'class': 'pill st-open', text: 'Open' })]),
+        el('span', null, [el('span', { 'class': 'pill st-refuted', text: 'Refuted' })]),
+        el('span', { text: 'Hover or focus a hypothesis to see its evidence' })
+      ]),
+      tree
+    ]));
+
+  }
+});
+</script>
+</body>
+</html>

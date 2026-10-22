@@ -1,0 +1,110 @@
+[
+  {
+    "id": "ac-01",
+    "source": "project_manager",
+    "title": "Escalate CRM data access with the IT lead",
+    "rationale": "CRM extraction is 5 days late and blocks the value model and sensitivity work feeding the 30 Oct SteerCo.",
+    "priority": "high",
+    "owner_id": "pe-02",
+    "due": "2026-10-22",
+    "status": "proposed",
+    "task_id": "tk-08",
+    "person_id": "pe-10",
+    "milestone_id": "ms-04",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ac-02",
+    "source": "project_manager",
+    "title": "Agree a fallback scope for the sensitivity analysis",
+    "rationale": "If data lands after 23 Oct, run sensitivity on the seven ready markets and show the other two as a range.",
+    "priority": "medium",
+    "owner_id": "pe-02",
+    "due": "2026-10-23",
+    "status": "proposed",
+    "task_id": "tk-10",
+    "milestone_id": "ms-04",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ac-03",
+    "source": "project_manager",
+    "title": "Pre-wire the sponsor on the value range",
+    "rationale": "The value range is now driven by adoption; align the sponsor before SteerCo to avoid surprises.",
+    "priority": "medium",
+    "owner_id": "pe-01",
+    "due": "2026-10-27",
+    "status": "accepted",
+    "person_id": "pe-07",
+    "milestone_id": "ms-04",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ac-04",
+    "source": "team_manager",
+    "title": "Move CRM data QA from Mei to Lukas",
+    "rationale": "Mei is planned at 130% of capacity in weeks 12-13 while Lukas is planned at 60%.",
+    "priority": "high",
+    "owner_id": "pe-02",
+    "due": "2026-10-22",
+    "status": "proposed",
+    "task_id": "tk-08",
+    "person_id": "pe-05",
+    "_meta": {
+      "version": 4,
+      "updated_at": "2026-10-21T09:20:00Z",
+      "updated_by": "team_manager",
+      "reason": "Mei planned above capacity in weeks 12-13"
+    }
+  },
+  {
+    "id": "ac-05",
+    "source": "team_manager",
+    "title": "Agree the value-model structure before the next review",
+    "rationale": "The value model is on its third review cycle; agreeing the structure with the partner stops the rework.",
+    "priority": "medium",
+    "owner_id": "pe-04",
+    "due": "2026-10-23",
+    "status": "proposed",
+    "task_id": "tk-09",
+    "person_id": "pe-04",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ac-06",
+    "source": "team_manager",
+    "title": "Protect the engagement manager in weeks 13-14",
+    "rationale": "Tomás is planned at 120-130% through SteerCo and board preparation; hand pre-wire logistics to Jonas.",
+    "priority": "low",
+    "owner_id": "pe-01",
+    "due": "2026-10-26",
+    "status": "proposed",
+    "person_id": "pe-02",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

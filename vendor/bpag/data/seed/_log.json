@@ -1,0 +1,106 @@
+[
+  {
+    "version": 2,
+    "at": "2026-10-21T09:12:00Z",
+    "agent": "project_manager",
+    "reason": "CRM extract not received from IT; task now 5 days overdue",
+    "changes": [
+      {
+        "op": "update",
+        "table": "tasks",
+        "id": "tk-08",
+        "before": {
+          "status": "in_progress",
+          "progress_pct": 60
+        },
+        "after": {
+          "status": "late",
+          "progress_pct": 70
+        }
+      }
+    ]
+  },
+  {
+    "version": 3,
+    "at": "2026-10-21T09:13:00Z",
+    "agent": "project_manager",
+    "reason": "Business case depends on the late CRM extract",
+    "changes": [
+      {
+        "op": "update",
+        "table": "milestones",
+        "id": "ms-04",
+        "before": {
+          "status": "planned"
+        },
+        "after": {
+          "status": "at_risk"
+        }
+      }
+    ]
+  },
+  {
+    "version": 4,
+    "at": "2026-10-21T09:20:00Z",
+    "agent": "team_manager",
+    "reason": "Mei planned above capacity in weeks 12-13",
+    "changes": [
+      {
+        "op": "create",
+        "table": "actions",
+        "id": "ac-04",
+        "before": null,
+        "after": {
+          "id": "ac-04",
+          "source": "team_manager",
+          "title": "Move CRM data QA from Mei to Lukas",
+          "rationale": "Mei is planned at 130% of capacity in weeks 12-13 while Lukas is planned at 60%.",
+          "priority": "high",
+          "owner_id": "pe-02",
+          "due": "2026-10-22",
+          "status": "proposed",
+          "task_id": "tk-08",
+          "person_id": "pe-05"
+        }
+      }
+    ]
+  },
+  {
+    "version": 5,
+    "at": "2026-10-21T09:41:00Z",
+    "agent": "model_builder",
+    "reason": "Conversion uplift updated to the pilot result (5%)",
+    "changes": [
+      {
+        "op": "update",
+        "table": "model_cells",
+        "id": "mc-25",
+        "before": {
+          "value": 20
+        },
+        "after": {
+          "value": 22
+        }
+      }
+    ]
+  },
+  {
+    "version": 6,
+    "at": "2026-10-21T09:45:00Z",
+    "agent": "value_estimator",
+    "reason": "Next-best-action lever aligned to the model",
+    "changes": [
+      {
+        "op": "update",
+        "table": "value_steps",
+        "id": "vs-05",
+        "before": {
+          "value": 20
+        },
+        "after": {
+          "value": 22
+        }
+      }
+    ]
+  }
+]

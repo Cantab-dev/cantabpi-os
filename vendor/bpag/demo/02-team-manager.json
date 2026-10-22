@@ -1,0 +1,46 @@
+{
+  "agent": "team_manager",
+  "reason": "CRM data QA moved from Mei to Lukas",
+  "ops": [
+    {
+      "op": "update",
+      "table": "time_entries",
+      "id": "te-084",
+      "set": {
+        "planned_days": 5
+      }
+    },
+    {
+      "op": "update",
+      "table": "time_entries",
+      "id": "te-085",
+      "set": {
+        "planned_days": 5
+      }
+    },
+    {
+      "op": "update",
+      "table": "time_entries",
+      "id": "te-102",
+      "set": {
+        "planned_days": 4.5
+      }
+    },
+    {
+      "op": "update",
+      "table": "time_entries",
+      "id": "te-103",
+      "set": {
+        "planned_days": 4.5
+      }
+    },
+    {
+      "op": "update",
+      "table": "actions",
+      "id": "ac-04",
+      "set": {
+        "status": "done"
+      }
+    }
+  ]
+}

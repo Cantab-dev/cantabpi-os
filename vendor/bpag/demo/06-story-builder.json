@@ -1,0 +1,14 @@
+{
+  "agent": "story_builder",
+  "reason": "Risk slide carries the risks answer",
+  "ops": [
+    {
+      "op": "update",
+      "table": "slides",
+      "id": "sl-05",
+      "set": {
+        "issue_node_id": "in-10"
+      }
+    }
+  ]
+}

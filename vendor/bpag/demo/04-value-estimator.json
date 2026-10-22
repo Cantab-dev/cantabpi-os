@@ -1,0 +1,94 @@
+{
+  "agent": "value_estimator",
+  "reason": "Bridge and sensitivity aligned to the revised model",
+  "ops": [
+    {
+      "op": "update",
+      "table": "value_steps",
+      "id": "vs-05",
+      "set": {
+        "value": 17.6
+      }
+    },
+    {
+      "op": "update",
+      "table": "value_steps",
+      "id": "vs-10",
+      "set": {
+        "value": -9.3
+      }
+    },
+    {
+      "op": "update",
+      "table": "sensitivity_drivers",
+      "id": "sd-01",
+      "set": {
+        "downside_value": 109,
+        "upside_value": 176
+      }
+    },
+    {
+      "op": "update",
+      "table": "sensitivity_drivers",
+      "id": "sd-02",
+      "set": {
+        "downside_input": "2%",
+        "downside_value": 122,
+        "upside_value": 182
+      }
+    },
+    {
+      "op": "update",
+      "table": "sensitivity_drivers",
+      "id": "sd-03",
+      "set": {
+        "downside_value": 130,
+        "upside_value": 172
+      }
+    },
+    {
+      "op": "update",
+      "table": "sensitivity_drivers",
+      "id": "sd-04",
+      "set": {
+        "downside_value": 134,
+        "upside_value": 167
+      }
+    },
+    {
+      "op": "update",
+      "table": "sensitivity_drivers",
+      "id": "sd-05",
+      "set": {
+        "downside_value": 139,
+        "upside_value": 164
+      }
+    },
+    {
+      "op": "update",
+      "table": "sensitivity_drivers",
+      "id": "sd-06",
+      "set": {
+        "downside_value": 142,
+        "upside_value": 165
+      }
+    },
+    {
+      "op": "update",
+      "table": "sensitivity_drivers",
+      "id": "sd-07",
+      "set": {
+        "downside_value": 147,
+        "upside_value": 161
+      }
+    },
+    {
+      "op": "update",
+      "table": "value_settings",
+      "id": "vt-01",
+      "set": {
+        "npv_base": 155
+      }
+    }
+  ]
+}

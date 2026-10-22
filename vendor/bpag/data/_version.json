@@ -1,0 +1,32 @@
+{
+  "global": 6,
+  "tables": {
+    "engagement": 1,
+    "people": 1,
+    "phases": 1,
+    "milestones": 3,
+    "deliverables": 1,
+    "tasks": 2,
+    "raci": 1,
+    "time_entries": 1,
+    "phase_raci": 1,
+    "reviews": 1,
+    "actions": 4,
+    "issue_nodes": 1,
+    "sources": 1,
+    "findings": 1,
+    "model_cells": 5,
+    "value_steps": 6,
+    "value_settings": 1,
+    "sensitivity_drivers": 1,
+    "narratives": 1,
+    "deck": 1,
+    "slides": 1,
+    "skills": 1,
+    "agents": 1,
+    "agent_lines": 1,
+    "proposal": 1,
+    "proposal_sections": 1,
+    "proposal_staffing": 1
+  }
+}

@@ -1,0 +1,41 @@
+[
+  {
+    "id": "ph-01",
+    "order": 1,
+    "name": "Pilot",
+    "start": "2026-08-03",
+    "end": "2026-09-25",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ph-02",
+    "order": 2,
+    "name": "Scale-up design",
+    "start": "2026-09-28",
+    "end": "2026-11-06",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ph-03",
+    "order": 3,
+    "name": "Rollout plan",
+    "start": "2026-11-09",
+    "end": "2026-12-04",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

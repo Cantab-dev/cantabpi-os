@@ -1,0 +1,24 @@
+{
+  "agent": "engagement_starter",
+  "reason": "Engagement manager takes accountability for the rollout plan; partner consulted",
+  "ops": [
+    {
+      "op": "update",
+      "table": "phase_raci",
+      "id": "px-023",
+      "set": {
+        "role": "C",
+        "comment": "Reviews the rollout proposal before it goes to the client"
+      }
+    },
+    {
+      "op": "update",
+      "table": "phase_raci",
+      "id": "px-024",
+      "set": {
+        "role": "A",
+        "comment": "Owns the rollout plan and drafts the proposal"
+      }
+    }
+  ]
+}

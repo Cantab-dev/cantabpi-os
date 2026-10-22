@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Presentation builder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+  .viewer { flex: 999 1 560px; align-self: flex-start; }
+  .deckp { flex: 1 1 320px; }
+  .stage { position: relative; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; aspect-ratio: 16 / 9; max-width: 100%; display: grid; place-items: center; overflow: hidden; }
+  .stage canvas { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .ghost { width: 100%; height: 100%; padding: 6% 7%; box-sizing: border-box; display: flex; flex-direction: column; gap: 4%; background: var(--surface); }
+  .ghost .sec { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand-ink); font-weight: 600; }
+  .ghost .tt { font-size: clamp(15px, 2.2vw, 24px); font-weight: 600; line-height: 1.25; text-wrap: balance; }
+  .ghost .bar { margin-top: auto; height: 4px; width: 22%; background: var(--brand); border-radius: 2px; }
+  .ghost .note { font-size: 12px; color: var(--muted); }
+  .controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .controls button { font: inherit; font-size: 13px; min-height: 36px; padding: 6px 14px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--fg); border-radius: 6px; cursor: pointer; }
+  .controls button:disabled { color: var(--faint); cursor: default; }
+  .controls .pg { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .controls a { margin-left: auto; font-size: 13px; }
+  .slist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .slist button { all: unset; box-sizing: border-box; width: 100%; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 4px 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; cursor: pointer; font-size: 13px; line-height: 1.35; }
+  .slist button:hover { border-color: var(--brand-line); }
+  .slist button:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+  .slist button[aria-current="true"] { border-color: var(--brand); background: var(--brand-tint); }
+  .slist .n { font-family: var(--mono); color: var(--brand-ink); font-weight: 600; }
+  .slist .m { grid-column: 2; display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 11.5px; color: var(--muted); align-items: center; }
+  .meta { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; color: var(--muted); }
+  .meta b { color: var(--fg); font-weight: 500; }
+  .gt { border: 2px solid var(--brand); border-radius: 10px; padding: 14px 16px; font-size: 16px; font-weight: 600; line-height: 1.4; text-wrap: balance; background: var(--brand-tint); }
+  .gt small { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand-ink); margin-bottom: 4px; }
+  .keyline { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .kl { border: 1px solid var(--line-strong); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; background: var(--surface); }
+  .kl.gap { border-style: dashed; }
+  .kl .q2 { font-size: 11.5px; color: var(--muted); }
+  .kl .ans { font-weight: 600; font-size: 13.5px; line-height: 1.35; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: auto; }
+  .chip { font-family: var(--mono); font-size: 11.5px; border: 1px solid var(--line-strong); border-radius: 4px; padding: 0 6px; color: var(--muted); }
+  .chip.miss { color: var(--warn); border-color: var(--warn); }
+  .sublbl { font-size: 12px; font-weight: 600; color: var(--muted); }
+</style>
+</head>
+<body>
+<header id="cp-header"></header>
+<div class="cp-layout">
+  <nav id="cp-rail"></nav>
+  <main id="cp-main" class="cp-main">
+    <div id="cp-notices"></div>
+    <div class="cp-view-head"><h1>Presentation builder</h1></div>
+    <div class="stack" id="view"></div>
+  </main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script src="../assets/runtime.js"></script>
+<script>
+var PB = { page: 1, url: null, pdf: null, loading: null, failed: false };
+CP.boot({
+  view: 'presentation_builder',
+  base: '../',
+  render: function (ctx) {
+    var el = ctx.el, f = ctx.fmt;
+    var root = document.getElementById('view');
+    root.innerHTML = '';
+    var deck = ctx.data.deck[0];
+    var slides = ctx.data.slides.slice().sort(function (a, b) { return a.number - b.number; });
+    var url = /^https?:/.test(deck.pdf_url) ? deck.pdf_url : '../' + deck.pdf_url;
+    if (url !== PB.url) { PB.url = url; PB.pdf = null; PB.failed = false; PB.loading = null; }
+    if (PB.page > Math.max(1, slides.length)) PB.page = 1;
+
+    /* ---------- Deck viewer ---------- */
+    var stage = el('div', { 'class': 'stage', role: 'img' });
+    var prev = el('button', { type: 'button', text: 'Previous' });
+    var next = el('button', { type: 'button', text: 'Next' });
+    var pg = el('span', { 'class': 'pg', 'aria-live': 'polite' });
+    var list = el('ol', { 'class': 'slist' });
+    function total() { return PB.pdf ? PB.pdf.numPages : slides.length; }
+    function ghost(n) {
+      var s = slides.filter(function (x) { return x.number === n; })[0];
+      stage.innerHTML = '';
+      stage.appendChild(el('div', { 'class': 'ghost' }, [
+        el('div', { 'class': 'sec', text: s ? (s.section || 'Slide ' + n) : 'Slide ' + n }),
+        el('div', { 'class': 'tt', text: s ? s.title : '' }),
+        el('div', { 'class': 'note', text: PB.failed ? 'The deck PDF is not available here; showing the slide title from the data.' : 'Loading the deck…' }),
+        el('div', { 'class': 'bar' })
+      ]));
+      stage.setAttribute('aria-label', 'Slide ' + n + ': ' + (s ? s.title : ''));
+    }
+    function show(n) {
+      PB.page = Math.min(Math.max(1, n), Math.max(1, total()));
+      pg.textContent = 'Slide ' + PB.page + ' of ' + total();
+      prev.disabled = PB.page <= 1; next.disabled = PB.page >= total();
+      Array.prototype.forEach.call(list.querySelectorAll('button'), function (b) { b.setAttribute('aria-current', String(Number(b.dataset.n) === PB.page)); });
+      if (!PB.pdf) { ghost(PB.page); return; }
+      PB.pdf.getPage(PB.page).then(function (page) {
+        var vp = page.getViewport({ scale: 1 });
+        var scale = Math.min(2, (stage.clientWidth * (window.devicePixelRatio || 1)) / vp.width);
+        var v = page.getViewport({ scale: scale });
+        var c = document.createElement('canvas');
+        c.width = v.width; c.height = v.height;
+        return page.render({ canvasContext: c.getContext('2d'), viewport: v }).promise.then(function () {
+          stage.innerHTML = ''; stage.appendChild(c);
+          var s = slides.filter(function (x) { return x.number === PB.page; })[0];
+          stage.setAttribute('aria-label', 'Slide ' + PB.page + (s ? ': ' + s.title : ''));
+        });
+      }).catch(function () { ghost(PB.page); });
+    }
+    prev.addEventListener('click', function () { show(PB.page - 1); });
+    next.addEventListener('click', function () { show(PB.page + 1); });
+    var viewer = el('section', { 'class': 'block viewer', 'aria-labelledby': 'v-h' }, [
+      el('div', { 'class': 'eyebrow', text: 'Deck · ' + deck.version + ' · ' + f.dateLong(deck.date) }),
+      el('h2', { id: 'v-h', text: deck.title }),
+      stage,
+      el('div', { 'class': 'controls' }, [prev, next, pg, el('a', { href: url, target: '_blank', rel: 'noopener', text: 'Open the PDF' })])
+    ]);
+    ctx.mark(viewer.querySelector('h2'), deck);
+
+    /* ---------- Slide list ---------- */
+    slides.forEach(function (s) {
+      var node = s.issue_node_id ? ctx.get('issue_nodes', s.issue_node_id) : null;
+      var b = el('button', { type: 'button', 'data-n': String(s.number), 'aria-label': 'Show slide ' + s.number + ': ' + s.title }, [
+        el('span', { 'class': 'n', text: String(s.number) }),
+        el('span', { text: s.title }),
+        el('span', { 'class': 'm' }, [el('span', { 'class': 'pill st-' + s.status, text: f.label(s.status) }), s.section ? el('span', { text: s.section }) : null, el('span', { text: node ? 'Carries: ' + (node.kind === 'question' ? 'governing thought' : node.text) : 'Not on the storyline' })])
+      ]);
+      b.addEventListener('click', function () { show(s.number); });
+      ctx.mark(b.children[1], s);
+      var li = el('li', null, [b]);
+      if (ctx.isFresh(s)) li.classList.add('flash');
+      list.appendChild(li);
+    });
+    var deckp = el('section', { 'class': 'block deckp', 'aria-labelledby': 'l-h' }, [
+      el('div', { 'class': 'eyebrow', text: 'Slides' }),
+      el('h2', { id: 'l-h', text: slides.length + ' slides · ' + f.label(deck.status) }),
+      el('div', { 'class': 'meta' }, [el('span', null, ['Version ', el('b', { text: deck.version })]), el('span', null, ['Date ', el('b', { text: f.date(deck.date) })])]),
+      list
+    ]);
+    root.appendChild(el('div', { 'class': 'row' }, [viewer, deckp]));
+
+    /* ---------- Storyline ---------- */
+    var N = ctx.data.issue_nodes;
+    var byOrder = function (a, b) { return a.order - b.order; };
+    var q = N.filter(function (n) { return n.kind === 'question'; })[0];
+    var branches = q ? N.filter(function (n) { return n.parent_id === q.id && n.kind === 'branch'; }).sort(byOrder) : [];
+    var hyps = N.filter(function (n) { return n.kind === 'hypothesis'; });
+    var B = ctx.bridge();
+    var PH = {
+      'value.net_impact': f.money_m(B.netImpact),
+      'value.target': f.money_m(B.lastSubtotal),
+      'hypotheses.confirmed': String(hyps.filter(function (h) { return h.status === 'confirmed'; }).length),
+      'hypotheses.total': String(hyps.length)
+    };
+    var slidesFor = function (ids) { return slides.filter(function (s) { return ids.indexOf(s.issue_node_id) >= 0; }); };
+    var gtN = ctx.data.narratives.filter(function (n) { return n.view === 'presentation_builder' && n.slot === 'governing_thought'; })[0];
+    var gt = el('div', { 'class': 'gt' }, [el('small', { text: 'Governing thought' }), gtN ? ctx.fill(gtN.text, PH) : '—']);
+    if (gtN) ctx.mark(gt, gtN);
+    var rootSlides = q ? slidesFor([q.id]) : [];
+    gt.appendChild(el('div', { 'class': 'chips', style: 'margin-top: 8px' }, rootSlides.length ? rootSlides.map(function (s) { return el('span', { 'class': 'chip', text: 'Slide ' + s.number }); }) : [el('span', { 'class': 'chip miss', text: 'No slide yet' })]));
+    var kl = el('div', { 'class': 'keyline' });
+    var gaps = 0;
+    branches.forEach(function (b) {
+      var ids = [b.id].concat(N.filter(function (n) { return n.parent_id === b.id; }).map(function (n) { return n.id; }));
+      var ss = slidesFor(ids);
+      if (!ss.length) gaps++;
+      var ans = el('div', { 'class': 'ans', text: ctx.fill(b.answer, PH) });
+      ctx.mark(ans, b);
+      kl.appendChild(el('div', { 'class': 'kl' + (ss.length ? '' : ' gap') }, [el('div', { 'class': 'q2', text: b.text }), ans,
+        el('div', { 'class': 'chips' }, ss.length ? ss.map(function (s) { return el('span', { 'class': 'chip', text: 'Slide ' + s.number }); }) : [el('span', { 'class': 'chip miss', text: 'No slide yet' })])]));
+    });
+    root.appendChild(el('section', { 'class': 'block', 'aria-labelledby': 's-h' }, [
+      el('div', { 'class': 'eyebrow', text: 'Storyline · pyramid principle' }),
+      el('h2', { id: 's-h', text: gaps ? gaps + ' of ' + branches.length + ' key-line answers have no slide yet' : 'Every key-line answer has a slide' }),
+      gt,
+      el('div', { 'class': 'sublbl', text: 'Key line: one answer per branch of the issue tree' }),
+      kl
+    ]));
+
+    /* ---------- load the PDF once ---------- */
+    show(PB.page);
+    if (!PB.pdf && !PB.loading && !PB.failed && window.pdfjsLib) {
+      PB.loading = window.pdfjsLib.getDocument({ url: url }).promise.then(function (pdf) { PB.pdf = pdf; show(PB.page); })
+        .catch(function () { PB.failed = true; show(PB.page); });
+    } else if (!window.pdfjsLib) { PB.failed = true; show(PB.page); }
+  }
+});
+</script>
+</body>
+</html>

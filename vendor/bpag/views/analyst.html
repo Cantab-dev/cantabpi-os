@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Analyst</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+  .board { width: 100%; min-width: 860px; border-collapse: separate; border-spacing: 0; font-size: 13px; table-layout: fixed; }
+  .board th { text-align: left; font-size: 11.5px; font-weight: 500; color: var(--muted); padding: 6px 10px; border-bottom: 1px solid var(--line-strong); }
+  .board td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .board tr.br th { background: var(--surface-2); color: var(--fg); font-size: 12.5px; font-weight: 600; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+  .board col.h { width: 26%; } .board col.s { width: 28%; }
+  .board td.h .t { font-weight: 500; display: block; margin-bottom: 4px; }
+  .ev { display: flex; flex-direction: column; gap: 5px; }
+  .fnd { border-radius: 6px; padding: 6px 9px; font-size: 12.5px; line-height: 1.4; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; }
+  .fnd .m { font-family: var(--mono); font-weight: 500; white-space: nowrap; }
+  .fnd .k { font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; grid-column: 2; grid-row: 1; align-self: start; }
+  .fnd.supports { background: var(--ok-tint); } .fnd.supports .k { color: var(--ok); }
+  .fnd.refutes { background: var(--bad-tint); } .fnd.refutes .k { color: var(--bad); }
+  .fnd.neutral { background: var(--surface-2); } .fnd.neutral .k { color: var(--muted); }
+  .srcs { display: flex; flex-direction: column; gap: 4px; }
+  .src { position: relative; display: block; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; font-size: 12.5px; line-height: 1.35; cursor: default; background: var(--surface); }
+  .src:hover, .src:focus { border-color: var(--brand-line); outline: none; }
+  .src:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+  .src .cred { font-family: var(--mono); letter-spacing: 1px; color: var(--muted); margin-left: 4px; white-space: nowrap; }
+  .src .qn { font-size: 11px; color: var(--muted); display: block; }
+  .pop { display: none; position: fixed; z-index: 50; width: min(320px, 80vw); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 8px; padding: 10px 12px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12); font-size: 12.5px; }
+  .pop blockquote { margin: 0 0 8px; padding-left: 10px; border-left: 2px solid var(--brand); font-style: italic; }
+  .pop blockquote:last-child { margin-bottom: 0; }
+  .pop .ph { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .cred { font-family: var(--mono); letter-spacing: 1px; color: var(--muted); }
+  .none { color: var(--faint); font-size: 12.5px; }
+</style>
+</head>
+<body>
+<header id="cp-header"></header>
+<div class="cp-layout">
+  <nav id="cp-rail"></nav>
+  <main id="cp-main" class="cp-main">
+    <div id="cp-notices"></div>
+    <div class="cp-view-head"><h1>Analyst</h1></div>
+    <div class="stack" id="view"></div>
+  </main>
+</div>
+<script src="../assets/runtime.js"></script>
+<script>
+CP.boot({
+  view: 'analyst',
+  base: '../',
+  render: function (ctx) {
+    var el = ctx.el, f = ctx.fmt;
+    var root = document.getElementById('view');
+    root.innerHTML = '';
+    var N = ctx.data.issue_nodes, F = ctx.data.findings;
+    var RANK = { high: 3, medium: 2, low: 1 };
+    var dots = function (c) { return { high: '●●●', medium: '●●○', low: '●○○' }[c] || ''; };
+    var STANCE = { supports: 'Supports', refutes: 'Refutes', neutral: 'Inconclusive' };
+    var ORDER = { supports: 0, refutes: 1, neutral: 2 };
+    var byOrder = function (a, b) { return a.order - b.order; };
+    var q = N.filter(function (n) { return n.kind === 'question'; })[0];
+    var branches = q ? N.filter(function (n) { return n.parent_id === q.id && n.kind === 'branch'; }).sort(byOrder) : [];
+    var usage = {};
+    F.forEach(function (x) { usage[x.source_id] = (usage[x.source_id] || 0) + 1; });
+
+    /* ---------- Evidence board: hypothesis | evidence | sources ---------- */
+    var tbody = el('tbody');
+    branches.forEach(function (b) {
+      tbody.appendChild(el('tr', { 'class': 'br' }, [el('th', { colspan: '3', scope: 'rowgroup', text: b.text })]));
+      N.filter(function (n) { return n.parent_id === b.id && n.kind === 'hypothesis'; }).sort(byOrder).forEach(function (h) {
+        var fs = F.filter(function (x) { return x.hypothesis_id === h.id; }).sort(function (a, c) { return ORDER[a.stance] - ORDER[c.stance]; });
+        var ev = el('div', { 'class': 'ev' });
+        var bySource = {};
+        fs.forEach(function (x) {
+          var card = el('div', { 'class': 'fnd ' + x.stance }, [
+            el('span', null, [x.metric ? el('span', { 'class': 'm', text: x.metric + ' ' }) : null, x.text]),
+            el('span', { 'class': 'k', text: STANCE[x.stance] })
+          ]);
+          ctx.mark(card, x);
+          if (ctx.isFresh(x)) card.classList.add('flash');
+          ev.appendChild(card);
+          (bySource[x.source_id] = bySource[x.source_id] || []).push(x);
+        });
+        if (!fs.length) ev.appendChild(el('span', { 'class': 'none', text: 'No evidence yet' }));
+        var srcs = el('div', { 'class': 'srcs' });
+        Object.keys(bySource).map(function (id) { return ctx.get('sources', id); }).filter(Boolean)
+          .sort(function (a, c) { return RANK[c.credibility] - RANK[a.credibility]; })
+          .forEach(function (so) {
+            var items = bySource[so.id];
+            var pop = el('div', { 'class': 'pop', role: 'tooltip' }, [el('div', { 'class': 'ph', text: so.publisher + ' · ' + so.year + ' · ' + f.label(so.type) })].concat(items.map(function (x) {
+              return el('blockquote', { text: '“' + (x.quote || x.text) + '”' });
+            })));
+            var item = el('span', { 'class': 'src', tabindex: '0', 'aria-label': so.title + ', credibility ' + so.credibility + '. Quotes: ' + items.map(function (x) { return x.quote || x.text; }).join(' / ') }, [
+              so.title, el('span', { 'class': 'cred', title: 'Credibility: ' + so.credibility, text: dots(so.credibility) }),
+              el('span', { 'class': 'qn', text: items.length + (items.length === 1 ? ' quote' : ' quotes') + ' · hover to read' }),
+              pop
+            ]);
+            ctx.mark(item, so, false);
+            var place = function () {
+              var r = item.getBoundingClientRect(), w = Math.min(320, window.innerWidth * 0.8);
+              pop.style.left = Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8)) + 'px';
+              pop.style.top = (r.bottom + 6 + 160 > window.innerHeight ? Math.max(8, r.top - 6 - pop.offsetHeight) : r.bottom + 6) + 'px';
+            };
+            item.addEventListener('mouseenter', function () { pop.style.display = 'block'; place(); });
+            item.addEventListener('focus', function () { pop.style.display = 'block'; place(); });
+            item.addEventListener('mouseleave', function () { pop.style.display = ''; });
+            item.addEventListener('blur', function () { pop.style.display = ''; });
+            srcs.appendChild(item);
+          });
+        if (!srcs.children.length) srcs.appendChild(el('span', { 'class': 'none', text: '—' }));
+        var t = el('span', { 'class': 't', text: h.text });
+        ctx.mark(t, h);
+        var hcell = el('td', { 'class': 'h' }, [t, el('span', { 'class': 'pill st-' + h.status, text: f.label(h.status) })]);
+        if (ctx.isFresh(h)) hcell.classList.add('flash');
+        tbody.appendChild(el('tr', null, [hcell, el('td', null, [ev]), el('td', null, [srcs])]));
+      });
+    });
+    var table = el('table', { 'class': 'board' }, [
+      el('caption', { 'class': 'sr-only', text: 'Evidence and sources by hypothesis' }),
+      el('colgroup', null, [el('col', { 'class': 'h' }), el('col'), el('col', { 'class': 's' })]),
+      el('thead', null, [el('tr', null, [el('th', { scope: 'col', text: 'Hypothesis' }), el('th', { scope: 'col', text: 'Evidence' }), el('th', { scope: 'col', text: 'Sources' })])]),
+      tbody
+    ]);
+    var hyps = N.filter(function (n) { return n.kind === 'hypothesis'; });
+    var thin = hyps.filter(function (h) { return F.filter(function (x) { return x.hypothesis_id === h.id && x.stance !== 'neutral'; }).length < 2; }).length;
+    root.appendChild(el('section', { 'class': 'block', 'aria-labelledby': 'e-title' }, [
+      el('div', { 'class': 'eyebrow', text: 'Evidence board · ' + F.length + ' findings · ' + ctx.data.sources.length + ' sources' }),
+      el('h2', { id: 'e-title', text: thin + ' of ' + hyps.length + ' hypotheses rest on fewer than two decisive findings' }),
+      el('div', { 'class': 'legend', 'aria-hidden': 'true' }, [
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--ok-tint); border: 1px solid var(--ok)' }), 'Supports']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--bad-tint); border: 1px solid var(--bad)' }), 'Refutes']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--surface-2); border: 1px solid var(--line-strong)' }), 'Inconclusive']),
+        el('span', null, [el('span', { 'class': 'cred', text: '●●●' }), 'Source credibility · hover a source for its quotes'])
+      ]),
+      el('div', { 'class': 'scroll-x' }, [table])
+    ]));
+
+    /* ---------- Source list ---------- */
+    var rows = ctx.data.sources.slice().sort(function (a, b) { return (RANK[b.credibility] - RANK[a.credibility]) || (b.year - a.year); });
+    var sb = el('tbody');
+    rows.forEach(function (so) {
+      var title = so.url ? el('a', { href: so.url, target: '_blank', rel: 'noopener', text: so.title }) : el('span', { text: so.title });
+      var td = el('td', null, [title]);
+      ctx.mark(td, so);
+      sb.appendChild(el('tr', null, [td, el('td', { text: so.publisher }), el('td', { 'class': 'mono', text: String(so.year) }), el('td', { text: f.label(so.type) }),
+        el('td', null, [el('span', { 'class': 'cred', text: dots(so.credibility) + ' ' }), f.label(so.credibility)]), el('td', { 'class': 'mono', style: 'text-align:right', text: String(usage[so.id] || 0) })]));
+    });
+    root.appendChild(el('section', { 'class': 'block', 'aria-labelledby': 'so-title' }, [
+      el('div', { 'class': 'eyebrow', text: 'Sources' }),
+      el('h2', { id: 'so-title', text: 'Where the evidence comes from' }),
+      el('div', { 'class': 'scroll-x' }, [el('table', { 'class': 'grid', style: 'min-width: 760px' }, [
+        el('thead', null, [el('tr', null, ['Source', 'Publisher', 'Year', 'Type', 'Credibility', 'Findings'].map(function (h, i) { return el('th', { scope: 'col', style: i === 5 ? 'text-align:right' : null, text: h }); }))]),
+        sb
+      ])])
+    ]));
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,2204 @@
+{
+  "contract_version": "2.0",
+  "description": "Engagement data store for the Cantab Pi agentic consulting environment. Single source of truth for tables, fields, render contracts, views, placeholders and agent write scopes.",
+  "conventions": {
+    "id_pattern": "<prefix>-<2 or 3 digits>, e.g. tk-07; ids are assigned by the tool on create and never change",
+    "dates": "ISO 8601 calendar dates (YYYY-MM-DD)",
+    "money": "Amounts in the engagement currency; value tables are in millions (€m) unless the field says otherwise",
+    "text": "Plain text only. No markup. Line breaks (\\n) only where the field allows more than one line",
+    "meta": "Every record carries _meta {version, updated_at, updated_by, reason}, set by the tool only",
+    "order": "Order and number fields are renumbered 1..n by the tool after each write, preserving relative order"
+  },
+  "tables": {
+    "engagement": {
+      "description": "The engagement itself. Exactly one record.",
+      "prefix": "en",
+      "kind": "singleton",
+      "fixed_ids": [
+        "en-01"
+      ],
+      "min": 1,
+      "max": 1,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "client": {
+          "type": "string",
+          "required": true,
+          "max_len": 40,
+          "description": "Client name"
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "max_len": 70,
+          "description": "Engagement name"
+        },
+        "objective": {
+          "type": "text",
+          "required": true,
+          "max_len": 280,
+          "description": "One- or two-sentence objective"
+        },
+        "start": {
+          "type": "date",
+          "required": true,
+          "description": "First day of week 1 (a Monday)"
+        },
+        "end": {
+          "type": "date",
+          "required": true,
+          "description": "Last day of the engagement"
+        },
+        "as_of": {
+          "type": "date",
+          "required": true,
+          "description": "Demo 'today'. All status, slippage and week calculations use this date"
+        },
+        "currency": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "EUR",
+            "USD",
+            "GBP",
+            "CHF"
+          ]
+        },
+        "partner_id": {
+          "type": "ref",
+          "table": "people",
+          "required": true
+        },
+        "manager_id": {
+          "type": "ref",
+          "table": "people",
+          "required": true,
+          "description": "Engagement manager"
+        },
+        "sponsor_id": {
+          "type": "ref",
+          "table": "people",
+          "required": true,
+          "description": "Client sponsor"
+        }
+      }
+    },
+    "people": {
+      "description": "Consulting team members and client stakeholders.",
+      "prefix": "pe",
+      "kind": "list",
+      "min": 3,
+      "max": 20,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "max_len": 32
+        },
+        "org": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "consulting",
+            "client"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "required": true,
+          "max_len": 48,
+          "description": "Job title or project role"
+        },
+        "rate_day": {
+          "type": "number",
+          "min": 0,
+          "max": 10000,
+          "decimals": 0,
+          "description": "Day rate in engagement currency. Consulting only"
+        },
+        "capacity_days_week": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "decimals": 1,
+          "description": "Days per week available to the engagement. Consulting only"
+        }
+      }
+    },
+    "phases": {
+      "description": "Engagement phases, contiguous and non-overlapping.",
+      "prefix": "ph",
+      "kind": "list",
+      "min": 1,
+      "max": 6,
+      "order_field": {
+        "field": "order",
+        "group_by": []
+      },
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "order": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 6
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "max_len": 28
+        },
+        "start": {
+          "type": "date",
+          "required": true
+        },
+        "end": {
+          "type": "date",
+          "required": true
+        }
+      }
+    },
+    "milestones": {
+      "description": "Dated checkpoints such as kick-off, go-live, SteerCo or board decisions.",
+      "prefix": "ms",
+      "kind": "list",
+      "min": 1,
+      "max": 12,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "phase_id": {
+          "type": "ref",
+          "table": "phases",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "max_len": 44
+        },
+        "date": {
+          "type": "date",
+          "required": true
+        },
+        "type": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "kickoff",
+            "go_live",
+            "readout",
+            "steerco",
+            "board",
+            "signoff"
+          ]
+        },
+        "status": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "planned",
+            "at_risk",
+            "done",
+            "missed"
+          ]
+        }
+      }
+    },
+    "deliverables": {
+      "description": "Work products the team commits to.",
+      "prefix": "dl",
+      "kind": "list",
+      "min": 1,
+      "max": 16,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "phase_id": {
+          "type": "ref",
+          "table": "phases",
+          "required": true
+        },
+        "milestone_id": {
+          "type": "ref",
+          "table": "milestones",
+          "description": "Milestone the deliverable feeds, if any"
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "max_len": 48
+        },
+        "owner_id": {
+          "type": "ref",
+          "table": "people",
+          "required": true,
+          "description": "Consulting team member"
+        },
+        "due": {
+          "type": "date",
+          "required": true
+        },
+        "status": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "not_started",
+            "in_progress",
+            "at_risk",
+            "late",
+            "done"
+          ]
+        }
+      }
+    },
+    "tasks": {
+      "description": "Scheduled work items shown on the Gantt chart.",
+      "prefix": "tk",
+      "kind": "list",
+      "min": 1,
+      "max": 40,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "phase_id": {
+          "type": "ref",
+          "table": "phases",
+          "required": true
+        },
+        "deliverable_id": {
+          "type": "ref",
+          "table": "deliverables"
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "max_len": 40
+        },
+        "owner_id": {
+          "type": "ref",
+          "table": "people",
+          "required": true,
+          "description": "Consulting team member"
+        },
+        "start": {
+          "type": "date",
+          "required": true
+        },
+        "end": {
+          "type": "date",
+          "required": true
+        },
+        "status": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "not_started",
+            "in_progress",
+            "at_risk",
+            "late",
+            "done"
+          ]
+        },
+        "progress_pct": {
+          "type": "integer",
+          "required": true,
+          "min": 0,
+          "max": 100
+        },
+        "depends_on": {
+          "type": "ref_list",
+          "table": "tasks",
+          "max_items": 4,
+          "description": "Tasks that must finish first"
+        }
+      }
+    },
+    "raci": {
+      "description": "RACI assignment of one person to one deliverable.",
+      "prefix": "ra",
+      "kind": "list",
+      "min": 0,
+      "max": 200,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "deliverable_id": {
+          "type": "ref",
+          "table": "deliverables",
+          "required": true
+        },
+        "person_id": {
+          "type": "ref",
+          "table": "people",
+          "required": true
+        },
+        "role": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "R",
+            "A",
+            "C",
+            "I"
+          ]
+        }
+      }
+    },
+    "phase_raci": {
+      "description": "Role and one-line responsibility of each person in each phase.",
+      "prefix": "px",
+      "kind": "list",
+      "min": 0,
+      "max": 120,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "phase_id": {
+          "type": "ref",
+          "table": "phases",
+          "required": true
+        },
+        "person_id": {
+          "type": "ref",
+          "table": "people",
+          "required": true
+        },
+        "role": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "R",
+            "A",
+            "C",
+            "I"
+          ]
+        },
+        "comment": {
+          "type": "string",
+          "required": true,
+          "max_len": 90,
+          "description": "One sentence: what this person does in the phase"
+        }
+      }
+    },
+    "time_entries": {
+      "description": "Planned and actual days per consulting team member per engagement week. Complete grid: every consulting person has one record per week.",
+      "prefix": "te",
+      "kind": "list",
+      "min": 0,
+      "max": 600,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "person_id": {
+          "type": "ref",
+          "table": "people",
+          "required": true
+        },
+        "week": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 52,
+          "description": "Engagement week, 1 = week containing engagement.start"
+        },
+        "planned_days": {
+          "type": "number",
+          "required": true,
+          "min": 0,
+          "max": 7,
+          "decimals": 1
+        },
+        "actual_days": {
+          "type": "number",
+          "min": 0,
+          "max": 7,
+          "decimals": 1,
+          "description": "Required for weeks before the as-of week, empty from the as-of week on"
+        }
+      }
+    },
+    "reviews": {
+      "description": "Review cycles on deliverables.",
+      "prefix": "rv",
+      "kind": "list",
+      "min": 0,
+      "max": 100,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "deliverable_id": {
+          "type": "ref",
+          "table": "deliverables",
+          "required": true
+        },
+        "reviewer_id": {
+          "type": "ref",
+          "table": "people",
+          "required": true
+        },
+        "date": {
+          "type": "date",
+          "required": true
+        },
+        "cycle": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 9
+        },
+        "outcome": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "approved",
+            "changes_requested"
+          ]
+        }
+      }
+    },
+    "actions": {
+      "description": "Recommended actions raised by the project manager and team manager agents.",
+      "prefix": "ac",
+      "kind": "list",
+      "min": 0,
+      "max": 12,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "source": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "project_manager",
+            "team_manager"
+          ],
+          "description": "Agent that raised the action"
+        },
+        "title": {
+          "type": "string",
+          "required": true,
+          "max_len": 64
+        },
+        "rationale": {
+          "type": "text",
+          "required": true,
+          "max_len": 200
+        },
+        "priority": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "owner_id": {
+          "type": "ref",
+          "table": "people",
+          "required": true
+        },
+        "due": {
+          "type": "date",
+          "required": true
+        },
+        "status": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "proposed",
+            "accepted",
+            "done",
+            "dismissed"
+          ]
+        },
+        "task_id": {
+          "type": "ref",
+          "table": "tasks"
+        },
+        "person_id": {
+          "type": "ref",
+          "table": "people",
+          "description": "Person the action is about, if any"
+        },
+        "milestone_id": {
+          "type": "ref",
+          "table": "milestones"
+        }
+      }
+    },
+    "issue_nodes": {
+      "description": "Issue tree: one key question, 2-5 branches, 1-5 hypotheses per branch.",
+      "prefix": "in",
+      "kind": "list",
+      "min": 3,
+      "max": 31,
+      "order_field": {
+        "field": "order",
+        "group_by": [
+          "parent_id"
+        ]
+      },
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "parent_id": {
+          "type": "ref",
+          "table": "issue_nodes",
+          "description": "Empty for the key question"
+        },
+        "kind": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "question",
+            "branch",
+            "hypothesis"
+          ]
+        },
+        "order": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 9
+        },
+        "text": {
+          "type": "string",
+          "required": true,
+          "max_len": 100
+        },
+        "answer": {
+          "type": "string",
+          "max_len": 120,
+          "placeholders": "view:presentation_builder",
+          "description": "Branches only: the key-line statement for the storyline"
+        },
+        "status": {
+          "type": "enum",
+          "values": [
+            "open",
+            "confirmed",
+            "refuted"
+          ],
+          "description": "Hypotheses only"
+        },
+        "analysis": {
+          "type": "string",
+          "max_len": 60,
+          "description": "Hypotheses only: the analysis that tests it"
+        }
+      }
+    },
+    "sources": {
+      "description": "Research sources used by the analyst.",
+      "prefix": "so",
+      "kind": "list",
+      "min": 0,
+      "max": 30,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "title": {
+          "type": "string",
+          "required": true,
+          "max_len": 80
+        },
+        "publisher": {
+          "type": "string",
+          "required": true,
+          "max_len": 40
+        },
+        "year": {
+          "type": "integer",
+          "required": true,
+          "min": 2000,
+          "max": 2030
+        },
+        "type": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "pilot_data",
+            "client_data",
+            "benchmark",
+            "expert_interview",
+            "industry_report",
+            "academic"
+          ]
+        },
+        "credibility": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "max_len": 200,
+          "description": "Link, if the source is public"
+        }
+      }
+    },
+    "findings": {
+      "description": "Evidence linking a source to a hypothesis.",
+      "prefix": "fi",
+      "kind": "list",
+      "min": 0,
+      "max": 60,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "source_id": {
+          "type": "ref",
+          "table": "sources",
+          "required": true
+        },
+        "hypothesis_id": {
+          "type": "ref",
+          "table": "issue_nodes",
+          "required": true,
+          "description": "Must be a hypothesis node"
+        },
+        "stance": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "supports",
+            "refutes",
+            "neutral"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "required": true,
+          "max_len": 140
+        },
+        "metric": {
+          "type": "string",
+          "max_len": 14,
+          "description": "Headline number, e.g. +14% calls"
+        },
+        "quote": {
+          "type": "string",
+          "max_len": 200,
+          "description": "Verbatim excerpt from the source, shown on hover"
+        }
+      }
+    },
+    "value_steps": {
+      "description": "Bars of the value bridge, left to right.",
+      "prefix": "vs",
+      "kind": "list",
+      "min": 3,
+      "max": 12,
+      "order_field": {
+        "field": "order",
+        "group_by": []
+      },
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "order": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 12
+        },
+        "label": {
+          "type": "string",
+          "required": true,
+          "max_len": 28,
+          "max_lines": 2,
+          "line_len": 14,
+          "description": "Category label; \\n forces a line break"
+        },
+        "kind": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "start",
+            "delta",
+            "subtotal"
+          ]
+        },
+        "value": {
+          "type": "number",
+          "min": -1000,
+          "max": 1000,
+          "decimals": 1,
+          "description": "Absolute for start, signed change for delta, empty for subtotal (derived)"
+        },
+        "hypothesis_id": {
+          "type": "ref",
+          "table": "issue_nodes",
+          "description": "Hypothesis the lever rests on"
+        },
+        "model_cell_id": {
+          "type": "ref",
+          "table": "model_cells",
+          "description": "Model cell the value comes from"
+        }
+      }
+    },
+    "value_settings": {
+      "description": "Settings for the value view. Exactly one record.",
+      "prefix": "vt",
+      "kind": "singleton",
+      "fixed_ids": [
+        "vt-01"
+      ],
+      "min": 1,
+      "max": 1,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "npv_base": {
+          "type": "number",
+          "required": true,
+          "min": -10000,
+          "max": 10000,
+          "decimals": 0,
+          "description": "Base-case NPV used by the sensitivity chart"
+        },
+        "npv_cell_id": {
+          "type": "ref",
+          "table": "model_cells",
+          "description": "Model output the NPV comes from"
+        },
+        "annotation_from_id": {
+          "type": "ref",
+          "table": "value_steps",
+          "description": "Bridge bracket start (a start or subtotal step)"
+        },
+        "annotation_to_id": {
+          "type": "ref",
+          "table": "value_steps",
+          "description": "Bridge bracket end (a later subtotal step)"
+        }
+      }
+    },
+    "sensitivity_drivers": {
+      "description": "Tornado chart inputs: output value at the downside and upside value of one input.",
+      "prefix": "sd",
+      "kind": "list",
+      "min": 3,
+      "max": 10,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "max_len": 26
+        },
+        "downside_input": {
+          "type": "string",
+          "required": true,
+          "max_len": 10,
+          "description": "Displayed input value that gives the lower output"
+        },
+        "downside_value": {
+          "type": "number",
+          "required": true,
+          "min": -10000,
+          "max": 10000,
+          "decimals": 0
+        },
+        "upside_input": {
+          "type": "string",
+          "required": true,
+          "max_len": 10
+        },
+        "upside_value": {
+          "type": "number",
+          "required": true,
+          "min": -10000,
+          "max": 10000,
+          "decimals": 0
+        }
+      }
+    },
+    "model_cells": {
+      "description": "Business-case spreadsheet. Each record is one row of a sheet: label in column B, value in column C (the ref), unit in D, formula or note in E.",
+      "prefix": "mc",
+      "kind": "list",
+      "min": 1,
+      "max": 80,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "sheet": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "Inputs",
+            "Calculations",
+            "Outputs"
+          ]
+        },
+        "ref": {
+          "type": "string",
+          "required": true,
+          "max_len": 4,
+          "pattern": "^C([4-9]|[1-5][0-9])$",
+          "description": "Value cell, C4 to C59; the row number orders the sheet"
+        },
+        "label": {
+          "type": "string",
+          "required": true,
+          "max_len": 44
+        },
+        "kind": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "input",
+            "calc",
+            "output"
+          ]
+        },
+        "value": {
+          "type": "number",
+          "required": true,
+          "min": -1000000000.0,
+          "max": 1000000000.0,
+          "decimals": 4
+        },
+        "decimals": {
+          "type": "integer",
+          "required": true,
+          "min": 0,
+          "max": 3,
+          "description": "Display precision"
+        },
+        "unit": {
+          "type": "string",
+          "max_len": 8
+        },
+        "formula": {
+          "type": "string",
+          "max_len": 120,
+          "description": "Calc and output rows only; references as Sheet!C7 or C7"
+        },
+        "note": {
+          "type": "string",
+          "max_len": 60,
+          "description": "Source or assumption"
+        }
+      }
+    },
+    "narratives": {
+      "description": "Text blocks on views: titles, eyebrows, footnotes, so-what points. Slots are defined below; fixed slots always exist.",
+      "prefix": "nv",
+      "kind": "list",
+      "min": 1,
+      "max": 40,
+      "order_field": {
+        "field": "order",
+        "group_by": [
+          "view",
+          "slot"
+        ]
+      },
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "view": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "value_estimator",
+            "presentation_builder"
+          ]
+        },
+        "slot": {
+          "type": "string",
+          "required": true,
+          "max_len": 40
+        },
+        "order": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 9
+        },
+        "text": {
+          "type": "text",
+          "required": true,
+          "max_len": 300,
+          "placeholders": "field:view",
+          "description": "Length limit per slot is set in slots"
+        },
+        "highlight": {
+          "type": "boolean",
+          "required": true
+        }
+      },
+      "slots": {
+        "value_estimator": {
+          "bridge.eyebrow": {
+            "fixed": true,
+            "max_len": 60
+          },
+          "bridge.title": {
+            "fixed": true,
+            "max_len": 110
+          },
+          "bridge.annotation": {
+            "fixed": true,
+            "max_len": 34
+          },
+          "bridge.footnote": {
+            "fixed": true,
+            "max_len": 260
+          },
+          "sensitivity.eyebrow": {
+            "fixed": true,
+            "max_len": 60
+          },
+          "sensitivity.title": {
+            "fixed": true,
+            "max_len": 100
+          },
+          "so_what.title": {
+            "fixed": true,
+            "max_len": 70
+          },
+          "so_what.point": {
+            "fixed": false,
+            "min": 1,
+            "max": 5,
+            "max_len": 220,
+            "highlight_max": 1
+          }
+        },
+        "presentation_builder": {
+          "governing_thought": {
+            "fixed": true,
+            "max_len": 220
+          }
+        }
+      }
+    },
+    "deck": {
+      "description": "The current deck. Exactly one record.",
+      "prefix": "dk",
+      "kind": "singleton",
+      "fixed_ids": [
+        "dk-01"
+      ],
+      "min": 1,
+      "max": 1,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "title": {
+          "type": "string",
+          "required": true,
+          "max_len": 80
+        },
+        "version": {
+          "type": "string",
+          "required": true,
+          "max_len": 10
+        },
+        "date": {
+          "type": "date",
+          "required": true
+        },
+        "status": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "draft",
+            "review",
+            "final"
+          ]
+        },
+        "pdf_url": {
+          "type": "string",
+          "required": true,
+          "max_len": 300,
+          "description": "Relative path or https URL of the PDF"
+        }
+      }
+    },
+    "slides": {
+      "description": "Slides of the deck, with their action titles and link to the storyline.",
+      "prefix": "sl",
+      "kind": "list",
+      "min": 1,
+      "max": 30,
+      "order_field": {
+        "field": "number",
+        "group_by": []
+      },
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "number": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 30
+        },
+        "section": {
+          "type": "string",
+          "max_len": 24
+        },
+        "title": {
+          "type": "string",
+          "required": true,
+          "max_len": 110,
+          "description": "Action title"
+        },
+        "issue_node_id": {
+          "type": "ref",
+          "table": "issue_nodes",
+          "description": "Storyline element the slide carries"
+        },
+        "status": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "draft",
+            "review",
+            "final"
+          ]
+        }
+      }
+    },
+    "proposal": {
+      "description": "Letter of proposal header. Exactly one record.",
+      "prefix": "pr",
+      "kind": "singleton",
+      "fixed_ids": [
+        "pr-01"
+      ],
+      "min": 1,
+      "max": 1,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "title": {
+          "type": "string",
+          "required": true,
+          "max_len": 80
+        },
+        "addressee_id": {
+          "type": "ref",
+          "table": "people",
+          "required": true
+        },
+        "date": {
+          "type": "date",
+          "required": true
+        },
+        "status": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "draft",
+            "review",
+            "sent"
+          ]
+        }
+      }
+    },
+    "proposal_sections": {
+      "description": "Sections of the letter of proposal. The seven keys are fixed.",
+      "prefix": "ps",
+      "kind": "fixed",
+      "fixed_keys": {
+        "field": "key",
+        "values": [
+          "context",
+          "objectives",
+          "scope",
+          "approach",
+          "team",
+          "fees",
+          "terms"
+        ]
+      },
+      "min": 7,
+      "max": 7,
+      "order_field": {
+        "field": "order",
+        "group_by": []
+      },
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "key": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "context",
+            "objectives",
+            "scope",
+            "approach",
+            "team",
+            "fees",
+            "terms"
+          ]
+        },
+        "order": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 7
+        },
+        "title": {
+          "type": "string",
+          "required": true,
+          "max_len": 40
+        },
+        "text": {
+          "type": "text",
+          "required": true,
+          "max_len": 900,
+          "placeholders": "view:proposal_builder"
+        }
+      }
+    },
+    "proposal_staffing": {
+      "description": "Consultant days proposed per team member; fees are derived from day rates.",
+      "prefix": "pf",
+      "kind": "list",
+      "min": 1,
+      "max": 12,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "person_id": {
+          "type": "ref",
+          "table": "people",
+          "required": true
+        },
+        "days": {
+          "type": "number",
+          "required": true,
+          "min": 0,
+          "max": 250,
+          "decimals": 1
+        }
+      }
+    },
+    "skills": {
+      "description": "Catalogue of skills available to agents.",
+      "prefix": "sk",
+      "kind": "list",
+      "min": 0,
+      "max": 30,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "max_len": 32
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "max_len": 100
+        }
+      }
+    },
+    "agents": {
+      "description": "Agent setups: goal, system prompt, trigger and assigned skills.",
+      "prefix": "ag",
+      "kind": "list",
+      "min": 0,
+      "max": 12,
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "max_len": 40
+        },
+        "audience": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "client",
+            "team"
+          ],
+          "description": "team = an agent for the consulting team; client = an agent built for the client"
+        },
+        "goal": {
+          "type": "string",
+          "required": true,
+          "max_len": 200
+        },
+        "system_prompt": {
+          "type": "text",
+          "required": true,
+          "max_len": 1500
+        },
+        "trigger": {
+          "type": "string",
+          "required": true,
+          "max_len": 60,
+          "description": "When the agent runs"
+        },
+        "owner_id": {
+          "type": "ref",
+          "table": "people",
+          "required": true
+        },
+        "status": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "draft",
+            "testing",
+            "live"
+          ]
+        },
+        "skill_ids": {
+          "type": "ref_list",
+          "table": "skills",
+          "max_items": 8,
+          "description": "Skills assigned to the agent"
+        }
+      }
+    },
+    "agent_lines": {
+      "description": "List blocks of an agent setup: tools (with data access), state variables and guardrails.",
+      "prefix": "al",
+      "kind": "list",
+      "min": 0,
+      "max": 150,
+      "order_field": {
+        "field": "order",
+        "group_by": [
+          "agent_id",
+          "block"
+        ]
+      },
+      "fields": {
+        "id": {
+          "type": "id"
+        },
+        "agent_id": {
+          "type": "ref",
+          "table": "agents",
+          "required": true
+        },
+        "block": {
+          "type": "enum",
+          "required": true,
+          "values": [
+            "tools",
+            "state",
+            "guardrails"
+          ]
+        },
+        "order": {
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 12
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "max_len": 64
+        },
+        "detail": {
+          "type": "string",
+          "max_len": 120
+        },
+        "access": {
+          "type": "enum",
+          "values": [
+            "read",
+            "write",
+            "read_write",
+            "action"
+          ],
+          "description": "Tools only"
+        },
+        "resource": {
+          "type": "string",
+          "max_len": 32,
+          "description": "Tools only: system or table the tool touches"
+        },
+        "type": {
+          "type": "enum",
+          "values": [
+            "text",
+            "integer",
+            "number",
+            "date",
+            "datetime",
+            "boolean",
+            "list"
+          ],
+          "description": "State only"
+        },
+        "value": {
+          "type": "string",
+          "max_len": 40,
+          "description": "State only: current value"
+        }
+      }
+    }
+  },
+  "invariants": [
+    {
+      "id": "I01",
+      "severity": "error",
+      "tables": [
+        "engagement"
+      ],
+      "rule": "engagement.start < engagement.end and start <= as_of <= end; start is a Monday"
+    },
+    {
+      "id": "I02",
+      "severity": "error",
+      "tables": [
+        "engagement",
+        "people"
+      ],
+      "rule": "partner_id and manager_id are consulting people; sponsor_id is a client person"
+    },
+    {
+      "id": "I03",
+      "severity": "error",
+      "tables": [
+        "people"
+      ],
+      "rule": "Consulting people have rate_day and capacity_days_week; client people have neither"
+    },
+    {
+      "id": "I04",
+      "severity": "error",
+      "tables": [
+        "phases",
+        "engagement"
+      ],
+      "rule": "Phases ordered 1..n do not overlap, each start <= end, the first starts on engagement.start and the last ends on engagement.end"
+    },
+    {
+      "id": "I05",
+      "severity": "error",
+      "tables": [
+        "milestones",
+        "deliverables",
+        "tasks",
+        "reviews",
+        "actions",
+        "deck",
+        "proposal"
+      ],
+      "rule": "Every date field lies within [engagement.start, engagement.end]"
+    },
+    {
+      "id": "I06",
+      "severity": "error",
+      "tables": [
+        "milestones",
+        "phases"
+      ],
+      "rule": "A milestone date lies within its phase"
+    },
+    {
+      "id": "I07",
+      "severity": "error",
+      "tables": [
+        "milestones"
+      ],
+      "rule": "status done or missed requires date <= as_of"
+    },
+    {
+      "id": "I08",
+      "severity": "error",
+      "tables": [
+        "deliverables"
+      ],
+      "rule": "Owner is consulting; due lies within the phase; if milestone_id is set the milestone is in the same phase and due <= milestone date; status late requires due < as_of"
+    },
+    {
+      "id": "I09",
+      "severity": "error",
+      "tables": [
+        "tasks"
+      ],
+      "rule": "Owner is consulting; start <= end; start and end lie within the phase; deliverable (if set) is in the same phase"
+    },
+    {
+      "id": "I10",
+      "severity": "error",
+      "tables": [
+        "tasks"
+      ],
+      "rule": "Status vs as_of and progress: done requires progress 100 and end <= as_of; not_started requires progress 0 and start > as_of; in_progress, at_risk and late require start <= as_of and progress < 100; late requires end < as_of"
+    },
+    {
+      "id": "I11",
+      "severity": "error",
+      "tables": [
+        "tasks"
+      ],
+      "rule": "depends_on contains no self-reference and the dependency graph has no cycles"
+    },
+    {
+      "id": "I12",
+      "severity": "error",
+      "tables": [
+        "raci",
+        "deliverables"
+      ],
+      "rule": "One role per (deliverable, person); every deliverable has exactly one A and at least one R; the deliverable owner holds R or A"
+    },
+    {
+      "id": "I13",
+      "severity": "error",
+      "tables": [
+        "time_entries",
+        "people",
+        "engagement"
+      ],
+      "rule": "Exactly one record per consulting person per engagement week (complete grid); week <= number of engagement weeks; actual_days present for weeks before the as-of week and empty from the as-of week on"
+    },
+    {
+      "id": "I14",
+      "severity": "error",
+      "tables": [
+        "reviews"
+      ],
+      "rule": "Per deliverable, cycles run 1..n in date order; review dates are <= as_of"
+    },
+    {
+      "id": "I15",
+      "severity": "error",
+      "tables": [
+        "issue_nodes"
+      ],
+      "rule": "Exactly one question (no parent); branches have the question as parent (2-5 branches); hypotheses have a branch as parent (1-5 per branch); answer is required on branches and absent elsewhere; status and analysis are required on hypotheses and absent elsewhere"
+    },
+    {
+      "id": "I16",
+      "severity": "error",
+      "tables": [
+        "findings",
+        "value_steps",
+        "issue_nodes"
+      ],
+      "rule": "findings.hypothesis_id and value_steps.hypothesis_id point to hypothesis nodes"
+    },
+    {
+      "id": "I17",
+      "severity": "error",
+      "tables": [
+        "value_steps"
+      ],
+      "rule": "Bridge shape: the first step is the only start; the last step is a subtotal; start and delta steps have a value, subtotals do not; deltas are non-zero; the running level stays >= 0"
+    },
+    {
+      "id": "I18",
+      "severity": "error",
+      "tables": [
+        "value_settings",
+        "value_steps"
+      ],
+      "rule": "Annotation (if set): both ends set, from is a start or subtotal, to is a later subtotal"
+    },
+    {
+      "id": "I19",
+      "severity": "error",
+      "tables": [
+        "sensitivity_drivers",
+        "value_settings"
+      ],
+      "rule": "downside_value <= npv_base <= upside_value and downside_value < upside_value"
+    },
+    {
+      "id": "I20",
+      "severity": "error",
+      "tables": [
+        "model_cells"
+      ],
+      "rule": "ref unique per sheet; calc and output rows have a formula, input rows do not; every reference in a formula resolves to an existing cell"
+    },
+    {
+      "id": "I21",
+      "severity": "error",
+      "tables": [
+        "narratives"
+      ],
+      "rule": "Slot rules: slot exists for the view; fixed slots present exactly once; group slots within min..max; highlight only where highlight_max allows and within it; text within the slot's max_len"
+    },
+    {
+      "id": "I22",
+      "severity": "error",
+      "tables": [
+        "narratives",
+        "issue_nodes",
+        "proposal_sections"
+      ],
+      "rule": "Placeholders {name} must be declared by the view; for length checks each placeholder counts as its declared width"
+    },
+    {
+      "id": "I23",
+      "severity": "error",
+      "tables": [
+        "slides"
+      ],
+      "rule": "Slide numbers run 1..n without gaps or duplicates"
+    },
+    {
+      "id": "I24",
+      "severity": "error",
+      "tables": [
+        "agent_lines"
+      ],
+      "rule": "Tools lines have access and resource and no type or value; state lines have type (value optional) and no access or resource; guardrail lines have none of access, resource, type or value"
+    },
+    {
+      "id": "I25",
+      "severity": "error",
+      "tables": [
+        "proposal_sections",
+        "proposal_staffing",
+        "proposal"
+      ],
+      "rule": "Each section key exists exactly once; staffing persons are consulting and unique; addressee is a client person"
+    },
+    {
+      "id": "I26",
+      "severity": "error",
+      "tables": [
+        "*"
+      ],
+      "rule": "Record ids are unique, match the table prefix, and fixed ids and keys are present; table cardinality within min..max; ordered fields form 1..n per group"
+    },
+    {
+      "id": "I27",
+      "severity": "error",
+      "tables": [
+        "phase_raci",
+        "phases",
+        "people"
+      ],
+      "rule": "One role per (phase, person); every phase that has phase RACI rows has exactly one A and at least one R"
+    },
+    {
+      "id": "W01",
+      "severity": "warning",
+      "tables": [
+        "value_steps",
+        "model_cells"
+      ],
+      "rule": "A start or delta step linked to a model cell has the cell's value (rounded to 1 decimal); a linked subtotal's derived level equals the cell value within 0.5"
+    },
+    {
+      "id": "W02",
+      "severity": "warning",
+      "tables": [
+        "value_settings",
+        "model_cells"
+      ],
+      "rule": "npv_base equals the linked model output (rounded)"
+    },
+    {
+      "id": "W03",
+      "severity": "warning",
+      "tables": [
+        "narratives"
+      ],
+      "rule": "Narrative text quotes a literal money figure (e.g. €51m); prefer a placeholder so the text cannot go stale"
+    },
+    {
+      "id": "W04",
+      "severity": "warning",
+      "tables": [
+        "tasks",
+        "milestones",
+        "deliverables"
+      ],
+      "rule": "A task ends after its deliverable's due date, or a deliverable is due after its milestone, or a dependency ends after the dependent task starts"
+    }
+  ],
+  "placeholder_formats": {
+    "money_m": "Currency symbol + whole millions, e.g. €51m; negative values get −. Width 8",
+    "money_k": "Currency symbol + whole thousands, e.g. €894k. Width 10",
+    "number": "Plain number. Width 8",
+    "integer": "Whole number. Width 4",
+    "text": "Text from data. Width as declared"
+  },
+  "views": {
+    "home": {
+      "label": "Engagement home",
+      "file": "index.html",
+      "audience": "team",
+      "agent": null,
+      "description": "Time plan by phase and RACI by phase",
+      "reads": [
+        "engagement",
+        "people",
+        "phases",
+        "milestones",
+        "phase_raci"
+      ],
+      "placeholders": {}
+    },
+    "engagement_starter": {
+      "label": "Engagement starter",
+      "file": "views/engagement-starter.html",
+      "audience": "team",
+      "agent": "engagement_starter",
+      "description": "RACI matrix by deliverable and phase plan with milestones",
+      "reads": [
+        "engagement",
+        "people",
+        "phases",
+        "milestones",
+        "deliverables",
+        "raci"
+      ],
+      "placeholders": {}
+    },
+    "analyst": {
+      "label": "Analyst",
+      "file": "views/analyst.html",
+      "audience": "team",
+      "agent": "analyst",
+      "description": "Evidence and sources by hypothesis, and the source list",
+      "reads": [
+        "engagement",
+        "issue_nodes",
+        "sources",
+        "findings"
+      ],
+      "placeholders": {}
+    },
+    "value_estimator": {
+      "label": "Value estimator",
+      "file": "views/value-estimator.html",
+      "audience": "client",
+      "agent": "value_estimator",
+      "description": "Value bridge, NPV sensitivity and so what",
+      "reads": [
+        "engagement",
+        "value_steps",
+        "value_settings",
+        "sensitivity_drivers",
+        "narratives"
+      ],
+      "placeholders": {
+        "bridge.start": {
+          "format": "money_m",
+          "width": 8,
+          "description": "Value of the start step"
+        },
+        "bridge.momentum": {
+          "format": "money_m",
+          "width": 8,
+          "description": "Level at the first subtotal"
+        },
+        "bridge.target": {
+          "format": "money_m",
+          "width": 8,
+          "description": "Level at the last subtotal"
+        },
+        "bridge.net_impact": {
+          "format": "money_m",
+          "width": 8,
+          "description": "Annotation 'to' level minus 'from' level"
+        },
+        "sensitivity.base": {
+          "format": "money_m",
+          "width": 8,
+          "description": "npv_base"
+        },
+        "sensitivity.top_driver": {
+          "format": "text",
+          "width": 26,
+          "description": "Driver with the largest swing"
+        },
+        "sensitivity.top_downside": {
+          "format": "money_m",
+          "width": 8,
+          "description": "Downside value of that driver"
+        }
+      }
+    },
+    "presentation_builder": {
+      "label": "Presentation builder",
+      "file": "views/presentation-builder.html",
+      "audience": "client",
+      "agent": "presentation_builder",
+      "description": "Deck PDF and the storyline it carries",
+      "reads": [
+        "engagement",
+        "deck",
+        "slides",
+        "issue_nodes",
+        "narratives",
+        "value_steps",
+        "value_settings"
+      ],
+      "placeholders": {
+        "value.net_impact": {
+          "format": "money_m",
+          "width": 8,
+          "description": "Net impact from the value bridge annotation"
+        },
+        "value.target": {
+          "format": "money_m",
+          "width": 8,
+          "description": "Last subtotal of the value bridge"
+        },
+        "hypotheses.confirmed": {
+          "format": "integer",
+          "width": 4,
+          "description": "Number of confirmed hypotheses"
+        },
+        "hypotheses.total": {
+          "format": "integer",
+          "width": 4,
+          "description": "Number of hypotheses"
+        }
+      }
+    },
+    "project_manager": {
+      "label": "Project manager",
+      "file": "views/project-manager.html",
+      "audience": "team",
+      "agent": "project_manager",
+      "description": "Gantt chart and recommended actions",
+      "reads": [
+        "engagement",
+        "people",
+        "phases",
+        "milestones",
+        "deliverables",
+        "tasks",
+        "actions"
+      ],
+      "placeholders": {}
+    },
+    "team_manager": {
+      "label": "Team manager",
+      "file": "views/team-manager.html",
+      "audience": "team",
+      "agent": "team_manager",
+      "description": "Capacity heatmap and delivery scorecard",
+      "reads": [
+        "engagement",
+        "people",
+        "deliverables",
+        "tasks",
+        "time_entries",
+        "reviews",
+        "actions"
+      ],
+      "placeholders": {}
+    },
+    "story_builder": {
+      "label": "Story builder",
+      "file": "views/story-builder.html",
+      "audience": "team",
+      "agent": "story_builder",
+      "description": "Issue tree with evidence on hover",
+      "reads": [
+        "engagement",
+        "issue_nodes",
+        "findings",
+        "sources",
+        "value_steps"
+      ],
+      "placeholders": {}
+    },
+    "agent_builder": {
+      "label": "Agent builder",
+      "file": "views/agent-builder.html",
+      "audience": "team",
+      "agent": "agent_builder",
+      "description": "Agent setup: goal, prompt, tools, state, skills, trigger and guardrails",
+      "reads": [
+        "engagement",
+        "people",
+        "agents",
+        "agent_lines",
+        "skills"
+      ],
+      "placeholders": {}
+    },
+    "proposal_builder": {
+      "label": "Proposal builder",
+      "file": "views/proposal-builder.html",
+      "audience": "client",
+      "agent": "proposal_builder",
+      "description": "Letter of proposal with derived fee table",
+      "reads": [
+        "engagement",
+        "people",
+        "proposal",
+        "proposal_sections",
+        "proposal_staffing"
+      ],
+      "placeholders": {
+        "fees.total": {
+          "format": "money_k",
+          "width": 10,
+          "description": "Sum of days x day rate, e.g. €894k"
+        },
+        "fees.days": {
+          "format": "number",
+          "width": 6,
+          "description": "Total proposed days"
+        },
+        "client.name": {
+          "format": "text",
+          "width": 40,
+          "description": "engagement.client"
+        }
+      }
+    },
+    "model_builder": {
+      "label": "Model builder",
+      "file": "views/model-builder.html",
+      "audience": "team",
+      "agent": "model_builder",
+      "description": "Business-case spreadsheet and its links to the value bridge",
+      "reads": [
+        "engagement",
+        "model_cells",
+        "value_steps",
+        "value_settings"
+      ],
+      "placeholders": {}
+    }
+  },
+  "agents": {
+    "engagement_starter": {
+      "label": "Engagement starter",
+      "writes": {
+        "engagement": {
+          "update": [
+            "name",
+            "objective"
+          ]
+        },
+        "people": {
+          "create": true,
+          "update": [
+            "name",
+            "title",
+            "rate_day",
+            "capacity_days_week"
+          ]
+        },
+        "milestones": {
+          "create": true,
+          "delete": true,
+          "update": [
+            "name",
+            "date",
+            "type",
+            "phase_id"
+          ]
+        },
+        "deliverables": {
+          "create": true,
+          "delete": true,
+          "update": [
+            "name",
+            "owner_id",
+            "due",
+            "milestone_id",
+            "phase_id"
+          ]
+        },
+        "raci": {
+          "create": true,
+          "delete": true,
+          "update": [
+            "role"
+          ]
+        },
+        "phase_raci": {
+          "create": true,
+          "delete": true,
+          "update": [
+            "role",
+            "comment"
+          ]
+        }
+      }
+    },
+    "analyst": {
+      "label": "Analyst",
+      "writes": {
+        "sources": {
+          "create": true,
+          "delete": true,
+          "update": "*"
+        },
+        "findings": {
+          "create": true,
+          "delete": true,
+          "update": "*"
+        },
+        "issue_nodes": {
+          "update": [
+            "status"
+          ]
+        }
+      }
+    },
+    "value_estimator": {
+      "label": "Value estimator",
+      "writes": {
+        "value_steps": {
+          "create": true,
+          "delete": true,
+          "update": [
+            "order",
+            "label",
+            "kind",
+            "value",
+            "hypothesis_id",
+            "model_cell_id"
+          ]
+        },
+        "value_settings": {
+          "update": [
+            "npv_base",
+            "annotation_from_id",
+            "annotation_to_id"
+          ]
+        },
+        "sensitivity_drivers": {
+          "create": true,
+          "delete": true,
+          "update": "*"
+        },
+        "narratives": {
+          "create": true,
+          "delete": true,
+          "update": [
+            "text",
+            "order",
+            "highlight"
+          ],
+          "row_filter": {
+            "view": "value_estimator"
+          }
+        }
+      }
+    },
+    "presentation_builder": {
+      "label": "Presentation builder",
+      "writes": {
+        "deck": {
+          "update": [
+            "title",
+            "version",
+            "date",
+            "status",
+            "pdf_url"
+          ]
+        },
+        "slides": {
+          "create": true,
+          "delete": true,
+          "update": "*"
+        }
+      }
+    },
+    "project_manager": {
+      "label": "Project manager",
+      "writes": {
+        "tasks": {
+          "create": true,
+          "update": [
+            "start",
+            "end",
+            "status",
+            "progress_pct",
+            "owner_id",
+            "depends_on"
+          ]
+        },
+        "milestones": {
+          "update": [
+            "status",
+            "date"
+          ]
+        },
+        "deliverables": {
+          "update": [
+            "status",
+            "due"
+          ]
+        },
+        "actions": {
+          "create": true,
+          "delete": true,
+          "update": "*",
+          "row_filter": {
+            "source": "project_manager"
+          }
+        }
+      }
+    },
+    "team_manager": {
+      "label": "Team manager",
+      "writes": {
+        "time_entries": {
+          "update": [
+            "planned_days"
+          ]
+        },
+        "actions": {
+          "create": true,
+          "delete": true,
+          "update": "*",
+          "row_filter": {
+            "source": "team_manager"
+          }
+        }
+      }
+    },
+    "story_builder": {
+      "label": "Story builder",
+      "writes": {
+        "issue_nodes": {
+          "create": true,
+          "delete": true,
+          "update": [
+            "parent_id",
+            "kind",
+            "order",
+            "text",
+            "answer",
+            "analysis"
+          ]
+        },
+        "slides": {
+          "update": [
+            "title",
+            "issue_node_id"
+          ]
+        },
+        "narratives": {
+          "update": [
+            "text"
+          ],
+          "row_filter": {
+            "view": "presentation_builder"
+          }
+        }
+      }
+    },
+    "agent_builder": {
+      "label": "Agent builder",
+      "writes": {
+        "agents": {
+          "create": true,
+          "update": "*"
+        },
+        "agent_lines": {
+          "create": true,
+          "delete": true,
+          "update": "*"
+        },
+        "skills": {
+          "create": true,
+          "update": [
+            "name",
+            "description"
+          ]
+        }
+      }
+    },
+    "proposal_builder": {
+      "label": "Proposal builder",
+      "writes": {
+        "proposal": {
+          "update": [
+            "title",
+            "addressee_id",
+            "date",
+            "status"
+          ]
+        },
+        "proposal_sections": {
+          "update": [
+            "title",
+            "text",
+            "order"
+          ]
+        },
+        "proposal_staffing": {
+          "create": true,
+          "delete": true,
+          "update": [
+            "days"
+          ]
+        }
+      }
+    },
+    "model_builder": {
+      "label": "Model builder",
+      "writes": {
+        "model_cells": {
+          "create": true,
+          "delete": true,
+          "update": [
+            "label",
+            "kind",
+            "value",
+            "decimals",
+            "unit",
+            "formula",
+            "note"
+          ]
+        }
+      }
+    }
+  }
+}

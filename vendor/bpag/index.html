@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Big Pharma AG engagement</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+  .tp svg { display: block; width: 100%; min-width: 760px; height: auto; }
+  .tp text { font-family: var(--sans); fill: var(--fg); }
+  .tp .mo { font-size: 12px; fill: var(--muted); font-weight: 500; }
+  .tp .wk { font-size: 10.5px; fill: var(--faint); font-family: var(--mono); }
+  .tp .ph { font-size: 14px; font-weight: 600; }
+  .tp .phd { font-size: 12px; fill: var(--muted); }
+  .tp .ms { font-size: 12px; }
+  .tp .msd { font-size: 11px; fill: var(--muted); }
+  .tp .today { font-size: 11.5px; font-weight: 600; fill: var(--brand-ink); }
+  table.pr { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 820px; font-size: 13px; table-layout: fixed; }
+  .pr th, .pr td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+  .pr thead th { font-size: 12px; font-weight: 600; color: var(--fg); border-bottom: 1px solid var(--line-strong); }
+  .pr thead th small { display: block; font-weight: 400; color: var(--muted); font-size: 11.5px; }
+  .pr th.who { font-weight: 500; width: 210px; }
+  .pr th.who small { display: block; color: var(--muted); font-weight: 400; font-size: 11.5px; }
+  .pr tr.org th { background: var(--surface-2); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; padding: 5px 10px; }
+  .cellc { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 8px; align-items: start; }
+  .cellc p { margin: 0; font-size: 12.5px; line-height: 1.4; color: var(--fg); }
+  .role { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; font-family: var(--mono); font-weight: 600; font-size: 12.5px; }
+  .r-A { background: var(--brand); color: #FFFFFF; }
+  .r-R { border: 1.5px solid var(--brand); color: var(--brand-ink); }
+  .r-C { background: var(--c-plan); color: var(--fg); }
+  .r-I { color: var(--muted); border: 1px dashed var(--line-strong); }
+  .legend .role { width: 20px; height: 20px; font-size: 11px; }
+  .empty { color: var(--faint); }
+</style>
+</head>
+<body>
+<header id="cp-header"></header>
+<div class="cp-layout">
+  <nav id="cp-rail"></nav>
+  <main id="cp-main" class="cp-main">
+    <div id="cp-notices"></div>
+    <div class="cp-view-head"><h1>Engagement home</h1></div>
+    <div class="stack" id="home"></div>
+  </main>
+</div>
+<script src="assets/runtime.js"></script>
+<script>
+CP.boot({
+  view: 'home',
+  base: '',
+  render: function (ctx) {
+    var el = ctx.el, svg = ctx.svg, en = ctx.en, f = ctx.fmt, cal = ctx.cal;
+    var root = document.getElementById('home');
+    root.innerHTML = '';
+    var phases = ctx.data.phases.slice().sort(function (a, b) { return a.order - b.order; });
+
+    /* ---------- 1. Time plan: one row per phase ---------- */
+    var W = 1100, LBL = 220, X0 = LBL + 10, X1 = W - 20, TOP = 66;
+    var total = cal.days(en.start, en.end) + 1;
+    var x = function (d, plusDay) { return X0 + (cal.days(en.start, d) + (plusDay ? 1 : 0)) / total * (X1 - X0); };
+    var rows = phases.map(function (p) {
+      var ms = ctx.data.milestones.filter(function (m) { return m.phase_id === p.id; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+      return { p: p, ms: ms, h: ms.length > 1 ? 104 : 84 };
+    });
+    var H = TOP + rows.reduce(function (a, r) { return a + r.h; }, 0) + 10;
+    var s = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img' });
+    var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    var d0 = CP.date(en.start), d1 = CP.date(en.end);
+    for (var m = new Date(Date.UTC(d0.getUTCFullYear(), d0.getUTCMonth(), 1)); m <= d1; m = new Date(Date.UTC(m.getUTCFullYear(), m.getUTCMonth() + 1, 1))) {
+      var iso = m.toISOString().slice(0, 10), mx = iso < en.start ? X0 : x(iso);
+      var near = mx > X1 - 80;
+      s.appendChild(svg('text', { x: near ? X1 : mx + 4, y: 16, 'text-anchor': near ? 'end' : 'start', 'class': 'mo' }, MONTHS[m.getUTCMonth()]));
+      if (iso >= en.start) s.appendChild(svg('line', { x1: mx, x2: mx, y1: 4, y2: H - 6, stroke: 'var(--line-strong)', 'stroke-width': 1 }));
+    }
+    for (var w = 1; w <= cal.totalWeeks; w++) {
+      var wx = x(cal.weekStart(w));
+      s.appendChild(svg('text', { x: wx + 3, y: 36, 'class': 'wk' }, 'W' + w));
+      s.appendChild(svg('line', { x1: wx, x2: wx, y1: 42, y2: H - 6, stroke: 'var(--line)', 'stroke-width': 1 }));
+    }
+    var colors = { done: 'var(--ok)', planned: 'var(--surface)', at_risk: 'var(--warn)', missed: 'var(--bad)' };
+    var y = TOP;
+    rows.forEach(function (r, ri) {
+      var p = r.p, past = p.end < en.as_of, now = p.start <= en.as_of && en.as_of <= p.end;
+      if (ri % 2 === 0) s.appendChild(svg('rect', { x: 0, y: y, width: W, height: r.h, fill: 'var(--surface-2)' }));
+      var g = svg('g', {});
+      g.appendChild(svg('text', { x: 8, y: y + 26, 'class': 'ph' }, p.name));
+      g.appendChild(svg('text', { x: 8, y: y + 44, 'class': 'phd' }, f.date(p.start) + ' – ' + f.date(p.end) + ' · W' + cal.week(p.start) + '–W' + cal.week(p.end)));
+      var bx0 = x(p.start), bx1 = x(p.end, true), by = y + 14;
+      g.appendChild(svg('rect', { x: bx0 + 1, y: by, width: Math.max(2, bx1 - bx0 - 2), height: 24, rx: 4, fill: past ? 'var(--c-total)' : now ? 'var(--brand-tint)' : 'var(--c-plan)', stroke: now ? 'var(--brand)' : 'none' }));
+      if (now) g.appendChild(svg('rect', { x: bx0 + 1, y: by, width: Math.max(2, x(en.as_of, true) - bx0), height: 24, rx: 4, fill: 'var(--brand)', opacity: 0.85 }));
+      r.ms.forEach(function (ms, i) {
+        var cx = x(ms.date, true), row = i % 2;
+        var anchor = cx > X1 - 140 ? 'end' : 'start';
+        var tx = anchor === 'end' ? cx - 2 : cx - 2;
+        g.appendChild(svg('line', { x1: cx, x2: cx, y1: by + 24, y2: by + 34 + row * 30, stroke: 'var(--line-strong)' }));
+        g.appendChild(svg('rect', { x: cx - 6, y: by + 6, width: 12, height: 12, transform: 'rotate(45 ' + cx + ' ' + (by + 12) + ')', fill: colors[ms.status] || 'var(--surface)', stroke: 'var(--fg)', 'stroke-width': 1.2 }));
+        g.appendChild(svg('text', { x: tx, y: by + 46 + row * 30, 'text-anchor': anchor, 'class': 'ms' }, ms.name));
+        g.appendChild(svg('text', { x: tx, y: by + 60 + row * 30, 'text-anchor': anchor, 'class': 'msd' }, f.date(ms.date) + ' · ' + ms.status.replace('_', ' ')));
+        var note = ctx.changedNote(ms);
+        if (note) { g.appendChild(svg('circle', { cx: cx + 11, cy: by + 4, r: 3.5, fill: 'var(--brand)' })); g.appendChild(svg('title', {}, note)); }
+      });
+      if (ctx.isFresh(p) || r.ms.some(ctx.isFresh)) g.setAttribute('class', 'pulse');
+      s.appendChild(g);
+      y += r.h;
+    });
+    var tx2 = x(en.as_of, true);
+    s.appendChild(svg('line', { x1: tx2, x2: tx2, y1: TOP - 18, y2: H - 6, stroke: 'var(--brand-ink)', 'stroke-width': 2 }));
+    s.appendChild(svg('text', { x: tx2 + 5, y: TOP - 6, 'class': 'today' }, 'Today ' + f.date(en.as_of)));
+    s.setAttribute('aria-label', 'Time plan as of ' + f.dateLong(en.as_of) + '. ' + rows.map(function (r) {
+      return r.p.name + ' ' + f.date(r.p.start) + ' to ' + f.date(r.p.end) + (r.ms.length ? ', milestones: ' + r.ms.map(function (m) { return m.name + ' ' + f.date(m.date) + ' ' + m.status.replace('_', ' '); }).join(', ') : '');
+    }).join('; ') + '.');
+    root.appendChild(el('section', { 'class': 'block tp', 'aria-labelledby': 'tp-title' }, [
+      el('div', { 'class': 'eyebrow', text: 'Time plan · ' + cal.totalWeeks + ' weeks · ' + f.date(en.start) + ' – ' + f.dateLong(en.end) }),
+      el('h2', { id: 'tp-title', text: en.name }),
+      el('div', { 'class': 'legend', 'aria-hidden': 'true' }, [
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--c-total)' }), 'Completed']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--brand)' }), 'Current phase to date']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--c-plan)' }), 'Planned']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--ok)' }), 'Milestone done']),
+        el('span', null, [el('i', { 'class': 'sw', style: 'background: var(--warn)' }), 'Milestone at risk'])
+      ]),
+      el('div', { 'class': 'scroll-x' }, [s])
+    ]));
+
+    /* ---------- 2. RACI by phase: people x phases ---------- */
+    var cell = {};
+    ctx.data.phase_raci.forEach(function (r) { cell[r.phase_id + '|' + r.person_id] = r; });
+    var head = el('tr', null, [el('th', { scope: 'col', 'class': 'who', text: '' })]);
+    phases.forEach(function (p) { head.appendChild(el('th', { scope: 'col' }, [p.name, el('small', { text: f.date(p.start) + ' – ' + f.date(p.end) })])); });
+    var tb = el('tbody');
+    [['consulting', 'Consulting team'], ['client', en.client]].forEach(function (o) {
+      var ppl = ctx.data.people.filter(function (p) { return p.org === o[0]; });
+      if (!ppl.length) return;
+      tb.appendChild(el('tr', { 'class': 'org' }, [el('th', { scope: 'rowgroup', colspan: String(phases.length + 1), text: o[1] })]));
+      ppl.forEach(function (p) {
+        var th = el('th', { scope: 'row', 'class': 'who' }, [p.name, el('small', { text: p.title })]);
+        var tr = el('tr', null, [th]);
+        phases.forEach(function (ph) {
+          var r = cell[ph.id + '|' + p.id];
+          var td = el('td');
+          if (r) {
+            var txt = el('p', { text: r.comment });
+            td.appendChild(el('div', { 'class': 'cellc' }, [el('span', { 'class': 'role r-' + r.role, text: r.role, title: { R: 'Responsible', A: 'Accountable', C: 'Consulted', I: 'Informed' }[r.role] }), txt]));
+            ctx.mark(txt, r);
+            if (ctx.isFresh(r)) td.classList.add('flash');
+          } else td.appendChild(el('span', { 'class': 'empty', text: '—' }));
+          tr.appendChild(td);
+        });
+        tb.appendChild(tr);
+      });
+    });
+    var accountable = phases.map(function (ph) { var a = ctx.data.phase_raci.filter(function (r) { return r.phase_id === ph.id && r.role === 'A'; })[0]; return a ? ph.name + ': ' + ctx.name(a.person_id) : null; }).filter(Boolean);
+    root.appendChild(el('section', { 'class': 'block', 'aria-labelledby': 'pr-title' }, [
+      el('div', { 'class': 'eyebrow', text: 'RACI by phase · ' + ctx.data.people.length + ' people · ' + phases.length + ' phases' }),
+      el('h2', { id: 'pr-title', text: 'Accountable: ' + accountable.join(' · ') }),
+      el('div', { 'class': 'legend', 'aria-hidden': 'true' }, [
+        el('span', null, [el('span', { 'class': 'role r-R', text: 'R' }), 'Responsible']),
+        el('span', null, [el('span', { 'class': 'role r-A', text: 'A' }), 'Accountable (one per phase)']),
+        el('span', null, [el('span', { 'class': 'role r-C', text: 'C' }), 'Consulted']),
+        el('span', null, [el('span', { 'class': 'role r-I', text: 'I' }), 'Informed'])
+      ]),
+      el('div', { 'class': 'scroll-x' }, [el('table', { 'class': 'pr' }, [el('caption', { 'class': 'sr-only', text: 'RACI by phase and person' }), el('thead', null, [head]), tb])])
+    ]));
+  }
+});
+</script>
+</body>
+</html>

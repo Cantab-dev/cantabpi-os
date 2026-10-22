@@ -1,0 +1,14 @@
+{
+  "agent": "proposal_builder",
+  "reason": "Data remediation in two markets needs more data-science time",
+  "ops": [
+    {
+      "op": "update",
+      "table": "proposal_staffing",
+      "id": "pf-05",
+      "set": {
+        "days": 60
+      }
+    }
+  ]
+}

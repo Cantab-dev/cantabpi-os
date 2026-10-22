@@ -1,0 +1,15 @@
+[
+  {
+    "id": "pr-01",
+    "title": "Wave 1 rollout of field-sales AI agents: Germany and Italy",
+    "addressee_id": "pe-07",
+    "date": "2026-11-27",
+    "status": "draft",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

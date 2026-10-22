@@ -1,0 +1,16 @@
+{
+  "agent": "project_manager",
+  "reason": "CRM extract received for 7 of 9 markets; remaining two by 23 Oct",
+  "ops": [
+    {
+      "op": "update",
+      "table": "tasks",
+      "id": "tk-08",
+      "set": {
+        "status": "in_progress",
+        "progress_pct": 85,
+        "end": "2026-10-23"
+      }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "agent": "agent_builder",
+  "reason": "Interview agent passed review on seven interviews",
+  "ops": [
+    {
+      "op": "update",
+      "table": "agents",
+      "id": "ag-04",
+      "set": {
+        "status": "live"
+      }
+    },
+    {
+      "op": "create",
+      "table": "agent_lines",
+      "record": {
+        "agent_id": "ag-04",
+        "block": "tools",
+        "order": 2.5,
+        "name": "Expert network transcripts",
+        "detail": "Transcripts of paid expert calls",
+        "access": "read",
+        "resource": "Expert network"
+      }
+    }
+  ]
+}

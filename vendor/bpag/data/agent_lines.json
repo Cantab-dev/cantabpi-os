@@ -1,0 +1,698 @@
+[
+  {
+    "id": "al-001",
+    "agent_id": "ag-01",
+    "block": "tools",
+    "order": 1,
+    "name": "Route plan and call history",
+    "detail": "Last three interactions per HCP",
+    "access": "read",
+    "resource": "CRM",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-002",
+    "agent_id": "ag-01",
+    "block": "tools",
+    "order": 2,
+    "name": "Approved content library",
+    "detail": "Approved items with claims metadata",
+    "access": "read",
+    "resource": "Content library",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-003",
+    "agent_id": "ag-01",
+    "block": "tools",
+    "order": 3,
+    "name": "Medical information requests",
+    "detail": "Open requests per HCP",
+    "access": "read",
+    "resource": "MI system",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-004",
+    "agent_id": "ag-01",
+    "block": "tools",
+    "order": 4,
+    "name": "Call-prep note",
+    "detail": "One note per HCP, before 07:00",
+    "access": "write",
+    "resource": "CRM",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-005",
+    "agent_id": "ag-01",
+    "block": "state",
+    "order": 1,
+    "name": "last_run",
+    "detail": "Start of the latest run",
+    "type": "datetime",
+    "value": "2026-10-21 06:00",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-006",
+    "agent_id": "ag-01",
+    "block": "state",
+    "order": 2,
+    "name": "reps_in_scope",
+    "detail": "Reps receiving briefs",
+    "type": "integer",
+    "value": "40",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-007",
+    "agent_id": "ag-01",
+    "block": "state",
+    "order": 3,
+    "name": "wave",
+    "detail": "Rollout wave",
+    "type": "text",
+    "value": "Pilot: 2 regions",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-008",
+    "agent_id": "ag-01",
+    "block": "guardrails",
+    "order": 1,
+    "name": "Never mention off-label use",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-009",
+    "agent_id": "ag-01",
+    "block": "guardrails",
+    "order": 2,
+    "name": "No competitor product names",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-010",
+    "agent_id": "ag-01",
+    "block": "guardrails",
+    "order": 3,
+    "name": "Clinical statements quote approved content verbatim",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-011",
+    "agent_id": "ag-01",
+    "block": "guardrails",
+    "order": 4,
+    "name": "Weekly human review of a 5% sample of outputs",
+    "detail": "Compliance lead reviews and signs off",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-012",
+    "agent_id": "ag-02",
+    "block": "tools",
+    "order": 1,
+    "name": "tasks",
+    "detail": "Dates, status, progress, owner",
+    "access": "read_write",
+    "resource": "Engagement data",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-013",
+    "agent_id": "ag-02",
+    "block": "tools",
+    "order": 2,
+    "name": "milestones",
+    "detail": "Status and date",
+    "access": "read_write",
+    "resource": "Engagement data",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-014",
+    "agent_id": "ag-02",
+    "block": "tools",
+    "order": 3,
+    "name": "deliverables",
+    "detail": "Status and due date",
+    "access": "read_write",
+    "resource": "Engagement data",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-015",
+    "agent_id": "ag-02",
+    "block": "tools",
+    "order": 4,
+    "name": "actions",
+    "detail": "Only actions it raised",
+    "access": "read_write",
+    "resource": "Engagement data",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-016",
+    "agent_id": "ag-02",
+    "block": "tools",
+    "order": 5,
+    "name": "people and phases",
+    "detail": "Context for owners and dates",
+    "access": "read",
+    "resource": "Engagement data",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-017",
+    "agent_id": "ag-02",
+    "block": "state",
+    "order": 1,
+    "name": "as_of",
+    "detail": "Date the plan is judged against",
+    "type": "date",
+    "value": "2026-10-21",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-018",
+    "agent_id": "ag-02",
+    "block": "state",
+    "order": 2,
+    "name": "open_actions",
+    "detail": "Actions it raised that are still open",
+    "type": "integer",
+    "value": "3",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-019",
+    "agent_id": "ag-02",
+    "block": "state",
+    "order": 3,
+    "name": "last_review",
+    "detail": "Latest full plan review",
+    "type": "datetime",
+    "value": "2026-10-21 08:00",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-020",
+    "agent_id": "ag-02",
+    "block": "guardrails",
+    "order": 1,
+    "name": "Never mark work done without the owner's confirmation",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-021",
+    "agent_id": "ag-02",
+    "block": "guardrails",
+    "order": 2,
+    "name": "Escalations go to the engagement manager, not to the client",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-022",
+    "agent_id": "ag-02",
+    "block": "guardrails",
+    "order": 3,
+    "name": "At most five open actions at a time",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-023",
+    "agent_id": "ag-03",
+    "block": "tools",
+    "order": 1,
+    "name": "value_steps",
+    "detail": "Bridge bars and links to the model",
+    "access": "read_write",
+    "resource": "Engagement data",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-024",
+    "agent_id": "ag-03",
+    "block": "tools",
+    "order": 2,
+    "name": "sensitivity_drivers",
+    "detail": "Tornado inputs",
+    "access": "read_write",
+    "resource": "Engagement data",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-025",
+    "agent_id": "ag-03",
+    "block": "tools",
+    "order": 3,
+    "name": "narratives",
+    "detail": "Value view text only",
+    "access": "read_write",
+    "resource": "Engagement data",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-026",
+    "agent_id": "ag-03",
+    "block": "tools",
+    "order": 4,
+    "name": "model_cells",
+    "detail": "Model inputs and outputs",
+    "access": "read",
+    "resource": "Engagement data",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-027",
+    "agent_id": "ag-03",
+    "block": "tools",
+    "order": 5,
+    "name": "findings",
+    "detail": "Evidence behind each lever",
+    "access": "read",
+    "resource": "Engagement data",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-028",
+    "agent_id": "ag-03",
+    "block": "state",
+    "order": 1,
+    "name": "model_version",
+    "detail": "Model version last aligned to",
+    "type": "text",
+    "value": "v4, 21 Oct",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-029",
+    "agent_id": "ag-03",
+    "block": "state",
+    "order": 2,
+    "name": "links_differing",
+    "detail": "Bridge links that differ from the model",
+    "type": "integer",
+    "value": "0",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-030",
+    "agent_id": "ag-03",
+    "block": "state",
+    "order": 3,
+    "name": "npv_base",
+    "detail": "Base NPV used by the tornado, €m",
+    "type": "number",
+    "value": "168",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-031",
+    "agent_id": "ag-03",
+    "block": "guardrails",
+    "order": 1,
+    "name": "Every figure in narrative text is a placeholder",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-032",
+    "agent_id": "ag-03",
+    "block": "guardrails",
+    "order": 2,
+    "name": "Never changes model cells; asks the model builder",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-033",
+    "agent_id": "ag-03",
+    "block": "guardrails",
+    "order": 3,
+    "name": "Client-facing text stays within slot limits",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-034",
+    "agent_id": "ag-04",
+    "block": "tools",
+    "order": 1,
+    "name": "Interview notes",
+    "detail": "Uploaded notes and transcripts",
+    "access": "read",
+    "resource": "Team drive",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-035",
+    "agent_id": "ag-04",
+    "block": "tools",
+    "order": 2,
+    "name": "issue_nodes",
+    "detail": "Hypotheses to map claims to",
+    "access": "read",
+    "resource": "Engagement data",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-036",
+    "agent_id": "ag-04",
+    "block": "tools",
+    "order": 3,
+    "name": "sources",
+    "detail": "Registers each interview as a source",
+    "access": "read_write",
+    "resource": "Engagement data",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-037",
+    "agent_id": "ag-04",
+    "block": "tools",
+    "order": 4,
+    "name": "findings",
+    "detail": "Claims with quote, metric and stance",
+    "access": "read_write",
+    "resource": "Engagement data",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-038",
+    "agent_id": "ag-04",
+    "block": "tools",
+    "order": 5,
+    "name": "Weekly evidence digest",
+    "detail": "Posts the Friday digest",
+    "access": "action",
+    "resource": "Team channel",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-039",
+    "agent_id": "ag-04",
+    "block": "state",
+    "order": 1,
+    "name": "interviews_processed",
+    "detail": "Interviews turned into findings so far",
+    "type": "integer",
+    "value": "7",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-040",
+    "agent_id": "ag-04",
+    "block": "state",
+    "order": 2,
+    "name": "last_digest",
+    "detail": "Date of the latest Friday digest",
+    "type": "date",
+    "value": "2026-10-16",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-041",
+    "agent_id": "ag-04",
+    "block": "state",
+    "order": 3,
+    "name": "open_contradictions",
+    "detail": "Contradictions flagged and not yet resolved",
+    "type": "integer",
+    "value": "1",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-042",
+    "agent_id": "ag-04",
+    "block": "state",
+    "order": 4,
+    "name": "awaiting_review",
+    "detail": "New findings a consultant has not yet checked",
+    "type": "list",
+    "value": "fi-11, fi-12",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-043",
+    "agent_id": "ag-04",
+    "block": "guardrails",
+    "order": 1,
+    "name": "Quotes are verbatim; never paraphrase inside quotation marks",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-044",
+    "agent_id": "ag-04",
+    "block": "guardrails",
+    "order": 2,
+    "name": "Never names an interviewee who asked to stay anonymous",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-045",
+    "agent_id": "ag-04",
+    "block": "guardrails",
+    "order": 3,
+    "name": "Never changes a hypothesis status; flags it to the analyst",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "al-046",
+    "agent_id": "ag-04",
+    "block": "guardrails",
+    "order": 4,
+    "name": "A consultant reviews every new finding before client use",
+    "detail": "Unreviewed findings never reach a client deck",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

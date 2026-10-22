@@ -1,0 +1,62 @@
+{
+  "agent": "model_builder",
+  "reason": "NBA conversion uplift revised to 4% after control-group correction",
+  "ops": [
+    {
+      "op": "update",
+      "table": "model_cells",
+      "id": "mc-10",
+      "set": {
+        "value": 4
+      }
+    },
+    {
+      "op": "update",
+      "table": "model_cells",
+      "id": "mc-25",
+      "set": {
+        "value": 17.6
+      }
+    },
+    {
+      "op": "update",
+      "table": "model_cells",
+      "id": "mc-30",
+      "set": {
+        "value": -9.2872
+      }
+    },
+    {
+      "op": "update",
+      "table": "model_cells",
+      "id": "mc-32",
+      "set": {
+        "value": 47.3433
+      }
+    },
+    {
+      "op": "update",
+      "table": "model_cells",
+      "id": "mc-33",
+      "set": {
+        "value": 422.3433
+      }
+    },
+    {
+      "op": "update",
+      "table": "model_cells",
+      "id": "mc-34",
+      "set": {
+        "value": 154.7753
+      }
+    },
+    {
+      "op": "update",
+      "table": "model_cells",
+      "id": "mc-35",
+      "set": {
+        "value": 19.7264
+      }
+    }
+  ]
+}

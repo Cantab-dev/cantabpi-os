@@ -1,0 +1,21 @@
+[
+  {
+    "id": "en-01",
+    "client": "Big Pharma AG",
+    "name": "Agentic AI for field sales: pilot to scale",
+    "objective": "Prove the value of AI agents for field sales reps in a two-region pilot, then design and justify the rollout to all nine EU markets.",
+    "start": "2026-08-03",
+    "end": "2026-12-04",
+    "as_of": "2026-10-21",
+    "currency": "EUR",
+    "partner_id": "pe-01",
+    "manager_id": "pe-02",
+    "sponsor_id": "pe-07",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

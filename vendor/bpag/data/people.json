@@ -1,0 +1,146 @@
+[
+  {
+    "id": "pe-01",
+    "name": "Clara Weber",
+    "org": "consulting",
+    "title": "Partner",
+    "rate_day": 4500,
+    "capacity_days_week": 1.5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "pe-02",
+    "name": "Tomás Reyes",
+    "org": "consulting",
+    "title": "Engagement manager",
+    "rate_day": 3200,
+    "capacity_days_week": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "pe-03",
+    "name": "Aisha Rahman",
+    "org": "consulting",
+    "title": "Consultant",
+    "rate_day": 2200,
+    "capacity_days_week": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "pe-04",
+    "name": "Jonas Lindqvist",
+    "org": "consulting",
+    "title": "Consultant",
+    "rate_day": 2200,
+    "capacity_days_week": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "pe-05",
+    "name": "Mei Tanaka",
+    "org": "consulting",
+    "title": "Data scientist",
+    "rate_day": 2400,
+    "capacity_days_week": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "pe-06",
+    "name": "Lukas Brandt",
+    "org": "consulting",
+    "title": "AI engineer",
+    "rate_day": 2400,
+    "capacity_days_week": 5,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "pe-07",
+    "name": "Dr Sabine Keller",
+    "org": "client",
+    "title": "Head of Commercial Excellence (sponsor)",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "pe-08",
+    "name": "Marco Rossi",
+    "org": "client",
+    "title": "Sales Director, EU",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "pe-09",
+    "name": "Nina Hoffmann",
+    "org": "client",
+    "title": "Product owner, field force AI",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "pe-10",
+    "name": "Peter Vogel",
+    "org": "client",
+    "title": "Head of data platform, IT",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "pe-11",
+    "name": "Dr Hannah Becker",
+    "org": "client",
+    "title": "Medical-legal compliance lead",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

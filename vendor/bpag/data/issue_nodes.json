@@ -1,0 +1,220 @@
+[
+  {
+    "id": "in-01",
+    "kind": "question",
+    "order": 1,
+    "text": "How should Big Pharma AG scale its field-sales AI agents across the EU?",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-02",
+    "parent_id": "in-01",
+    "kind": "branch",
+    "order": 1,
+    "text": "Is the value real and large enough?",
+    "answer": "Yes: the pilot shows more and better calls, worth {value.net_impact} of EBIT a year at scale",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-03",
+    "parent_id": "in-02",
+    "kind": "hypothesis",
+    "order": 1,
+    "text": "Freed admin time converts into more customer calls",
+    "status": "confirmed",
+    "analysis": "Pilot vs control call volumes",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-04",
+    "parent_id": "in-02",
+    "kind": "hypothesis",
+    "order": 2,
+    "text": "Next-best-action raises prescription conversion",
+    "status": "confirmed",
+    "analysis": "Conversion by HCP segment, pilot vs control",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-05",
+    "parent_id": "in-02",
+    "kind": "hypothesis",
+    "order": 3,
+    "text": "Personalised content lifts HCP engagement",
+    "status": "open",
+    "analysis": "Content open and follow-up rates",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-06",
+    "parent_id": "in-02",
+    "kind": "hypothesis",
+    "order": 4,
+    "text": "Medical-legal review effort falls",
+    "status": "confirmed",
+    "analysis": "Review log, hours per item",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-07",
+    "parent_id": "in-01",
+    "kind": "branch",
+    "order": 2,
+    "text": "Can it scale across all nine markets?",
+    "answer": "Mostly: seven markets are ready; two need CRM data remediation first",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-08",
+    "parent_id": "in-07",
+    "kind": "hypothesis",
+    "order": 1,
+    "text": "CRM data quality is sufficient in all markets",
+    "status": "refuted",
+    "analysis": "Record completeness by market",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-09",
+    "parent_id": "in-07",
+    "kind": "hypothesis",
+    "order": 2,
+    "text": "Reps adopt the agents without extra incentives",
+    "status": "open",
+    "analysis": "Daily use over time; benchmark decay",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-10",
+    "parent_id": "in-01",
+    "kind": "branch",
+    "order": 3,
+    "text": "Are the risks manageable?",
+    "answer": "Yes, with medical-legal guardrails and early works-council engagement",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-11",
+    "parent_id": "in-10",
+    "kind": "hypothesis",
+    "order": 1,
+    "text": "Guardrails keep compliance incidents at zero",
+    "status": "confirmed",
+    "analysis": "Incident log over generated notes",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-12",
+    "parent_id": "in-10",
+    "kind": "hypothesis",
+    "order": 2,
+    "text": "Works councils accept usage analytics",
+    "status": "open",
+    "analysis": "Works council consultation, Germany",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-13",
+    "parent_id": "in-01",
+    "kind": "branch",
+    "order": 4,
+    "text": "What does it take to deliver?",
+    "answer": "Three gated waves over 18 months, with one-off cost recovered within two years",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-14",
+    "parent_id": "in-13",
+    "kind": "hypothesis",
+    "order": 1,
+    "text": "A three-wave rollout over 18 months is feasible",
+    "status": "open",
+    "analysis": "Comparable rollout timelines",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "in-15",
+    "parent_id": "in-13",
+    "kind": "hypothesis",
+    "order": 2,
+    "text": "The investment pays back within two years",
+    "status": "confirmed",
+    "analysis": "Value model cash profile",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

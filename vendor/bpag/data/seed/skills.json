@@ -1,0 +1,112 @@
+[
+  {
+    "id": "sk-01",
+    "name": "Summarise CRM history",
+    "description": "Condenses recent HCP interactions into a short brief",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sk-02",
+    "name": "Next-best-action",
+    "description": "Ranks approved messages for an HCP from history and segment",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sk-03",
+    "name": "Compliance check",
+    "description": "Screens text against medical-legal rules and approved claims",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sk-04",
+    "name": "Plan analysis",
+    "description": "Finds slippage, float and dependency conflicts in the plan",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sk-05",
+    "name": "Recommended actions",
+    "description": "Drafts actions with owner, due date and rationale",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sk-06",
+    "name": "Bridge and sensitivity",
+    "description": "Builds value bridges and tornado charts from model outputs",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sk-07",
+    "name": "Executive writing",
+    "description": "Writes action titles and so-what statements in house style",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sk-08",
+    "name": "Model reconciliation",
+    "description": "Compares view figures with model cells and flags differences",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sk-09",
+    "name": "Interview extraction",
+    "description": "Pulls claims, numbers and verbatim quotes from interview notes",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sk-10",
+    "name": "Hypothesis mapping",
+    "description": "Matches claims to hypotheses in the issue tree and sets the stance",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

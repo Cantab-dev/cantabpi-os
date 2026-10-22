@@ -1,0 +1,85 @@
+[
+  {
+    "id": "sl-01",
+    "number": 1,
+    "section": "Cover",
+    "title": "Scaling field-sales AI agents across the EU",
+    "status": "review",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sl-02",
+    "number": 2,
+    "section": "Summary",
+    "title": "Scaling the field-sales agents across the EU adds about €51m of EBIT a year from 2028",
+    "issue_node_id": "in-01",
+    "status": "review",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sl-03",
+    "number": 3,
+    "section": "Evidence",
+    "title": "The pilot proved the value: 14% more calls, 5% higher conversion and zero compliance incidents",
+    "issue_node_id": "in-02",
+    "status": "review",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sl-04",
+    "number": 4,
+    "section": "Value",
+    "title": "The scale-up lifts 2028 EBIT to €426m, €51m above the momentum case, and holds even at 55% adoption",
+    "issue_node_id": "in-15",
+    "status": "review",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sl-05",
+    "number": 5,
+    "section": "Feasibility and risks",
+    "title": "Seven of nine markets are ready now, and the remaining risks are manageable with gated waves",
+    "issue_node_id": "in-07",
+    "status": "review",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "sl-06",
+    "number": 6,
+    "section": "Decision",
+    "title": "We ask the Board to approve wave 1 now and release waves 2 and 3 on adoption gates",
+    "issue_node_id": "in-13",
+    "status": "review",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

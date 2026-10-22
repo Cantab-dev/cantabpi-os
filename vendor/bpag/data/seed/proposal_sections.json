@@ -1,0 +1,93 @@
+[
+  {
+    "id": "ps-01",
+    "key": "context",
+    "order": 1,
+    "title": "Context",
+    "text": "Over eight weeks, 40 reps in two regions used AI agents for call preparation, next-best-action and call notes. They made 14% more calls, converted 5% better on suggested visits, and generated 2,900 call notes without a compliance incident. The Board is asked to approve the scale-up on 6 November.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ps-02",
+    "key": "objectives",
+    "order": 2,
+    "title": "Objectives",
+    "text": "Roll the agents out to all field reps in Germany and Italy within 16 weeks.\nReach at least 70% daily use by month 4, the gate for wave 2.\nHand over a run model that {client.name} operates without external support.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ps-03",
+    "key": "scope",
+    "order": 3,
+    "title": "Scope",
+    "text": "In scope: about 900 reps in Germany and Italy, the three pilot agents, CRM integration, medical-legal guardrails, training and adoption tracking. Out of scope: new agent use cases, markets beyond wave 1, and changes to incentive schemes.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ps-04",
+    "key": "approach",
+    "order": 4,
+    "title": "Approach",
+    "text": "Weeks 1-4: production readiness, data remediation and guardrail sign-off.\nWeeks 5-12: rollout in four cohorts with floor-walkers and weekly adoption reviews.\nWeeks 13-16: stabilisation, run-model handover and the wave-2 gate assessment.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ps-05",
+    "key": "team",
+    "order": 5,
+    "title": "Team",
+    "text": "The pilot team continues, led by the engagement manager with partner oversight. The client provides a product owner, a data platform lead and a compliance reviewer for the full 16 weeks.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ps-06",
+    "key": "fees",
+    "order": 6,
+    "title": "Fees",
+    "text": "Professional fees total {fees.total} for {fees.days} consultant days, set out below. Expenses are charged at cost and capped at 8% of fees.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "ps-07",
+    "key": "terms",
+    "order": 7,
+    "title": "Terms",
+    "text": "This proposal is valid for 60 days and is subject to the framework agreement between {client.name} and Cantab Pi. Fees are invoiced monthly in arrears.",
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]

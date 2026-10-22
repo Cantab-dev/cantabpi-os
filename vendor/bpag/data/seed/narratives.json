@@ -1,0 +1,156 @@
+[
+  {
+    "id": "nv-01",
+    "view": "value_estimator",
+    "slot": "bridge.eyebrow",
+    "order": 1,
+    "text": "EBIT bridge · EU commercial · €m · run-rate 2028",
+    "highlight": false,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "nv-02",
+    "view": "value_estimator",
+    "slot": "bridge.title",
+    "order": 1,
+    "text": "Scaling the agents lifts 2028 EBIT to {bridge.target}, {bridge.net_impact} above the momentum case",
+    "highlight": false,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "nv-03",
+    "view": "value_estimator",
+    "slot": "bridge.annotation",
+    "order": 1,
+    "text": "{bridge.net_impact} net impact",
+    "highlight": false,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "nv-04",
+    "view": "value_estimator",
+    "slot": "bridge.footnote",
+    "order": 1,
+    "text": "Momentum case = 2028 EBIT without the agents. Levers are sized from the two-region pilot; the adoption haircut applies to the call, conversion and content levers. Illustrative figures.",
+    "highlight": false,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "nv-05",
+    "view": "value_estimator",
+    "slot": "sensitivity.eyebrow",
+    "order": 1,
+    "text": "Sensitivity · 5-year NPV · €m · one input at a time",
+    "highlight": false,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "nv-06",
+    "view": "value_estimator",
+    "slot": "sensitivity.title",
+    "order": 1,
+    "text": "{sensitivity.top_driver} is the swing factor; no single input turns NPV negative",
+    "highlight": false,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "nv-07",
+    "view": "value_estimator",
+    "slot": "so_what.title",
+    "order": 1,
+    "text": "Approve the scale-up in three waves, gated on adoption",
+    "highlight": false,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "nv-08",
+    "view": "value_estimator",
+    "slot": "so_what.point",
+    "order": 1,
+    "text": "Rep adoption drives the largest NPV swing. Pilot reps reached 78% daily use, but benchmarks show a 15-20 point drop without incentives.",
+    "highlight": false,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "nv-09",
+    "view": "value_estimator",
+    "slot": "so_what.point",
+    "order": 2,
+    "text": "Even at the downside adoption rate NPV stays at {sensitivity.top_downside}, so the case survives a plausible miss.",
+    "highlight": false,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "nv-10",
+    "view": "value_estimator",
+    "slot": "so_what.point",
+    "order": 3,
+    "text": "Approve wave 1 (Germany, Italy) now; release wave 2 only if daily use stays above 70% by month 4.",
+    "highlight": true,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  },
+  {
+    "id": "nv-11",
+    "view": "presentation_builder",
+    "slot": "governing_thought",
+    "order": 1,
+    "text": "Scale the field-sales agents to all nine EU markets in three gated waves: the pilot proved {value.net_impact} of annual EBIT, and the remaining risks are manageable.",
+    "highlight": false,
+    "_meta": {
+      "version": 1,
+      "updated_at": "2026-10-21T08:00:00Z",
+      "updated_by": "seed",
+      "reason": "Initial dataset"
+    }
+  }
+]
