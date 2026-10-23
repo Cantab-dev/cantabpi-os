@@ -8,7 +8,7 @@ This document is both the plan and the record of what exists. Each item has a st
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then altered; note what changed) · `open` (needs a decision).
 
-All nineteen tools are deployed and tested against dummy data; the deployed function is v0.10.0 (2026-10-22: the five engagement tools renamed to the package's verbs `contract`, `query`, `write`, `log`, `reset`); v0.9.0 (2026-10-22: five `engagement_*` tools for Siniša's views package, see the Engagement section); v0.8.0 (2026-10-22: `view` takes the ten header views and writes to the view in front of the user); v0.7.1 moved the `view` links to `https://os.cantabpi.com/v/N`; v0.7.0 (2026-10-22) added projects (`select_project`, `write_project`; see the Projects section). v0.6.0 (2026-10-21) added `view`. The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
+All eighteen tools are deployed and tested against dummy data; the deployed function is v0.11.0 (2026-10-23: the project data under project names, the `reset` tool removed, the demo set up with `scripts/demo-project.mjs`); v0.10.0 (2026-10-22: the five engagement tools renamed to the package's verbs `contract`, `query`, `write`, `log`, `reset`); v0.9.0 (2026-10-22: five `engagement_*` tools for Siniša's views package, see the Engagement section); v0.8.0 (2026-10-22: `view` takes the ten header views and writes to the view in front of the user); v0.7.1 moved the `view` links to `https://os.cantabpi.com/v/N`; v0.7.0 (2026-10-22) added projects (`select_project`, `write_project`; see the Projects section). v0.6.0 (2026-10-21) added `view`. The plan was checked against the project kit's agent design guide (Part 1 and the tool-description format); items marked ▲ were added to close gaps that check found and are not in the original spec.
 
 **Current contract.** Everything below is the contract deployed in function v0.5.5. The in-chat views, with their plan, test record and open improvements, are in [chat-ux-status.md](chat-ux-status.md); this document is the home of what each tool takes and returns.
 
@@ -129,16 +129,17 @@ settings, and no longer returns `slot_limit`. 42 unit tests pass. [live-views-st
 
 Points the user's live view page (`https://os.cantabpi.com/v/<slot>`) at a slide's PDF or the `sales_overview` dashboard; without `template` it lists the user's views. Returns a confirmation and the url, never content. Errors: `not_found`, `invalid_parameter`, `slot_limit`. Contract, slot rules and the page: [live-views-status.md](live-views-status.md) §2–§4. Checked live as `claude@test.com` on 2026-10-21 (list, pdf at a page, dashboard with filters, reuse of a view, another user's slide, unknown dashboard).
 
-### Project data (the package's tools) — `changed` (v0.9.0, v2 phase 2; renamed in v0.10.0; v0.11.0 built, not deployed)
+### Project data (the package's tools) — `changed` (v0.9.0, v2 phase 2; renamed in v0.10.0; v0.11.0)
 
-`contract`, `query`, `write`, `log`, `reset` (until v0.10.0 `engagement_contract` … `engagement_reset`): the package's data tool
+`contract`, `query`, `write`, `log` (until v0.10.0 `engagement_contract` … `engagement_log`; `reset` removed in v0.11.0:
+the demo is set up from Claude Code with `scripts/demo-project.mjs`, Nela 2026-10-23): the package's data tool
 (`vendor/bpag/spec/02-data-tool.md`) on the selected project's data. Writes run the package's validator unchanged
 (`package.ts`, built by `scripts/build-package.mjs`) and save with the admin client through `project_commit`, which only
 the service role may call (Aleph's pattern, P13). Code in `project_data.ts`. v0.11.0 (2026-10-23): the database names
 are `project_*` and the texts say "the selected project's data" ([project-engagement-status.md](project-engagement-status.md));
-`reset` names the engagement record after the project; a project name follows the package's rule (70 characters, one
-line, plain text) in `write_project` and `edit`. 53 unit tests (the package demo included); v0.10.0 checked live
-2026-10-22, 21/21. Design: [live-views-status.md](live-views-status.md) §4.
+the demo script names the engagement record after the project; a project name follows the package's rule (70
+characters, one line, plain text) in `write_project` and `edit`. 53 unit tests (the package demo included); v0.11.0
+checked live 2026-10-23 (`smoke.sh`, `templates/bpag/test/live.mjs` 23/23). Design: [live-views-status.md](live-views-status.md) §4.
 
 ### Projects — `built` (v0.7.0, v2 phase 1)
 
@@ -223,7 +224,7 @@ Rows created during testing were removed; the label numbers they used are not re
 Improvements from the test rounds are listed in [chat-ux-status.md](chat-ux-status.md) (Learnings from testing). The tool contract changes only after a planning session; that is design work and needs Opus.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
-- v1.11 (2026-10-23) — Function v0.11.0 built (not deployed): the package's tools on `project_*` database names; project names follow the package's name rule. → DECISIONS.md 2026-10-23
+- v1.11 (2026-10-23) — Function v0.11.0 live: the package's tools on `project_*` database names; project names follow the package's name rule; `reset` removed (18 tools). → DECISIONS.md 2026-10-23
 - v1.10 (2026-10-22) — Function v0.10.0: the engagement tools renamed to the package's verbs. → DECISIONS.md 2026-10-22
 - v1.8 (2026-10-21) — `view` tool added (function v0.6.0); twelve tools. → DECISIONS.md 2026-10-21
 - v1.7 (2026-10-16) — Swept: the tool sections now describe the deployed v0.5.5 contract (fields, filters, view, read-only hints); testing and file lists current.

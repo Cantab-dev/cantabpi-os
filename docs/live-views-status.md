@@ -4,7 +4,7 @@
 | --- | --- | --- | --- |
 | Current | v1.4 | Nela | 2026-10-23 |
 
-**What is live (function v0.10.0, 2026-10-22):** a browser page at `https://os.cantabpi.com/v/1…10` that Claude
+**What is live (function v0.11.0, 2026-10-23):** a browser page at `https://os.cantabpi.com/v/1…10` that Claude
 steers from claude.ai. Each of the ten views (slots) shows one thing; Claude changes it with the `view` tool and the
 open page follows within about a second. The page has a header with ten agent icons and shows Siniša's engagement
 views (Big Pharma AG demo), the POC's slide PDF, or the POC's sales dashboard.
@@ -17,9 +17,9 @@ Section numbers cited in COMMS, DECISIONS and the applied migrations before 2026
 ## 1. How it fits together
 
 ```
-claude.ai ──MCP──▶ mcp function (19 tools, acts as the signed-in user)
+claude.ai ──MCP──▶ mcp function (18 tools, acts as the signed-in user)
    │                 ├─ view ───────────────▶ ui_views (slot → template, project)          ◀── Realtime ──┐
-   │                 └─ contract/query/write/log/reset ─ validator ─▶ project_commit (service role) ─▶ project.<27 tables>
+   │                 └─ contract/query/write/log ─ validator ─▶ project_commit (service role) ─▶ project.<27 tables>
    │                                                                                                     │
 os.cantabpi.com/v/N (Lovable): header + centre pane                                                       │
    ├─ agent views: view_templates.html in <iframe srcdoc>, runtime polls project_version ────────────────┘ (every 2 s)
@@ -96,13 +96,14 @@ icon is active. No project chip, no account menu, no sidebar (Nela, 2026-10-22).
 (fictional), engagement "Agentic AI for field sales: pilot to scale". Ten agent views plus Engagement home, 27 tables, a
 validator that refuses any write that would break a view, a ten-step demo script.
 
-**Names (v0.11.0, built 2026-10-23, not live until pushed and deployed):** "engagement" is replaced by "project" wherever
-the name is ours ([project-engagement-status.md](project-engagement-status.md)); the package keeps its own words (the
-table `engagement`, the agent `engagement_starter`, "Engagement home"). Live until the cut-over: the schema `engagement`,
-`engagement_datasets`, `engagement_log` and `engagement_*` functions with the same shapes.
+**Names (v0.11.0, live 2026-10-23):** "engagement" is replaced by "project" wherever the name is ours
+([project-engagement-status.md](project-engagement-status.md)); the package keeps its own words (the table
+`engagement`, the agent `engagement_starter`, "Engagement home"). **The demo is set up from Claude Code** with
+`node scripts/demo-project.mjs <email> [--select]` (creates "Dummy - Big Pharma AG" if missing and loads the seed, or
+reloads it); there is no `reset` tool in the chat.
 
 **Data.** The project's data (`project.versions`: global version, per-table versions; 0 or 1 per project, made by the
-first `reset`), one Postgres table per package table in the closed schema `project` (`project.engagement`,
+demo script), one Postgres table per package table in the closed schema `project` (`project.engagement`,
 `project.people`, …; generated from `_schema.json` by `scripts/gen-project-tables.mjs`, design in
 [engagement-tables-status.md](engagement-tables-status.md)), and `project_log` (last 200 changes). RLS: read own. The
 schema `_schema.json` is the single source of truth. One name: the engagement record takes the project's name, both ways.
@@ -123,7 +124,7 @@ the admin client, passing the user; the function checks that the project is thei
 | `query {table, where?, fields?, expand?, limit?}` | Records of one table; `expand` resolves references one level |
 | `write {agent, reason, ops, dry_run?, if_version?}` | One batch, checked against every rule and saved whole or not at all; refusals list each rule and what is allowed |
 | `log {since_version? \| limit?}` | Recent changes, newest last |
-| `reset {confirm: true}` | Loads the demo seed (version 6) into the selected project, replacing what is there |
+| (no `reset` since v0.11.0) | The package's `reset` verb is `scripts/demo-project.mjs`, run from Claude Code (Nela, 2026-10-23) |
 
 Claude plays each of the ten agents by naming it in `agent`; the validator enforces that agent's scope.
 
@@ -225,7 +226,7 @@ agent fixed, one claude.ai connector each, about 2–3 h; C) autonomous agents t
 - A dashboard over the real `todos` table would show the page following agent edits made with existing tools.
 
 **Changelog** (rationale in DECISIONS.md; file history in git; Lovable rounds in COMMS.md)
-- v1.4 (2026-10-23) — §4: the project's data under project names (schema `project`, `project_*` functions), one name for project and engagement record; built, not live. → DECISIONS.md 2026-10-23
+- v1.4 (2026-10-23) — §4: the project's data under project names (schema `project`, `project_*` functions), one name for project and engagement record; the demo set up from Claude Code (`scripts/demo-project.mjs`), no `reset` tool; live in v0.11.0. → DECISIONS.md 2026-10-23
 - v1.3 (2026-10-22) — §7.2 live: the five tools renamed (`contract`, `query`, `write`, `log`, `reset`), function v0.10.0. → DECISIONS.md 2026-10-22
 - v1.2 (2026-10-22) — §7.1 live and rechecked (§5).
 - v1.1 (2026-10-22) — §7.1 built (real tables in the schema `engagement`); §1 and §4 updated. → DECISIONS.md 2026-10-22

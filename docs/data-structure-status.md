@@ -150,7 +150,7 @@ Added 2026-10-15 for the in-chat views. Detail, seed values and the checks: [cha
 - `supabase/migrations/20261015120000_categories_and_action.sql`
 - `supabase/seed.sql`
 - Engagement data (Siniša's package): `20261022150000_engagement.sql` and the generated `20261022160000_engagement_tables.sql`; described in [live-views-status.md](live-views-status.md) §4 and [engagement-tables-status.md](engagement-tables-status.md)
-- The project's data under project names: the generated `20261023100000_project_data.sql` (schema `project`, `project.versions`, `project_log`, functions `project_*`; check `projects_name_package` and trigger `sync_engagement_name` on `projects`); **built, not pushed**; described in [project-engagement-status.md](project-engagement-status.md)
+- The project's data under project names: the generated `20261023100000_project_data.sql` (schema `project`, `project.versions`, `project_log`, functions `project_*`; check `projects_name_package` and trigger `sync_engagement_name` on `projects`); live 2026-10-23; described in [project-engagement-status.md](project-engagement-status.md)
 
 ## Next
 
