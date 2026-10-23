@@ -89,7 +89,7 @@ async function open(key, width, project = 'p-demo') {
   const frame = await (await page.waitForSelector('#frame')).contentFrame()
   await frame.waitForFunction(() => {
     const m = document.getElementById('cp-main'), h = document.getElementById('cp-header')
-    return m && (m.querySelector('.cp-notice') || (h && h.querySelector('.cp-ctx')))
+    return m && (m.querySelector('.cp-notice') || [...m.children].some((c) => c.id !== 'cp-notices' && c.querySelectorAll('*').length > 20))
   }, null, { timeout: 15000 }).catch(() => {})
   await page.waitForTimeout(300)
   return { page, frame, errors }
@@ -103,7 +103,8 @@ async function state(frame) {
       notices: [...document.querySelectorAll('.cp-notice')].map((n) => n.textContent),
       brand: !!document.querySelector('.cp-brand'),
       railVisible: (() => { const r = document.getElementById('cp-rail'); return !!r && !r.hidden && r.offsetWidth > 0 })(),
-      ctx: (document.querySelector('.cp-ctx') || {}).textContent || '',
+      chrome: [document.getElementById('cp-header'), ...document.querySelectorAll('.cp-view-head')]
+        .filter((n) => n && n.offsetHeight > 0).map((n) => n.id || n.className),
       drawn: content.reduce((n, c) => n + c.querySelectorAll('*').length, 0),
       overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
     }
@@ -121,7 +122,7 @@ for (const key of keys) {
     if (errors.length) problems.push(errors.join(' | '))
     if (s.brand) problems.push('brand shown')
     if (s.railVisible) problems.push('rail shown')
-    if (!/Client/.test(s.ctx)) problems.push('no engagement line')
+    if (s.chrome.length) problems.push('second header or view title shown: ' + s.chrome.join(', '))
     if (s.drawn < 20) problems.push(`only ${s.drawn} elements drawn`)
     report(`${key} @${width}`, !problems.length, problems.join('; ') || `${s.drawn} elements, overflow-x ${s.overflowX}px`)
     await page.close()
@@ -143,7 +144,7 @@ for (const key of keys) {
   emptyProjects.delete('p-later')
   await page.waitForTimeout(2500)
   const s = await state(frame)
-  report('empty → data draws within 2.5 s', !s.notices.length && s.drawn > 20 && /Client/.test(s.ctx), `${s.drawn} elements`)
+  report('empty → data draws within 2.5 s', !s.notices.length && s.drawn > 20 && !s.chrome.length, `${s.drawn} elements`)
   await page.close()
   resetData()
 }

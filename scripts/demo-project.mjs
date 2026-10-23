@@ -2,7 +2,7 @@
 // up from Claude Code, not from the chat (docs/project-engagement-status.md). The seed is the one the MCP function
 // uses (supabase/functions/mcp/package.ts, built by scripts/build-package.mjs). Runs through the Supabase CLI's linked
 // login (`npx supabase db query --linked`), so no key is read. Safe to rerun: the project is found by user and name.
-//   node scripts/demo-project.mjs <email> [--name "Dummy - Big Pharma AG"] [--select] [--sql <file>]
+//   node scripts/demo-project.mjs <email> [--name "Big Pharma AG"] [--select] [--sql <file>]
 // --select also makes it the user's selected project. --sql writes the SQL to <file> and runs nothing.
 import { spawnSync } from 'node:child_process'
 import { mkdtempSync, writeFileSync } from 'node:fs'
@@ -15,7 +15,7 @@ const flag = (name) => {
   const i = args.indexOf(name)
   return i < 0 ? undefined : args.splice(i, 2)[1]
 }
-const name = flag('--name') ?? 'Dummy - Big Pharma AG'
+const name = flag('--name') ?? 'Big Pharma AG'
 const sqlOut = flag('--sql')
 const select = args.includes('--select')
 const email = args.find((a) => !a.startsWith('--'))

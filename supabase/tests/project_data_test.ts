@@ -255,15 +255,15 @@ Deno.test('project data: scripts/demo-project.mjs creates the demo project, load
   const res = await new Deno.Command('node', { args: [script, 'b@test.com', '--select', '--sql', out] }).output()
   assert(res.success, new TextDecoder().decode(res.stderr))
   const sql = Deno.readTextFileSync(out)
-  const count = () => one(db, `select count(*)::int as n from public.projects where profile_id = $1 and name = 'Dummy - Big Pharma AG'`, [B])
+  const count = () => one(db, `select count(*)::int as n from public.projects where profile_id = $1 and name = 'Big Pharma AG'`, [B])
 
   await db.exec(sql)
   assertEquals((await count()).n, 1)
-  const p = (await one(db, `select id from public.projects where profile_id = $1 and name = 'Dummy - Big Pharma AG'`, [B])).id as string
+  const p = (await one(db, `select id from public.projects where profile_id = $1 and name = 'Big Pharma AG'`, [B])).id as string
   assertEquals((await one(db, `select selected_project_id from public.profiles where id = $1`, [B])).selected_project_id, p)
   const got = await after.read(db, p, ['engagement', 'people'])
   assertEquals((got.version as Row).global, 6)
-  assertEquals(((got.tables as Record<string, Row[]>).engagement[0]).name, 'Dummy - Big Pharma AG')
+  assertEquals(((got.tables as Record<string, Row[]>).engagement[0]).name, 'Big Pharma AG')
 
   const [w] = await after.demo(db, B, p, DEMO.slice(0, 1))
   assert(w.committed)

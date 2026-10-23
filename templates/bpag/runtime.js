@@ -10,7 +10,8 @@
       (p_project), fetched with the publishable key as apikey and the user's token from getToken() as bearer,
       instead of data/<table>.json and data/_version.json. Polling every 2 s is unchanged.
    3. Schema. window.CP_SCHEMA (inlined by scripts/templates.mjs) instead of data/_schema.json.
-   4. Embed mode (whenever there is a host): no brand, no agent rail; the engagement line stays.
+   4. Embed mode (whenever there is a host): no header (brand and engagement line), no agent rail and no view title;
+      the Lovable page's header names the view (Nela, 2026-10-23).
    5. Links to other views (brand, rail) call CP_HOST.openView(key) instead of navigating; the rail skips its
       HEAD check for pages that do not exist as files.
    6. status 'empty' hides the view and shows "This project has no data yet." (the demo is loaded from Claude Code,
@@ -215,7 +216,11 @@
     var en = ctx.en, cal = ctx.cal;
     var phase = ctx.data.phases.filter(function (p) { return p.start <= en.as_of && en.as_of <= p.end; })[0];
     var header = document.getElementById('cp-header');
-    if (header) {
+    if (EMBED) {
+      // The Lovable page's own header names the view: no second header and no view title in the frame.
+      if (header) { header.innerHTML = ''; header.style.display = 'none'; }
+      Array.prototype.forEach.call(document.querySelectorAll('.cp-view-head'), function (n) { n.style.display = 'none'; });
+    } else if (header) {
       header.className = 'cp-header';
       header.innerHTML = '';
       header.appendChild(el('div', { 'class': 'cp-header-in' }, [

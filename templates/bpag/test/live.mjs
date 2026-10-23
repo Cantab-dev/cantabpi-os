@@ -1,5 +1,5 @@
 // Live headless check of the eleven agent views on os.cantabpi.com, as claude@test.com on its selected project
-// (select "Dummy - Big Pharma AG", project:10, first; reselect Atlas afterwards). Signs in with CANTAB_TEST_PASSWORD from
+// ("Big Pharma AG", project:10, selected first with scripts/demo-project.mjs --select). Signs in with CANTAB_TEST_PASSWORD from
 // .env.local, sets slot 1 with the view tool, and checks each view at 1280 and 400 px; then a phase_raci write (demo
 // step 8) with Home open must be marked without reloading the frame. Resets the project data to the seed before and after with scripts/demo-project.mjs (the Supabase CLI login).
 //   PLAYWRIGHT_CORE=<folder with node_modules/playwright-core> CHROME=<chrome-headless-shell.exe> //     node templates/bpag/test/live.mjs
@@ -68,7 +68,7 @@ async function open(width) {
   }
   if (!frame) return { page, frame: null, errors }
   await frame.waitForFunction(() => {
-    const m = document.getElementById('cp-main'); return m && (m.querySelector('.cp-notice') || document.querySelector('.cp-ctx'))
+    const m = document.getElementById('cp-main'); return m && (m.querySelector('.cp-notice') || [...m.children].some((c) => c.id !== 'cp-notices' && c.querySelectorAll('*').length > 20))
   }, null, { timeout: 15000 }).catch(() => {})
   await page.waitForTimeout(800)
   return { page, frame, errors }
@@ -79,7 +79,8 @@ const state = (frame) => frame.evaluate(() => {
   const content = [...main.children].filter((c) => c.id !== 'cp-notices' && !c.hidden)
   return {
     notices: [...document.querySelectorAll('.cp-notice')].map((x) => x.textContent),
-    ctx: (document.querySelector('.cp-ctx') || {}).textContent || '',
+    chrome: [document.getElementById('cp-header'), ...document.querySelectorAll('.cp-view-head')]
+        .filter((n) => n && n.offsetHeight > 0).map((n) => n.id || n.className),
     drawn: content.reduce((k, c) => k + c.querySelectorAll('*').length, 0),
     overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
   }
@@ -95,8 +96,8 @@ for (const key of KEYS) {
     const { page, frame, errors } = await open(width)
     if (!frame) { report(`${key} @${width}`, false, 'no frame'); await page.close(); continue }
     const s = await state(frame)
-    const ok = !s.notices.length && !errors.length && s.drawn > 20 && /Big Pharma/.test(s.ctx) && (width > 400 || s.overflowX <= 0)
-    report(`${key} @${width}`, ok, `${s.drawn} elements${s.notices.length ? ' notice: ' + s.notices.join('|') : ''}${errors.length ? ' errors: ' + errors.join('|') : ''}${s.overflowX > 0 ? ' overflowX ' + s.overflowX : ''}`)
+    const ok = !s.notices.length && !errors.length && s.drawn > 20 && !s.chrome.length && (width > 400 || s.overflowX <= 0)
+    report(`${key} @${width}`, ok, `${s.drawn} elements${s.notices.length ? ' notice: ' + s.notices.join('|') : ''}${errors.length ? ' errors: ' + errors.join('|') : ''}${s.overflowX > 0 ? ' overflowX ' + s.overflowX : ''}${s.chrome.length ? ' chrome: ' + s.chrome.join(',') : ''}`)
     await page.close()
   }
 }
