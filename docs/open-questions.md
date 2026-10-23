@@ -27,12 +27,12 @@ Answered by Siniša's memo of 2026-10-15: the in-chat views stay, and only openi
 Still open after the live views POC was planned (2026-10-21): Google files keep this approach; PDFs and dashboards go to live views ([live-views-status.md](live-views-status.md)).
 
 ## Projects (v2 phase 1, built 2026-10-22)
-Detail: [projects-status.md](projects-status.md) §1 and Open.
+Detail: [archive/projects-status.md](archive/projects-status.md) §1 and Open.
 - Confirm Claude's three choices: only an empty project can be deleted; older rows in `Unsorted (from v1)`;
   Atlas selected at the start. (Nela, Siniša)
 - Moving an item to another project: not possible today. Needed?
 - Do the live views and the v2 view slots belong to a project? (Phase 2)
-- Oria connector: what it is and who calls it ([Diagram_input.md](Diagram_input.md) §1). (Nela)
+- Oria connector: what it is and who calls it (`01_analysis/Diagram_input.md` §1 in the SharePoint folder). (Nela)
 
 ## Questions raised by multi-user (for Opus design pass)
 Partly answered by projects: a project has one owner; todos, sheets, docs and slides are per project; leads and

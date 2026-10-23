@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.0 | Nela | 2026-10-13 |
+| Closed — the original brief, kept verbatim; absorbed into later docs and DECISIONS.md; archived 2026-10-23 | v1.0 | Nela | 2026-10-23 |
 
 The spec as Nela provided it, kept verbatim. Where a later decision changes it, [DECISIONS.md](DECISIONS.md) wins.
 

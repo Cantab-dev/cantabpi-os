@@ -23,7 +23,7 @@ export interface EntityDef {
   listCols: string[]
   getCols: string[]
   hasContext: boolean
-  /** Rows belong to a project and follow the selection (docs/projects-status.md D1). */
+  /** Rows belong to a project and follow the selection (docs/archive/projects-status.md D1). */
   scoped: boolean
   fields: Record<string, FieldSpec>
 }

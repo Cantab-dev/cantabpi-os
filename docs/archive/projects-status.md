@@ -2,9 +2,9 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.3 | Nela | 2026-10-22 |
+| Executed — built and live 2026-10-22; archived 2026-10-23 (open choices in open-questions.md) | v0.3 | Nela | 2026-10-23 |
 
-Plan and record for the first phase of Cantab OS v2 ([cantapi_os_2_0.md](cantapi_os_2_0.md), Siniša, work in
+Plan and record for the first phase of Cantab OS v2 ([cantapi_os_2_0.md](../cantapi_os_2_0.md), Siniša, work in
 progress): the **Projects** part, backend only. Phase 2 is the views (Siniša is preparing them as a package),
 phase 3 how they show in claude.ai. Approved by Nela on 2026-10-22 ("build and deploy"); model changed the same
 day after Siniša's answers (§1). Read whole.

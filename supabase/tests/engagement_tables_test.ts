@@ -1,4 +1,4 @@
-// The engagement tables migration (docs/engagement-tables-status.md) in an in-memory Postgres (PGlite), on minimal
+// The engagement tables migration (docs/archive/engagement-tables-status.md) in an in-memory Postgres (PGlite), on minimal
 // stand-ins for the Supabase pieces it needs. Run from the repo root:
 //   deno test -A --config supabase/functions/mcp/deno.json supabase/tests/engagement_tables_test.ts
 import { PGlite } from 'npm:@electric-sql/pglite@0.3.14'

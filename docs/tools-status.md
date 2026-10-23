@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.11 | Nela | 2026-10-23 |
+| Current | v1.12 | Nela | 2026-10-23 |
 
 This document is both the plan and the record of what exists. Each item has a status; update the status in the same change that builds the item.
 
@@ -131,19 +131,15 @@ Points the user's live view page (`https://os.cantabpi.com/v/<slot>`) at a slide
 
 ### Project data (the package's tools) — `changed` (v0.9.0, v2 phase 2; renamed in v0.10.0; v0.11.0)
 
-`contract`, `query`, `write`, `log` (until v0.10.0 `engagement_contract` … `engagement_log`; `reset` removed in v0.11.0:
-the demo is set up from Claude Code with `scripts/demo-project.mjs`, Nela 2026-10-23): the package's data tool
-(`vendor/bpag/spec/02-data-tool.md`) on the selected project's data. Writes run the package's validator unchanged
-(`package.ts`, built by `scripts/build-package.mjs`) and save with the admin client through `project_commit`, which only
-the service role may call (Aleph's pattern, P13). Code in `project_data.ts`. v0.11.0 (2026-10-23): the database names
-are `project_*` and the texts say "the selected project's data" ([project-engagement-status.md](project-engagement-status.md));
-the demo script names the engagement record after the project; a project name follows the package's rule (70
-characters, one line, plain text) in `write_project` and `edit`. 53 unit tests (the package demo included); v0.11.0
-checked live 2026-10-23 (`smoke.sh`, `templates/bpag/test/live.mjs` 23/23). Design: [live-views-status.md](live-views-status.md) §4.
+`contract {agent}`, `query {table, where?, fields?, expand?, limit?}`, `write {agent, reason, ops, dry_run?,
+if_version?}`, `log {since_version? | limit?}`: the package's data tool (`vendor/bpag/spec/02-data-tool.md`) on the
+selected project's data; no `reset` (the demo is set up from Claude Code). Code in `project_data.ts`. 53 unit tests;
+checked live on v0.11.0 (2026-10-23). **How the port works, its data and its history:
+[live-views-status.md](live-views-status.md) §4** (the home for it).
 
 ### Projects — `built` (v0.7.0, v2 phase 1)
 
-The user works in one selected project. Without one, every call fails with "No project selected. Select a project first…", except project calls: `list` with entity `projects`, `select_project`, `write_project`, and `get`, `edit`, `note`, `delete` on `project:` labels. Every successful reply starts with `Project: <name> (<label>).` and carries `project` in its data. Todos, sheets, docs and slides come from the selected project only and carry their `project`; new ones go into it. `select_project` takes one `label` and replies with every project's counts; `write_project` takes `name` and `icon`; a project with items cannot be deleted. Contract and decisions: [projects-status.md](projects-status.md) §1, §3. Checked live as `claude@test.com` on 2026-10-22 (`smoke.sh` projects section: switch, hidden labels, another user's project, non-empty delete, no selection).
+The user works in one selected project. Without one, every call fails with "No project selected. Select a project first…", except project calls: `list` with entity `projects`, `select_project`, `write_project`, and `get`, `edit`, `note`, `delete` on `project:` labels. Every successful reply starts with `Project: <name> (<label>).` and carries `project` in its data. Todos, sheets, docs and slides come from the selected project only and carry their `project`; new ones go into it. `select_project` takes one `label` and replies with every project's counts; `write_project` takes `name` and `icon`; a project with items cannot be deleted. Contract and decisions: [archive/projects-status.md](archive/projects-status.md) §1, §3. Checked live as `claude@test.com` on 2026-10-22 (`smoke.sh` projects section: switch, hidden labels, another user's project, non-empty delete, no selection).
 
 ## Instructions for the model and the view — `changed`
 
@@ -224,6 +220,7 @@ Rows created during testing were removed; the label numbers they used are not re
 Improvements from the test rounds are listed in [chat-ux-status.md](chat-ux-status.md) (Learnings from testing). The tool contract changes only after a planning session; that is design work and needs Opus.
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v1.12 (2026-10-23) — Swept: the project-data section keeps the tool contract only; the port lives in live-views-status §4.
 - v1.11 (2026-10-23) — Function v0.11.0 live: the package's tools on `project_*` database names; project names follow the package's name rule; `reset` removed (18 tools). → DECISIONS.md 2026-10-23
 - v1.10 (2026-10-22) — Function v0.10.0: the engagement tools renamed to the package's verbs. → DECISIONS.md 2026-10-22
 - v1.8 (2026-10-21) — `view` tool added (function v0.6.0); twelve tools. → DECISIONS.md 2026-10-21

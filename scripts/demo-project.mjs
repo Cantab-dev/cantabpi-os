@@ -1,5 +1,5 @@
 // Creates the demo project for one user and loads Siniša's Big Pharma AG seed into it, or reloads it: the demo is set
-// up from Claude Code, not from the chat (docs/project-engagement-status.md). The seed is the one the MCP function
+// up from Claude Code, not from the chat (docs/archive/project-engagement-status.md). The seed is the one the MCP function
 // uses (supabase/functions/mcp/package.ts, built by scripts/build-package.mjs). Runs through the Supabase CLI's linked
 // login (`npx supabase db query --linked`), so no key is read. Safe to rerun: the project is found by user and name.
 //   node scripts/demo-project.mjs <email> [--name "Big Pharma AG"] [--select] [--sql <file>]

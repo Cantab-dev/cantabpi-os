@@ -1,4 +1,4 @@
-// The project data migration (docs/project-engagement-status.md) in an in-memory Postgres (PGlite), on minimal
+// The project data migration (docs/archive/project-engagement-status.md) in an in-memory Postgres (PGlite), on minimal
 // stand-ins for the Supabase pieces it needs: the two engagement migrations first, with data in them, then the renames.
 // Run from the repo root:
 //   deno test -A --config supabase/functions/mcp/deno.json supabase/tests/project_data_test.ts

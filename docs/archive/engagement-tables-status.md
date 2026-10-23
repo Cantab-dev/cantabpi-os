@@ -2,14 +2,14 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current — built and live | v0.3 | Nela | 2026-10-22 |
+| Executed — built and live 2026-10-22; archived 2026-10-23 | v0.3 | Nela | 2026-10-23 |
 
 **Since 2026-10-23 (v0.11.0):** the names in this record are renamed in place: the schema `engagement` is `project`,
 `engagement_datasets` is `project.versions`, `engagement_log` is `project_log`, the functions are `project_*` and the
 generator is `scripts/gen-project-tables.mjs`; see [project-engagement-status.md](project-engagement-status.md). The
 design below is unchanged.
 
-**What this is:** the plan for [live-views-status.md](live-views-status.md) §7.1: one Postgres table per package table in
+**What this is:** the plan for [live-views-status.md](../live-views-status.md) §7.1: one Postgres table per package table in
 place of one JSON row per table, so the engagement data can be queried with SQL. Go and answers: Nela, 2026-10-22 (§3).
 **Live since 2026-10-22** (Nela pushed migration `20261022160000`); checked live (§4).
 

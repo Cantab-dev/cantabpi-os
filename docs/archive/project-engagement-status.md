@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current — built and live | v0.6 | Nela | 2026-10-23 |
+| Executed — built and live 2026-10-23; archived 2026-10-23 | v0.6 | Nela | 2026-10-23 |
 
 **What this is:** the record of removing "engagement" from Cantab OS where the name and the structure are ours, and
 using "project" instead. Asked by Nela on 2026-10-23: "remove engagement and completely replace it with project".

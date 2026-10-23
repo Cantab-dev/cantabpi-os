@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.4 | Nela | 2026-10-23 |
+| Current | v1.5 | Nela | 2026-10-23 |
 
 **What is live (function v0.11.0, 2026-10-23):** a browser page at `https://os.cantabpi.com/v/1…10` that Claude
 steers from claude.ai. Each of the ten views (slots) shows one thing; Claude changes it with the `view` tool and the
@@ -97,7 +97,7 @@ icon is active. No project chip, no account menu, no sidebar (Nela, 2026-10-22).
 validator that refuses any write that would break a view, a ten-step demo script.
 
 **Names (v0.11.0, live 2026-10-23):** "engagement" is replaced by "project" wherever the name is ours
-([project-engagement-status.md](project-engagement-status.md)); the package keeps its own words (the table
+([archive/project-engagement-status.md](archive/project-engagement-status.md)); the package keeps its own words (the table
 `engagement`, the agent `engagement_starter`, "Engagement home"). **The demo is set up from Claude Code** with
 `node scripts/demo-project.mjs <email> [--select]` (creates "Dummy - Big Pharma AG" if missing and loads the seed, or
 reloads it); there is no `reset` tool in the chat.
@@ -105,7 +105,7 @@ reloads it); there is no `reset` tool in the chat.
 **Data.** The project's data (`project.versions`: global version, per-table versions; 0 or 1 per project, made by the
 demo script), one Postgres table per package table in the closed schema `project` (`project.engagement`,
 `project.people`, …; generated from `_schema.json` by `scripts/gen-project-tables.mjs`, design in
-[engagement-tables-status.md](engagement-tables-status.md)), and `project_log` (last 200 changes). RLS: read own. The
+[archive/engagement-tables-status.md](archive/engagement-tables-status.md)), and `project_log` (last 200 changes). RLS: read own. The
 schema `_schema.json` is the single source of truth. One name: the engagement record takes the project's name, both ways.
 
 **Reads** (as the user): `project_read(project, tables?)`, `project_version(project)` (the package's
@@ -149,7 +149,7 @@ seed with the deck's public address, demo requests, validator). Rerun after any 
 | Pages offline (session 2's harness, `templates/bpag/test/`) | 25/25: each page at 1280 and 400 px, empty state, empty → data, redraw with marker |
 | Pages live, headless on `os.cantabpi.com` | All eleven render with the Big Pharma data, no notice or script error, no rail, no horizontal scroll at 400 px; a write redraws and marks the change about 0.5 s after the save, without reloading the frame; view switches show the right page; the deck renders through pdf.js |
 | Header live, headless | Slot in view, Claude writes there, click saves and shows, conflict line at 400 px, badge fades |
-| After the tables migration (§7.1), live (`templates/bpag/test/live.mjs`) | Database, tools (demo 1–9 at 7–15, 10 refused, browser save 403) and the eleven pages at 1280 and 400 px rechecked; a write marks Home about 0.6 s after the save. Details: [engagement-tables-status.md](engagement-tables-status.md) §4 |
+| After the tables migration (§7.1), live (`templates/bpag/test/live.mjs`) | Database, tools (demo 1–9 at 7–15, 10 refused, browser save 403) and the eleven pages at 1280 and 400 px rechecked; a write marks Home about 0.6 s after the save. Details: [archive/engagement-tables-status.md](archive/engagement-tables-status.md) §4 |
 | POC loop (2026-10-21) | 9/9: PDF at a page, page follows in about 1 s, dashboard, a new sale moves it, closed view empties, another user's slide not found |
 
 The test user is left with the demo at the seed and Atlas selected. Findings go in [test_tracker.md](test_tracker.md).
@@ -171,7 +171,7 @@ Scope agreed by Nela on 2026-10-22. Plan each item on Opus before building; orde
 
 ### 7.1 The 27 package tables as real tables
 
-**Built and live 2026-10-22:** [engagement-tables-status.md](engagement-tables-status.md).
+**Built and live 2026-10-22:** [archive/engagement-tables-status.md](archive/engagement-tables-status.md).
 
 Replace one JSON row per table with one Postgres table per package table, so the data can be queried with SQL.
 
@@ -189,7 +189,7 @@ Replace one JSON row per table with one Postgres table per package table, so the
 
 ### 7.2 Tool names as in the package
 
-**Built and live 2026-10-22 (function v0.10.0):** [engagement-tools-status.md](engagement-tools-status.md). Was:
+**Built and live 2026-10-22 (function v0.10.0):** [archive/engagement-tools-status.md](archive/engagement-tools-status.md). Was:
 
 Rename `engagement_contract`, `engagement_query`, `engagement_write`, `engagement_log`, `engagement_reset` to the
 package's verbs `contract`, `query`, `write`, `log`, `reset` (none clashes with an existing tool). Tests, docs, a
@@ -207,7 +207,9 @@ address set):
 
 **Cost to weigh:** with the runtime unchanged there is no embed mode, so the package's own header and agent rail show
 inside the frame under ours, unless Lovable hides them with CSS. Where the plain files are hosted is to decide in the
-plan (Supabase serves no HTML from functions). About 2–3 h.
+plan (Supabase serves no HTML from functions). About 2–3 h. **Since 2026-10-23** Nela wants one header only (no second
+header, no in-page view title, done in our runtime's embed mode), so this plan must settle how the unchanged runtime
+keeps to that before anything is built.
 
 ### 7.4 The other tools under Aleph's pattern (P14)
 
@@ -226,6 +228,7 @@ agent fixed, one claude.ai connector each, about 2–3 h; C) autonomous agents t
 - A dashboard over the real `todos` table would show the page following agent edits made with existing tools.
 
 **Changelog** (rationale in DECISIONS.md; file history in git; Lovable rounds in COMMS.md)
+- v1.5 (2026-10-23) — Swept: the home of the package port (§4) and the next-session scope (§7); links to the archived plans; §7.3 noted against the one-header decision.
 - v1.4 (2026-10-23) — §4: the project's data under project names (schema `project`, `project_*` functions), one name for project and engagement record; the demo set up from Claude Code (`scripts/demo-project.mjs`), no `reset` tool; live in v0.11.0. → DECISIONS.md 2026-10-23
 - v1.3 (2026-10-22) — §7.2 live: the five tools renamed (`contract`, `query`, `write`, `log`, `reset`), function v0.10.0. → DECISIONS.md 2026-10-22
 - v1.2 (2026-10-22) — §7.1 live and rechecked (§5).

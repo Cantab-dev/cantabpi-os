@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { failure, ToolError, type ToolResult } from './lib.ts'
 import { applyWrite, SCHEMA } from './package.ts'
 
-// The project's data from Siniša's views package (docs/live-views-status.md §4, docs/project-engagement-status.md).
+// The project's data from Siniša's views package (docs/live-views-status.md §4, docs/archive/project-engagement-status.md).
 // The five tools follow the package's data tool (vendor/bpag/spec/02-data-tool.md). Reads act as the user (RLS). Saves
 // follow Aleph's pattern (P13): the package's validator runs here, then the admin client saves through project_commit,
 // which only the service role may call, passing the verified user.

@@ -55,7 +55,7 @@ async function currentProject(db: SupabaseClient): Promise<Project | null> {
 
 /**
  * Runs a tool. Unless `open` (calls that manage projects), it needs a selected project and fails without one
- * (docs/projects-status.md D4). Every successful reply names the project, as a first line and as `project` in
+ * (docs/archive/projects-status.md D4). Every successful reply names the project, as a first line and as `project` in
  * the data, so the model always knows where it works.
  */
 async function run(
