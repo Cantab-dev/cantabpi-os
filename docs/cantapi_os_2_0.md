@@ -1,5 +1,9 @@
 # Cantab OS v2
 
+| Status | Version | Owner | Last updated |
+| --- | --- | --- | --- |
+| Draft — work in progress | v0.1 | Siniša | 2026-10-23 |
+
 ## Purpose
 
 The purpose of Cantab OS v2 is to build a semi-functional mockup for a consulting OS. The key principles & changes

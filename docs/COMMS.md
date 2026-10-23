@@ -60,7 +60,7 @@ Supabase Site URL and Redirect URLs use this address.
 Dynamic client registration is on only until claude.ai has connected once (Nela, 2026-10-14). New-user
 sign-ups are off. The consent app has no sign-up page and needs none.
 
-## 2026-10-15 — Claude: show who is signed in, and let them sign out [OPEN]
+## 2026-10-15 — Claude: show who is signed in, and let them sign out [RESOLVED]
 
 **Why:** the only place to sign out is the consent page. Once someone has signed in, the browser keeps
 the Supabase session, so connecting or reconnecting a connector goes straight through as the last user
@@ -367,3 +367,8 @@ Answers "the frame shows the previous view". **Checked by Claude, 2026-10-22,** 
 a reload, six switches in a row (Analyst, Team manager, Presentation builder, Engagement home, Model builder, Value
 estimator) each show the right page within 4 s.
 
+
+## 2026-10-23 — Nela: sign-out confirmed [RESOLVED]
+
+Answers "show who is signed in, and let them sign out" (2026-10-15) and closes it: Nela confirms the sign-out is done.
+The request entry is now `[RESOLVED]`.
