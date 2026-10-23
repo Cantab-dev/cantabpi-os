@@ -2,9 +2,13 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.9 | Nela | 2026-10-16 |
+| Current | v0.10 | Nela | 2026-10-23 |
 
 Plan and record for the in-chat views (MVP 1.x, before MVP 2.0), from Siniša's memo of 2026-10-15. Steps 0–4 are built and live (function v0.5.5). Open: the POC timing comparison (§4) and the optional "+" (§3.5); the improvements to plan are under "Learnings from testing". The tool contract as deployed is in [tools-status.md](tools-status.md) and the structure in [data-structure-status.md](data-structure-status.md); §1 and §2 record what changed. Read whole.
+
+**Swept 2026-10-23:** this record predates projects (function v0.7.0). Since then the todos and files views show the
+selected project's rows only, and the projects list is drawn as a plain list; see [projects-status.md](projects-status.md).
+The rest below is unchanged.
 
 Status values: `planned` (agreed, not built) · `built` (deployed and tested) · `changed` (built, then
 altered; note what changed) · `open` (needs a decision).
@@ -320,6 +324,7 @@ next planning session; none is built or decided.
 - `scripts/smoke.sh` (live checks); `docs/test-script-chat-views.md` (the scripted round)
 
 **Changelog** (rationale in DECISIONS.md; file history in git)
+- v0.10 (2026-10-23) — Swept: a note that this record predates projects; pointer to projects-status.
 - v0.9 (2026-10-16) — Swept: status Current, orientation fixed, tests 1–6 validated, sign-out implemented, contract pointers to tools-status and data-structure-status.
 - v0.8 (2026-10-16) — Round of 2026-10-16 recorded; learnings and improvement candidates added.
 - v0.7 (2026-10-15) — v0.5.4 retest passed; v0.5.5 saves ticks in parallel.

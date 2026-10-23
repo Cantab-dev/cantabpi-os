@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v2.3 | Nela | 2026-10-22 |
+| Current | v2.4 | Nela | 2026-10-23 |
 
 How to connect Claude to Cantab OS as yourself and try the tools. About 10 minutes.
 
@@ -35,7 +35,17 @@ The page at https://os.cantabpi.com also shows the URL and these steps once you'
 
 2. **Fully restart Claude Code or VS Code.**
 3. Type `/mcp`, choose `cantabpi-os` and **Authenticate**. Sign in and approve in the browser.
-4. `/mcp` should list 11 tools.
+4. `/mcp` should list 18 tools.
+
+## The agent demo (live views)
+
+1. Ask Nela for a demo project: she has Claude Code run `node scripts/demo-project.mjs <your email> --select`, which
+   creates "Big Pharma AG" with Siniša's demo data and selects it. The same command puts the demo back to the start;
+   there is no reset in the chat.
+2. Open https://os.cantabpi.com/v/1 next to the chat and sign in with the same account.
+3. Ask Claude: "Show the Engagement home view." Then follow the steps in `vendor/bpag/spec/03-demo-script.md`: before
+   each step, ask Claude to show the view named in it, then ask for the change as the named agent.
+4. After an update of the connector's tools, Disconnect and Connect it once in claude.ai.
 
 ## Try it
 
@@ -84,6 +94,7 @@ tool, a message was unclear, or the sign-in didn't work. She logs each finding i
 [test_tracker.md](test_tracker.md).
 
 **Changelog** (file history in git)
+- v2.4 (2026-10-23) — Swept: 18 tools (function v0.11.0); the agent demo, set up from Claude Code.
 - v2.3 (2026-10-22) — Projects (function v0.7.0): three prompts and how the selection behaves.
 - v2.2 (2026-10-16) — Expected tools updated for the views; scripted round in test-script-chat-views.md.
 - v2.1 (2026-10-15) — In-chat views; reconnect after an update.
