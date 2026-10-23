@@ -227,6 +227,15 @@ Deno.test('project labels parse, and projects take name and icon only', () => {
   assert(message(() => validateEdit(ENTITIES.projects, { label: 'project:1', selected: true })).includes('name, icon'))
 })
 
+Deno.test('a project name follows the package\'s rule for the engagement name: 70, one line, plain text', () => {
+  assertEquals(validateWrite(ENTITIES.projects, { name: 'x'.repeat(70) }), { name: 'x'.repeat(70) })
+  assert(message(() => validateWrite(ENTITIES.projects, { name: 'x'.repeat(71) })).includes('the limit is 70'))
+  for (const name of ['Atlas\nBirch', 'Atlas <b>', 'Atlas {bridge.target}']) {
+    assert(message(() => validateWrite(ENTITIES.projects, { name })).includes('one line of plain text'), name)
+  }
+  assert(message(() => validateEdit(ENTITIES.projects, { label: 'project:1', name: 'A\tB' })).includes('plain text'))
+})
+
 Deno.test('projects take no list filters', () => {
   assert(message(() => parseFilters(ENTITIES.projects, { category: 'sales' })).includes('does not work for projects'))
 })

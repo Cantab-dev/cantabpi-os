@@ -1,8 +1,9 @@
-// Live headless check of the eleven engagement views on os.cantabpi.com, as claude@test.com on its selected project
+// Live headless check of the eleven agent views on os.cantabpi.com, as claude@test.com on its selected project
 // (select "Dummy - Big Pharma AG", project:10, first; reselect Atlas afterwards). Signs in with CANTAB_TEST_PASSWORD from
 // .env.local, sets slot 1 with the view tool, and checks each view at 1280 and 400 px; then a phase_raci write (demo
-// step 8) with Home open must be marked without reloading the frame. Resets the engagement to the seed before and after.
+// step 8) with Home open must be marked without reloading the frame. Resets the project data to the seed before and after with scripts/demo-project.mjs (the Supabase CLI login).
 //   PLAYWRIGHT_CORE=<folder with node_modules/playwright-core> CHROME=<chrome-headless-shell.exe> //     node templates/bpag/test/live.mjs
+import { spawnSync } from 'node:child_process'
 import { createRequire } from 'node:module'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -33,6 +34,12 @@ async function tool(name, args) {
   const msg = JSON.parse(line.replace(/^data: /, ''))
   if (msg.error || msg.result?.isError) throw new Error(`${name}: ${JSON.stringify(msg).slice(0, 300)}`)
   return msg.result
+}
+
+// The demo is reset from Claude Code, not through the MCP tools (there is no reset tool).
+function resetDemo() {
+  const r = spawnSync('node scripts/demo-project.mjs claude@test.com', { cwd: new URL('.', repo), shell: true, encoding: 'utf8' })
+  if (r.status !== 0) throw new Error(`demo reset failed: ${r.stdout}${r.stderr}`)
 }
 
 const KEYS = ['home', 'engagement_starter', 'analyst', 'value_estimator', 'presentation_builder', 'project_manager',
@@ -81,7 +88,7 @@ const state = (frame) => frame.evaluate(() => {
 let passed = 0, fail = 0
 const report = (name, ok, info = '') => { ok ? passed++ : fail++; console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${info ? '  ' + info : ''}`) }
 
-await tool('reset', { confirm: true })
+resetDemo()
 for (const key of KEYS) {
   await tool('view', { template: key, slot: 1 })
   for (const width of [1280, 400]) {
@@ -114,6 +121,6 @@ await tool('view', { template: 'home', slot: 1 })
   await page.close()
 }
 
-await tool('reset', { confirm: true })
+resetDemo()
 await browser.close()
 console.log(`\n${passed} passed, ${fail} failed`)

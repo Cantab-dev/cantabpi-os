@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v1.3 | Nela | 2026-10-22 |
+| Current | v1.4 | Nela | 2026-10-23 |
 
 **What is live (function v0.10.0, 2026-10-22):** a browser page at `https://os.cantabpi.com/v/1…10` that Claude
 steers from claude.ai. Each of the ten views (slots) shows one thing; Claude changes it with the `view` tool and the
@@ -19,10 +19,10 @@ Section numbers cited in COMMS, DECISIONS and the applied migrations before 2026
 ```
 claude.ai ──MCP──▶ mcp function (19 tools, acts as the signed-in user)
    │                 ├─ view ───────────────▶ ui_views (slot → template, project)          ◀── Realtime ──┐
-   │                 └─ contract/query/write/log/reset ─ validator ─▶ engagement_commit (service role) ─▶ engagement.<27 tables>
+   │                 └─ contract/query/write/log/reset ─ validator ─▶ project_commit (service role) ─▶ project.<27 tables>
    │                                                                                                     │
 os.cantabpi.com/v/N (Lovable): header + centre pane                                                       │
-   ├─ engagement views: view_templates.html in <iframe srcdoc>, runtime polls engagement_version ─────────┘ (every 2 s)
+   ├─ agent views: view_templates.html in <iframe srcdoc>, runtime polls project_version ────────────────┘ (every 2 s)
    └─ pdf / dashboard (POC): rendered by the Lovable page itself
 ```
 
@@ -96,15 +96,21 @@ icon is active. No project chip, no account menu, no sidebar (Nela, 2026-10-22).
 (fictional), engagement "Agentic AI for field sales: pilot to scale". Ten agent views plus Engagement home, 27 tables, a
 validator that refuses any write that would break a view, a ten-step demo script.
 
-**Data.** One dataset per project (`engagement_datasets`: global version, per-table versions), one Postgres table per
-package table in the schema `engagement` (`engagement.people`, `engagement.tasks`, …; generated from `_schema.json` by
-`scripts/gen-engagement-tables.mjs`, design in [engagement-tables-status.md](engagement-tables-status.md)), and
-`engagement_log` (last 200 changes). RLS: read own. The schema `_schema.json` is the single source of truth.
+**Names (v0.11.0, built 2026-10-23, not live until pushed and deployed):** "engagement" is replaced by "project" wherever
+the name is ours ([project-engagement-status.md](project-engagement-status.md)); the package keeps its own words (the
+table `engagement`, the agent `engagement_starter`, "Engagement home"). Live until the cut-over: the schema `engagement`,
+`engagement_datasets`, `engagement_log` and `engagement_*` functions with the same shapes.
 
-**Reads** (as the user): `engagement_read(project, tables?)`, `engagement_version(project)` (the package's
-`_version.json`), `engagement_log_read(project, since?, limit?)`; `status: 'empty'` when the project has no engagement.
+**Data.** The project's data (`project.versions`: global version, per-table versions; 0 or 1 per project, made by the
+first `reset`), one Postgres table per package table in the closed schema `project` (`project.engagement`,
+`project.people`, …; generated from `_schema.json` by `scripts/gen-project-tables.mjs`, design in
+[engagement-tables-status.md](engagement-tables-status.md)), and `project_log` (last 200 changes). RLS: read own. The
+schema `_schema.json` is the single source of truth. One name: the engagement record takes the project's name, both ways.
 
-**Writes** (Aleph's pattern): `engagement_commit` and `engagement_replace` may be called by the **service role only**.
+**Reads** (as the user): `project_read(project, tables?)`, `project_version(project)` (the package's
+`_version.json`), `project_log_read(project, since?, limit?)`; `status: 'empty'` when the project has no data yet.
+
+**Writes** (Aleph's pattern): `project_commit` and `project_replace` may be called by the **service role only**.
 The MCP function verifies the user's token, runs the package's `applyWrite` unchanged, and saves the touched tables with
 the admin client, passing the user; the function checks that the project is theirs and that the version has not moved
 (on a conflict the tool retries once). A browser cannot save (HTTP 403).
@@ -125,11 +131,11 @@ Claude plays each of the ten agents by naming it in `agent`; the validator enfor
 ported runtime and the schema inlined) and, with `--upload` (Nela, `CANTAB_SERVICE_KEY`), upserts `view_templates` and
 uploads the deck to the public bucket `engagement-assets` (`bpag/scale-up-proposal.pdf`). Rerun it after any change to
 the pages. `templates/bpag/runtime.js` is the package's runtime with one change set, listed in its header: data from
-`engagement_read` / `engagement_version` through `window.parent.CP_HOST`, the schema from `window.CP_SCHEMA`, embed mode
+`project_read` / `project_version` through `window.parent.CP_HOST`, the schema from `window.CP_SCHEMA`, embed mode
 (no brand, no agent rail; the engagement line stays), and the empty-project message. The pages load IBM Plex from
 Google Fonts and pdf.js from cdnjs.
 
-**Built from the package:** `scripts/build-engagement.mjs` writes `supabase/functions/mcp/engagement_pkg.ts` (schema,
+**Built from the package:** `scripts/build-package.mjs` writes `supabase/functions/mcp/package.ts` (schema,
 seed with the deck's public address, demo requests, validator). Rerun after any change to `vendor/bpag`.
 
 ## 5. Tests and checks
@@ -219,6 +225,7 @@ agent fixed, one claude.ai connector each, about 2–3 h; C) autonomous agents t
 - A dashboard over the real `todos` table would show the page following agent edits made with existing tools.
 
 **Changelog** (rationale in DECISIONS.md; file history in git; Lovable rounds in COMMS.md)
+- v1.4 (2026-10-23) — §4: the project's data under project names (schema `project`, `project_*` functions), one name for project and engagement record; built, not live. → DECISIONS.md 2026-10-23
 - v1.3 (2026-10-22) — §7.2 live: the five tools renamed (`contract`, `query`, `write`, `log`, `reset`), function v0.10.0. → DECISIONS.md 2026-10-22
 - v1.2 (2026-10-22) — §7.1 live and rechecked (§5).
 - v1.1 (2026-10-22) — §7.1 built (real tables in the schema `engagement`); §1 and §4 updated. → DECISIONS.md 2026-10-22

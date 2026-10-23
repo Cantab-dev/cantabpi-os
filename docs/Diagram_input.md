@@ -2,7 +2,7 @@
 
 | Status | Version | Owner | Last updated |
 | --- | --- | --- | --- |
-| Current | v0.1 | Nela | 2026-10-22 |
+| Current | v0.3 | Nela | 2026-10-23 |
 
 Source for two target-architecture diagrams: (1) the agent architecture, (2) the database. Taken from the
 migrations in `supabase/migrations/`, the function code in `supabase/functions/mcp/` and the plan docs, as of
@@ -202,20 +202,26 @@ cascade); `sold_on` date not null; `region` text check in (`emea`, `amer`, `apac
 (`Atlas`, `Beacon`, `Compass`, `Delta`); `amount` numeric(12,2) > 0; `created_at`. Index (`profile_id`,
 `sold_on`). No labels.
 
-**`engagement_datasets`, `engagement_log`, schema `engagement`** [built v0.9.0; tables live 2026-10-22] —
-Siniša's views package, one dataset per project. The schema `engagement` holds one table per package table (27, e.g.
-`engagement.people`), generated from `_schema.json` by `scripts/gen-engagement-tables.mjs`: `project_id`, `profile_id`,
-`pos` (array order), the package `id` (PK with `project_id`), one typed column per field (`date`, `integer`, `numeric`,
-`boolean`, `text`, `text[]` for ref lists; enums as checks), `meta_version`, `meta_updated_at` (timestamptz),
-`meta_updated_by`, `meta_reason`. Helpers `engagement.tables()`, `engagement.get` (as the caller), `engagement.put`
-(service role). Not exposed to the Data API. The dataset holds `global_version` and `table_versions`; the log keeps the
-last 200 changes. RLS: read own. Saves only through `engagement_commit` / `engagement_replace`, service role only.
-Replaces `engagement_tables` (one jsonb row per package table), dropped by migration `20261022160000`.
+**Schema `project`: `project.versions` and the 27 package tables; `project_log`** [built v0.9.0; tables live
+2026-10-22; renamed from the schema `engagement`, `engagement_datasets` and `engagement_log` by migration
+`20261023100000`, built v0.11.0, **not live until Nela pushes it**] — the project's data from Siniša's views package.
+`project.versions` (0 or 1 per project, FK → projects, cascade; the first `reset` creates it) holds `contract_version`,
+`global_version` and `table_versions`. One table per package table (27, e.g. `project.engagement`, `project.people`),
+each FK → `project.versions` (cascade), generated from `_schema.json` by `scripts/gen-project-tables.mjs`:
+`project_id`, `profile_id`, `pos` (array order), the package `id` (PK with `project_id`), one typed column per field
+(`date`, `integer`, `numeric`, `boolean`, `text`, `text[]` for ref lists; enums as checks), `meta_version`,
+`meta_updated_at` (timestamptz), `meta_updated_by`, `meta_reason`. Helpers `project.tables()`, `project.get` (as the
+caller), `project.put` (service role). The schema is not exposed to the Data API. `public.project_log` keeps the last
+200 changes. RLS: read own. Saves only through `project_commit` / `project_replace`, service role only.
+**One name:** `project.engagement`'s single record takes the project's name; trigger `sync_engagement_name` on
+`projects` (function `project.sync_name()`) passes a rename on, and a save that changes the record's name renames the
+project. Check `projects_name_package` gives project names the package's rule (1–70 characters, one line, plain text).
 
 **`view_templates`** [built v0.9.0] — `key` PK (the eleven engagement view keys), `html` (one self-contained page),
 `contract_version`. Read: any signed-in user. Written with the service key by `scripts/templates.mjs` (run by Nela),
-which builds each page from `vendor/bpag` with `templates/bpag/runtime.js` (data from `engagement_read` and
-`engagement_version` through `window.parent.CP_HOST`) and uploads the deck. Storage: public bucket `engagement-assets`
+which builds each page from `vendor/bpag` with `templates/bpag/runtime.js` (data from `project_read` and
+`project_version` through `window.parent.CP_HOST`; until the v0.11.0 pages are uploaded, `engagement_read` and
+`engagement_version`) and uploads the deck. Storage: public bucket `engagement-assets`
 (the deck, `bpag/scale-up-proposal.pdf`). The Lovable page shows a page in an `<iframe srcdoc>` and sets `CP_HOST`.
 
 **Planned and candidate tables**
@@ -259,8 +265,8 @@ which builds each page from `vendor/bpag` with `templates/bpag/runtime.js` (data
 | `view_agent_apply(p_template, p_agent_params, p_focus, p_slot)` | jsonb | definer | `view` | [POC]; v0.8.0: slot in view, keeps settings in `state` |
 | `view_close(p_slot)` | jsonb | definer | live page | [POC] |
 | `view_header_templates()` | text[] | — | view functions | [built v0.8.0]; v0.9.0: the package's eleven keys |
-| `engagement_read(p_project, p_tables)`, `engagement_version(p_project)`, `engagement_log_read(p_project, p_since, p_limit)` | jsonb | invoker | pages, engagement tools | [built v0.9.0] |
-| `engagement_commit(p_profile, p_project, p_expected_version, p_version, p_tables, p_log)`, `engagement_replace(…)`, `engagement_owns(…)` | jsonb | definer, **service role only** | `write`, `reset` | [built v0.9.0] |
+| `project_read(p_project, p_tables)`, `project_version(p_project)`, `project_log_read(p_project, p_since, p_limit)` | jsonb | invoker | pages, the five package tools | [built v0.9.0 as `engagement_*`; renamed v0.11.0, not live until pushed] |
+| `project_commit(p_profile, p_project, p_expected_version, p_version, p_tables, p_log)`, `project_replace(…)`, `project_owns(…)` | jsonb | definer, **service role only** | `write`, `reset` | [built v0.9.0 as `engagement_*`; renamed v0.11.0, not live until pushed]; commit renames the project when the engagement name changes, replace names the record after the project |
 | `view_seen(p_slot)` | jsonb | definer | live page | [built v0.8.0] |
 | `view_set_template(p_slot, p_expected_version, p_template)` | jsonb | definer | live page (icon click) | [built v0.8.0] |
 | `dashboard_sales_overview(p_period, p_region)` | jsonb | invoker | live page | [POC] |
@@ -320,8 +326,8 @@ selected and names the project in the reply. "Project calls" work without a sele
 | `edit` | `categories` | update the record's fields; trigger may append to `context`; `updated_at` | [built] |
 | `delete` | for a project: `project_summary()` (refuses when it holds items) | delete the record | [built] |
 | `view` | `views_list()` (ui_views); `slides` (id, label, storage_url) | `ui_views` via `view_agent_apply()` | [POC] |
-| `contract`, `query`, `log` | `engagement_read()` (`engagement_datasets`, the schema `engagement`), `engagement_log_read()` | — | [built v0.9.0, renamed v0.10.0] |
-| `write`, `reset` | `engagement_read()` | `engagement_commit()` / `engagement_replace()` with the service role: `engagement_datasets`, the schema `engagement`, `engagement_log` | [built v0.9.0, renamed v0.10.0] |
+| `contract`, `query`, `log` | `project_read()` (`project.versions`, the schema `project`), `project_log_read()` | — | [built v0.9.0, renamed v0.10.0; database names v0.11.0] |
+| `write`, `reset` | `project_read()` | `project_commit()` / `project_replace()` with the service role: `project.versions`, the schema `project`, `project_log`; a new engagement name renames the project | [built v0.9.0, renamed v0.10.0; database names v0.11.0] |
 
 Not tools, for completeness: the live page (A2) calls `view_open`, `view_update`, `view_close`, `views_list`,
 `dashboard_sales_overview`, signs `slide-pdfs` urls and subscribes to Realtime.
@@ -351,5 +357,6 @@ erDiagram
 
 ## Changelog
 
+- v0.3 (2026-10-23) — The project's data renamed from "engagement": schema `project`, `project.versions`, `project_log`, functions `project_*`; one name for a project and its engagement record (trigger, check). Function v0.11.0; migration `20261023100000` built, not pushed.
 - v0.2 (2026-10-22) — Engagement data as 27 tables in the schema `engagement`; the five engagement tools in §2.7 under their new names (function v0.10.0).
 - v0.1 (2026-10-22) — First version, at function v0.7.0 (projects).

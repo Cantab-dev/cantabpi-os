@@ -1,12 +1,12 @@
 import { assert, assertEquals } from 'jsr:@std/assert@1'
-import { AGENTS, contract, query, write } from './engagement.ts'
-import { DEMO, SCHEMA, SEED, validateDataset } from './engagement_pkg.ts'
+import { AGENTS, contract, query, write } from './project_data.ts'
+import { DEMO, SCHEMA, SEED, validateDataset } from './package.ts'
 import { ToolError } from './lib.ts'
 
 type Row = Record<string, unknown>
 const clone = <T>(x: T): T => JSON.parse(JSON.stringify(x))
 
-/** An in-memory stand-in for engagement_read and engagement_commit. */
+/** An in-memory stand-in for project_read and project_commit. */
 function store() {
   const s = { version: clone(SEED.version), data: clone(SEED.tables) as Record<string, Row[]>, log: [] as Row[] }
   const dataset = () => Promise.resolve({ version: clone(s.version), data: clone(s.data) })
@@ -104,16 +104,16 @@ Deno.test('contract gives the agent its own write scope', () => {
 Deno.test('tool names: the package\'s verbs, none clashing with the other tools', async () => {
   const { registerTools } = await import('./tools.ts')
   const { registerViewTool } = await import('./views.ts')
-  const { registerEngagementTools } = await import('./engagement.ts')
+  const { registerProjectDataTools } = await import('./project_data.ts')
   const names: string[] = []
   const server = { registerTool: (name: string) => { names.push(name) }, registerResource: () => {} } as never
   const db = {} as never
   const before = names.length
-  registerEngagementTools(server, db, db, null)
-  assertEquals(names.slice(before), ['contract', 'query', 'write', 'log', 'reset'])
+  registerProjectDataTools(server, db, db, null)
+  assertEquals(names.slice(before), ['contract', 'query', 'write', 'log'])
   registerTools(server, db)
   registerViewTool(server, db)
   assertEquals(new Set(names).size, names.length, `duplicate tool name in ${names.join(', ')}`)
-  assertEquals(names.length, 19)
+  assertEquals(names.length, 18)
   assert(!names.some((n) => n.startsWith('engagement_')))
 })

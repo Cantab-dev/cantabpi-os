@@ -6,15 +6,15 @@
    1. Host. When the page runs in the Lovable page's iframe, window.parent.CP_HOST
       { supabaseUrl, publishableKey, projectId, getToken, openView } is the data source. Without it the runtime
       behaves as in the package (files under data/).
-   2. Data. Tables come from rpc/engagement_read (p_project, p_tables) and versions from rpc/engagement_version
+   2. Data. Tables come from rpc/project_read (p_project, p_tables) and versions from rpc/project_version
       (p_project), fetched with the publishable key as apikey and the user's token from getToken() as bearer,
       instead of data/<table>.json and data/_version.json. Polling every 2 s is unchanged.
    3. Schema. window.CP_SCHEMA (inlined by scripts/templates.mjs) instead of data/_schema.json.
    4. Embed mode (whenever there is a host): no brand, no agent rail; the engagement line stays.
    5. Links to other views (brand, rail) call CP_HOST.openView(key) instead of navigating; the rail skips its
       HEAD check for pages that do not exist as files.
-   6. status 'empty' hides the view and shows "This project has no engagement data yet. Ask Claude to load the
-      demo (engagement_reset)."; the poll keeps running and draws the view once data arrives.
+   6. status 'empty' hides the view and shows "This project has no data yet." (the demo is loaded from Claude Code,
+      scripts/demo-project.mjs); the poll keeps running and draws the view once data arrives.
    Everything else, including what views receive in ctx, is the package's code unchanged. */
 (function () {
   'use strict';
@@ -27,7 +27,7 @@
   var HOST = null;
   try { HOST = window.parent !== window && window.parent.CP_HOST ? window.parent.CP_HOST : null; } catch (e) { HOST = null; }
   var EMBED = !!HOST;
-  var EMPTY_TEXT = 'This project has no engagement data yet. Ask Claude to load the demo (engagement_reset).';
+  var EMPTY_TEXT = 'This project has no data yet.';
 
   function el(tag, attrs, kids) {
     var e = document.createElement(tag);
@@ -69,10 +69,10 @@
       return r.json();
     });
   }
-  // The package's _version.json, or null when the project has no engagement.
+  // The package's _version.json, or null when the project has no data.
   function getVersion() {
     if (!HOST) return getJSON('data/_version.json');
-    return rpc('engagement_version', { p_project: HOST.projectId }).then(function (res) {
+    return rpc('project_version', { p_project: HOST.projectId }).then(function (res) {
       return res && res.status === 'ok' ? res.version : null;
     });
   }
@@ -96,7 +96,7 @@
 
   function loadTables(list) {
     if (HOST) {
-      return rpc('engagement_read', { p_project: HOST.projectId, p_tables: list }).then(function (res) {
+      return rpc('project_read', { p_project: HOST.projectId, p_tables: list }).then(function (res) {
         if (!res || res.status !== 'ok') { setEmpty(true); return; }
         if (S.empty) setEmpty(false);
         list.forEach(function (t) {
@@ -376,7 +376,7 @@
       setTimeout(poll, POLL_MS);
     }).catch(function (e) {
       var main = document.getElementById('cp-main');
-      if (main) { main.innerHTML = ''; main.appendChild(el('div', { 'class': 'cp-notice', role: 'alert', text: 'The engagement data could not be loaded (' + e.message + ').' })); }
+      if (main) { main.innerHTML = ''; main.appendChild(el('div', { 'class': 'cp-notice', role: 'alert', text: 'The project data could not be loaded (' + e.message + ').' })); }
     });
   };
 

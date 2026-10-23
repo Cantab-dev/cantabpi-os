@@ -1,7 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { z } from 'zod'
-import { SCHEMA } from './engagement_pkg.ts'
+import { SCHEMA } from './package.ts'
 import { ENTITIES, failure, finish, notFoundMessage, parseLabel, ToolError, type ToolResult } from './lib.ts'
 
 // Live views (docs/live-views-status.md §2–§3). The page /v/<slot> lives in the Lovable app and follows its slot
@@ -9,7 +9,7 @@ import { ENTITIES, failure, finish, notFoundMessage, parseLabel, ToolError, type
 // 20261021120000_live_views and 20261022150000_engagement migrations: they are kept in step by hand
 // (live-views-status.md §2, §4).
 export const VIEW_BASE_URL = 'https://os.cantabpi.com/v/'
-/** The engagement views (live-views-status.md §2): the package's eleven. None takes parameters; each reads its
+/** The agent views (live-views-status.md §2): the package's eleven. None takes parameters; each reads its
  * slot's project. */
 export const HEADER_VIEWS: Record<string, string> = Object.fromEntries(
   Object.entries(SCHEMA.views as Record<string, { label: string }>).map(([k, v]) => [k, v.label]),
@@ -202,7 +202,7 @@ export function registerViewTool(server: McpServer, db: SupabaseClient): void {
         'deliberate act: call it when the user asks to see something or would clearly benefit, never just because you ' +
         'changed data. Call it without "template" to list the user\'s views. It changes the view the user has open unless ' +
         'the user names another view number. Templates: "pdf" (the PDF of a slide deck, optionally at a page; find the ' +
-        'label with list entity "slides"), "dashboard" (a predefined dashboard, with optional filters), and the engagement ' +
+        'label with list entity "slides"), "dashboard" (a predefined dashboard, with optional filters), and the agent ' +
         `views of the selected project, which take no parameters: ${HEADER_LIST}. ` +
         'Examples: "Show me the company intro deck at page 3" -> view with template "pdf", document ' +
         '"slide:5", page 3. "Sales dashboard for EMEA this quarter" -> view with template "dashboard", dashboard ' +

@@ -3,8 +3,8 @@
 //   deno test -A --config supabase/functions/mcp/deno.json supabase/tests/engagement_tables_test.ts
 import { PGlite } from 'npm:@electric-sql/pglite@0.3.14'
 import { assert, assertEquals } from 'jsr:@std/assert@1'
-import { write } from '../functions/mcp/engagement.ts'
-import { DEMO, SEED, SCHEMA } from '../functions/mcp/engagement_pkg.ts'
+import { write } from '../functions/mcp/project_data.ts'
+import { DEMO, SEED, SCHEMA } from '../functions/mcp/package.ts'
 
 const root = new URL('../..', import.meta.url)
 const migration = (name: string) => Deno.readTextFileSync(new URL(`supabase/migrations/${name}`, root))

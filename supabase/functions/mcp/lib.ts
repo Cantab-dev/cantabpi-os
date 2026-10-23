@@ -9,7 +9,7 @@ export const MAX_ACTION_CHARS = 500
 export type EntityKey = 'skills' | 'todos' | 'leads' | 'sheets' | 'docs' | 'slides' | 'projects'
 
 type FieldSpec =
-  | { kind: 'text'; max: number; required?: boolean }
+  | { kind: 'text'; max: number; required?: boolean; plain?: boolean }
   | { kind: 'date' }
   | { kind: 'importance' }
   | { kind: 'bool' }
@@ -125,7 +125,8 @@ export const ENTITIES: Record<EntityKey, EntityDef> = {
     scoped: false,
     // The selection lives on the profile and changes only through select_project.
     fields: {
-      name: { kind: 'text', max: 200, required: true },
+      // Also the engagement record's name in the project's data, so the package's rule: one line, plain text, 70.
+      name: { kind: 'text', max: 70, required: true, plain: true },
       icon: { kind: 'text', max: 16 },
     },
   },
@@ -218,6 +219,10 @@ function checkField(def: EntityDef, field: string, spec: FieldSpec, value: unkno
           `"${field}" is ${value.length} characters; the limit is ${spec.max}. Shorten it` +
             (def.hasContext ? ', and put the extra detail in a note on the record afterwards.' : '.'),
         )
+      }
+      if (spec.plain && (/[\u0000-\u001F\u007F]/.test(value) || /<\/?[a-zA-Z][^>]*>/.test(value) ||
+        /\{[a-z_]+\.[a-z_]+\}/.test(value))) {
+        throw new ToolError(`"${field}" must be one line of plain text: no line breaks, markup or {placeholders}.`)
       }
       break
     case 'date':

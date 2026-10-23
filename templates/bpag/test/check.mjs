@@ -1,7 +1,7 @@
 // Headless check of the built pages without the backend (docs/live-views-status.md §8.5).
 // Serves harness.html and templates/bpag/dist/, and fakes the two read functions from vendor/bpag/data/*.json:
-//   POST /rest/v1/rpc/engagement_read     {p_project, p_tables}   project 'p-empty' → {status: 'empty'}
-//   POST /rest/v1/rpc/engagement_version  {p_project}
+//   POST /rest/v1/rpc/project_read     {p_project, p_tables}   project 'p-empty' → {status: 'empty'}
+//   POST /rest/v1/rpc/project_version  {p_project}
 // Each page must render with no notice and no script error at 1280 and 400 px. Then: the empty state, the change
 // from empty to data, and a redraw with a change marker within 2.5 s of a version bump.
 //
@@ -51,8 +51,8 @@ const server = createServer((req, res) => {
       rpcCalls.push({ fn, args })
       if (req.headers.apikey !== 'pk_test' || req.headers.authorization !== 'Bearer tok_test') return send(401, 'application/json', '{"message":"bad auth"}')
       const empty = emptyProjects.has(args.p_project)
-      if (fn === 'engagement_version') return send(200, 'application/json', JSON.stringify(empty ? { status: 'empty' } : { status: 'ok', version }))
-      if (fn === 'engagement_read') {
+      if (fn === 'project_version') return send(200, 'application/json', JSON.stringify(empty ? { status: 'empty' } : { status: 'ok', version }))
+      if (fn === 'project_read') {
         if (empty) return send(200, 'application/json', JSON.stringify({ status: 'empty' }))
         const out = {}
         for (const t of args.p_tables || Object.keys(tables)) if (tables[t]) out[t] = tables[t]
@@ -132,12 +132,12 @@ for (const key of keys) {
 {
   const { page, frame, errors } = await open('home', 1280, 'p-empty')
   const s = await state(frame)
-  const want = 'This project has no engagement data yet. Ask Claude to load the demo (engagement_reset).'
+  const want = 'This project has no data yet.'
   report('empty project shows the message', s.notices.length === 1 && s.notices[0] === want && s.drawn === 0 && !errors.length, JSON.stringify(s.notices) + (errors.length ? ' ' + errors.join(' | ') : ''))
   await page.close()
 }
 
-// 3. Empty, then data arrives (engagement_reset): drawn on the next poll.
+// 3. Empty, then data arrives (the demo loaded): drawn on the next poll.
 {
   const { page, frame } = await open('analyst', 1280, 'p-later')
   emptyProjects.delete('p-later')
@@ -162,7 +162,7 @@ for (const key of keys) {
     flash: document.querySelectorAll('.flash').length,
     marked: document.querySelectorAll('[data-changed]').length,
   }))
-  const reads = rpcCalls.slice(before).filter((c) => c.fn === 'engagement_read')
+  const reads = rpcCalls.slice(before).filter((c) => c.fn === 'project_read')
   const onlyChanged = reads.length === 1 && JSON.stringify(reads[0].args.p_tables) === '["phase_raci"]'
   report('version bump redraws with marker', got.text && got.flash > 0 && onlyChanged, JSON.stringify({ ...got, reads: reads.map((r) => r.args.p_tables) }))
   await page.close()

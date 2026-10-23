@@ -75,7 +75,7 @@ Deno.test('the message says whether the view is the one in front of the user', (
   assert(applyMessage(5, 'X', { in_view: false, seen_lately: false }).includes('If the user has view 5 open'))
 })
 
-Deno.test('engagement views match the engagement migration', () => {
+Deno.test('agent views match the view keys in the migration', () => {
   const sql = Deno.readTextFileSync(new URL('../../migrations/20261022150000_engagement.sql', import.meta.url))
   for (const k of Object.keys(HEADER_VIEWS)) assert(sql.includes(`'${k}'`), k)
 })

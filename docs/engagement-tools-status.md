@@ -4,6 +4,9 @@
 | --- | --- | --- | --- |
 | Current — §7.2 built and live; §7.4 not planned yet | v0.2 | Nela | 2026-10-22 |
 
+**Since 2026-10-23 (v0.11.0):** the database names below (`engagement_read`, `engagement_commit`, …) are `project_*`;
+see [project-engagement-status.md](project-engagement-status.md). The tool names are unchanged.
+
 **What this is:** the plan for [live-views-status.md](live-views-status.md) §7.2 (tool names as in the package). §7.4
 (the other tools under Aleph's pattern) will be planned here too. §7.2: go from Nela 2026-10-22; live in function v0.10.0.
 

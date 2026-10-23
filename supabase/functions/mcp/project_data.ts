@@ -2,12 +2,12 @@ import type { McpServer } from '@modelcontextprotocol/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 import { failure, ToolError, type ToolResult } from './lib.ts'
-import { applyWrite, SCHEMA, SEED } from './engagement_pkg.ts'
+import { applyWrite, SCHEMA } from './package.ts'
 
-// Siniša's views package, ported onto Supabase (docs/live-views-status.md §4). The five tools follow
-// the package's data tool (vendor/bpag/spec/02-data-tool.md). Reads act as the user (RLS). Saves follow Aleph's
-// pattern (P13): the package's validator runs here, then the admin client saves through engagement_commit, which
-// only the service role may call, passing the verified user.
+// The project's data from Siniša's views package (docs/live-views-status.md §4, docs/project-engagement-status.md).
+// The five tools follow the package's data tool (vendor/bpag/spec/02-data-tool.md). Reads act as the user (RLS). Saves
+// follow Aleph's pattern (P13): the package's validator runs here, then the admin client saves through project_commit,
+// which only the service role may call, passing the verified user.
 
 type Row = Record<string, unknown>
 type Version = { global: number; tables: Record<string, number> }
@@ -19,15 +19,15 @@ export const TABLES = Object.keys(SCHEMA.tables) as string[]
 const NO_PROJECT =
   'No project selected. Select a project first: call list with entity "projects", then select_project with one label.'
 const EMPTY =
-  'This project has no engagement data yet. Call reset with confirm true to load the Big Pharma AG demo, ' +
-  'or select the project that holds the engagement.'
+  'This project has no data. Select the project that holds the data (list with entity "projects", then ' +
+  'select_project). The demo project is set up outside the chat; tell the user if they have none.'
 const WRITE_CRASH =
   'The write may or may not have been saved. Call log with limit 1 to see the last change, then decide.'
 
 /** A result whose records keep their package ids (tk-08 …); the database's own ids never reach this module. */
 function done(data: Row, lead?: string): ToolResult {
   const text = JSON.stringify(data)
-  if (/"(profile_id|project_id)"/.test(text)) throw new Error('internal column in an engagement result')
+  if (/"(profile_id|project_id)"/.test(text)) throw new Error('internal column in a project data result')
   return { content: [{ type: 'text', text: lead ? `${lead}\n${text}` : text }], structuredContent: data }
 }
 
@@ -39,7 +39,7 @@ async function projectId(db: SupabaseClient): Promise<string> {
 }
 
 async function load(db: SupabaseClient, project: string, tables: string[] | null = null): Promise<Dataset> {
-  const res = await db.rpc('engagement_read', { p_project: project, p_tables: tables })
+  const res = await db.rpc('project_read', { p_project: project, p_tables: tables })
   if (res.error) throw res.error
   const out = res.data as Row
   if (out.status !== 'ok') throw new ToolError(EMPTY)
@@ -139,7 +139,7 @@ export async function write(
   return { committed: false, errors: [{ rule: 'version_conflict', message: 'the data kept changing; read again and retry' }], warnings: [] }
 }
 
-export function registerEngagementTools(
+export function registerProjectDataTools(
   server: McpServer, db: SupabaseClient, admin: SupabaseClient, userId: string | null,
 ): void {
   const guard = async (fn: () => Promise<ToolResult>, crash: string): Promise<ToolResult> => {
@@ -155,13 +155,13 @@ export function registerEngagementTools(
     if (!userId) throw new ToolError('not signed in')
     return userId
   }
-  const READ_CRASH = 'The engagement data could not be read. Try again once; if it fails again, tell the user.'
+  const READ_CRASH = 'The project data could not be read. Try again once; if it fails again, tell the user.'
   const ro = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
 
   server.registerTool('contract', {
-    title: 'Engagement contract',
+    title: 'Project data contract',
     description:
-      'Orientation for one of the ten engagement agents in the selected project: the tables and their limits, what ' +
+      'Orientation for one of the ten agents in the selected project: the tables and their limits, what ' +
       'each view shows, the rules (invariants), and what this agent may change. Call it first, before ' +
       'query or write, as the agent you act as. Agents: ' + AGENTS.join(', ') + '.',
     inputSchema: z.object({ agent: z.string().describe(`The agent you act as: ${AGENTS.join(', ')}.`) }),
@@ -173,9 +173,9 @@ export function registerEngagementTools(
   }, READ_CRASH))
 
   server.registerTool('query', {
-    title: 'Read engagement data',
+    title: 'Read project data',
     description:
-      'Read records from one table of the selected project\'s engagement. Optional: where (field equality; a list ' +
+      'Read records from one table of the selected project\'s data. Optional: where (field equality; a list ' +
       'means "in"), fields (projection; id always comes back), expand (reference fields resolved one level, under ' +
       '_expanded), limit (default 500).',
     inputSchema: z.object({
@@ -196,9 +196,9 @@ export function registerEngagementTools(
   }, READ_CRASH))
 
   server.registerTool('write', {
-    title: 'Change engagement data',
+    title: 'Change project data',
     description:
-      'Apply one batch of operations to the selected project\'s engagement, as one agent and within its write scope ' +
+      'Apply one batch of operations to the selected project\'s data, as one agent and within its write scope ' +
       '(see contract). The whole batch is checked against every rule and saved together, or not at all; a ' +
       'refusal lists each error with the rule and what is allowed, so fix the request and retry. Ops: {op "update", ' +
       'table, id, set}, {op "create", table, record, tmp?}, {op "delete", table, id}. A create never has id or ' +
@@ -219,7 +219,7 @@ export function registerEngagementTools(
     const profile = user()
     const project = await projectId(db)
     const out = await write(() => load(db, project), async (p) => {
-      const res = await admin.rpc('engagement_commit', { p_profile: profile, p_project: project, ...p })
+      const res = await admin.rpc('project_commit', { p_profile: profile, p_project: project, ...p })
       if (res.error) throw res.error
       return res.data as Row
     }, request)
@@ -227,8 +227,8 @@ export function registerEngagementTools(
   }, WRITE_CRASH))
 
   server.registerTool('log', {
-    title: 'Engagement change log',
-    description: 'The latest changes to the selected project\'s engagement, newest last: since_version, or the last limit entries.',
+    title: 'Project data change log',
+    description: 'The latest changes to the selected project\'s data, newest last: since_version, or the last limit entries.',
     inputSchema: z.object({
       since_version: z.number().describe('Entries after this version.').optional(),
       limit: z.number().describe('The last N entries; default 20.').optional(),
@@ -236,27 +236,12 @@ export function registerEngagementTools(
     annotations: ro,
   }, (args) => guard(async () => {
     const project = await projectId(db)
-    const res = await db.rpc('engagement_log_read', {
+    const res = await db.rpc('project_log_read', {
       p_project: project, p_since: args.since_version ?? null, p_limit: args.since_version === undefined ? (args.limit ?? 20) : null,
     })
     if (res.error) throw res.error
     return done({ entries: res.data as Row[] })
   }, READ_CRASH))
 
-  server.registerTool('reset', {
-    title: 'Reset engagement demo',
-    description:
-      'Replace the selected project\'s engagement with the Big Pharma AG demo seed (version 6), or load it into a ' +
-      'project that has none. Erases every change made since. Only when the user asks; needs confirm true.',
-    inputSchema: z.object({ confirm: z.boolean().describe('Must be true.') }),
-    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
-  }, (args) => guard(async () => {
-    if (args.confirm !== true) throw new ToolError('invalid_parameter: "confirm" must be true.')
-    const res = await admin.rpc('engagement_replace', {
-      p_profile: user(), p_project: await projectId(db), p_contract: SCHEMA.contract_version,
-      p_version: SEED.version, p_tables: SEED.tables, p_log: SEED.log,
-    })
-    if (res.error) throw res.error
-    return done({ version: { global: SEED.version.global } }, 'The engagement is reset to the demo seed.')
-  }, 'The reset may or may not have happened. Call log with limit 1 to check.'))
+  // No reset tool: the demo project is created and reset from Claude Code (scripts/demo-project.mjs), not from the chat.
 }
